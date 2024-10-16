@@ -97,4 +97,5 @@ alias python=python3
 
 export CODE_USER_DATA_DIR=~/.config/vscode
 
-
+# Aider
+alias aider='aider --env-file ~/.config/aider.env'

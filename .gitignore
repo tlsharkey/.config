@@ -10,3 +10,5 @@ wireshark/
 .mono/
 github-copilot/
 mozilla
+.aider*
+aider.env
