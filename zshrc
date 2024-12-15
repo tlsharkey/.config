@@ -85,6 +85,12 @@ function parse_git_branch() {
     git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/[\1]/p'
 }
 
+function check_python_venv() {
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        echo $VIRTUAL_ENV | grep -oE "[^\/\\]+$"
+    fi
+}
+
 setopt PROMPT_SUBST
 export PROMPT='%F{grey}%n%f %F{cyan}%~%f %F{green}$(parse_git_branch)%f %F{normal}$%f '
 
@@ -99,3 +105,13 @@ export CODE_USER_DATA_DIR=~/.config/vscode
 
 # Aider
 alias aider='aider --env-file ~/.config/aider.env'
+
+# tags
+# alias ctags = 'ctags --options=$HOME/.config/ctags'
+
+
+alias defaultsource='source ~/.config/zshrc'
+alias sourcedefault='source ~/.config/zshrc'
+alias re-source='source ~/.config/zshrc'
+alias resource='source ~/.config/zshrc'
+alias .config='cd ~/.config'

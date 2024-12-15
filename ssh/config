@@ -17,7 +17,8 @@ Host lifesaveraws
     IdentityAgent none
 
 Host lifesaverjupyter
-    HostName 34.212.133.20
+    # HostName 34.212.133.20
+    HostName 34.217.117.20
     User ubuntu
     IdentityFile ~/.config/ssh/lifesaver-pack-server-test.pem
     IdentityAgent none
@@ -38,7 +39,7 @@ Host fsodevops
     IdentityFile ~/.config/ssh/ey_devops.pub
     IdentitiesOnly yes
 
-Host github.com
-    IdentityFile ~/.config/ssh/git_personal.pub
-    IdentitiesOnly yes
+# Host github.com
+#     IdentityFile ~/.config/ssh/git_personal.pub
+#     IdentitiesOnly yes
 
