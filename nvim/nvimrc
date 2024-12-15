@@ -168,3 +168,19 @@ endif
 
 " set Netrw's default style to tree style listing
 let g:netrw_liststyle=3
+
+" Gutentags
+" let g:gutentags_ctags_tagfile = .tags
+" let g:gutentags_ctags_auto_set_tags = 0
+let g:gutentags_file_list_command = {
+                             \ 'markers': {
+                                 \ '.git': 'git ls-files',
+                                 \ '.hg': 'hg files',
+                                 \ },
+                             \ }
+let g:gutentags_generate_on_new = 1
+let g:gutentags_ctags_extra_args = ["--options=~/.config/ctags"]
+set statusline+=%{gutentags#statusline()}
+
+let g:gutentags_exclude_filetypes = []
+let g:gutentags_exclude_project_root = ['/usr/local', '/opt/homebrew', '/home/linuxbrew/.linuxbrew', '~/.config']

@@ -51,5 +51,7 @@ require("lazy").setup({
     "olimorris/onedarkpro.nvim",
     -- merge tool
     "sindrets/diffview.nvim",
+    -- gutentags (like intellisense)
+    "ludovicchabant/vim-gutentags"
 })
 

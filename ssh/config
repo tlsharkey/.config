@@ -18,7 +18,8 @@ Host lifesaveraws
     IdentityAgent none
 
 Host lifesaverjupyter
-    HostName 34.212.133.20
+    # HostName 34.212.133.20
+    HostName 34.217.117.20
     User ubuntu
     IdentityFile ~/.config/ssh/lifesaver-pack-server-test.pem
     IdentityAgent none
