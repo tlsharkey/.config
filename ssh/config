@@ -3,7 +3,8 @@ Host *
 
 # 1 Password
 Host *
-    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+    IdentityAgent "~/.1password/agent.sock"
+    # IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
 Host raspberrypi
     HostName raspberrypi
@@ -27,18 +28,4 @@ Host ec2-13-57-201-32.us-west-1.compute.amazonaws.com
     IdentityFile ~/.config/ssh/wordlebotkey.pem
     User ubuntu
     IdentityAgent none
-
-Host gitey
-    HostName github.com
-    IdentityFile ~/.config/ssh/github-ey.pub
-    IdentitiesOnly yes
-
-Host fsodevops
-    HostName vs-ssh.visualstudio.com
-    IdentityFile ~/.config/ssh/ey_devops.pub
-    IdentitiesOnly yes
-
-Host github.com
-    IdentityFile ~/.config/ssh/git_personal.pub
-    IdentitiesOnly yes
 
