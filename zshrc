@@ -31,24 +31,14 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' \
 ###alias###
 
 #ls
-alias l='ls -C'
-alias ll='ls -lh'
-alias la='ls -A'
-alias lal='ls -lha'
 alias ls='ls --color=auto'
 
 #grep
-alias g='\grep --color=auto'
 alias grep='\grep --color=auto'
 alias fgrep='\fgrep --color=auto'
 alias egrep='\egrep --color=auto'
-alias grep='grep --color=auto'
 
 #network tool
-alias p='ping'
-alias n='nslookup'
-alias d='dig'
-alias t='mtr'
 alias ssh='ssh -F ~/.config/ssh/config -R 2222:localhost:22'
 
 #cd
@@ -60,7 +50,6 @@ alias ....='\cd ../../..'
 alias .....='\cd ../../../..'
 
 #other alias
-alias c='clear'
 alias sudo='\sudo -E'
 alias less='\less -R'
 alias df='\df -hT'
@@ -72,6 +61,16 @@ alias last='\last | less'
 alias tree='\tree -C'
 alias optipng='\optipng -o7 -zm1-9 -preserve'
 alias vim='nvim'
+alias python=python3
+alias aider='aider --env-file ~/.config/aider.env'
+# alias ctags = 'ctags --options=$HOME/.config/ctags'
+alias defaultsource='source ~/.config/zshrc'
+alias sourcedefault='source ~/.config/zshrc'
+alias re-source='source ~/.config/zshrc'
+alias resource='source ~/.config/zshrc'
+alias .config='cd ~/.config'
+# ollama
+alias ?='ollama run gemma2 you are a smart command prompt that converts regular language into bash script. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
 
 # Azure
 autoload bashcompinit && bashcompinit
@@ -99,19 +98,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"
 [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && \. "/usr/local/opt/nvm/etc/bash_completion"
 
-alias python=python3
 
 export CODE_USER_DATA_DIR=~/.config/vscode
 
-# Aider
-alias aider='aider --env-file ~/.config/aider.env'
-
-# tags
-# alias ctags = 'ctags --options=$HOME/.config/ctags'
-
-
-alias defaultsource='source ~/.config/zshrc'
-alias sourcedefault='source ~/.config/zshrc'
-alias re-source='source ~/.config/zshrc'
-alias resource='source ~/.config/zshrc'
-alias .config='cd ~/.config'
