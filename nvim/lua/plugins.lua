@@ -52,6 +52,28 @@ require("lazy").setup({
     -- merge tool
     "sindrets/diffview.nvim",
     -- gutentags (like intellisense)
-    "ludovicchabant/vim-gutentags"
+    "ludovicchabant/vim-gutentags",
+    {
+        "Exafunction/codeium.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "hrsh7th/nvim-cmp",
+        },
+        config = function()
+            require("codeium").setup({
+                virtual_text = {
+                    enabled = true,
+                    key_bindings = {
+                        accept = "<C-CR>", -- competing with other auto-completion
+                        accept_word = "<C-Right>",
+                        accept_line = "<C-S-Right>",
+                        next = "<C-Down>",
+                        prev = "<C-Up>",
+                        dismiss = false,
+                    },
+                },
+            })
+        end
+    }
 })
 
