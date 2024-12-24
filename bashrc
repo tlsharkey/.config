@@ -1,3 +1,4 @@
+#!/bin/bash
 # .bashrc
 
 # Source global definitions
@@ -26,9 +27,10 @@ unset rc
 
 
 ###alias###
-
+alias cat='bat'
 #ls
 alias ls='ls --color=auto'
+alias fzf='fzf --preview "bat --color=always {}"'
 
 #grep
 alias grep='\grep --color=auto'
@@ -64,7 +66,7 @@ alias resource='source ~/.config/bashrc'
 alias re-source='source ~/.config/bashrc'
 # ollama alias for asking a question
 alias ?='ollama run gemma2 you are a smart command prompt that converts regular language into bash script. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
-
+alias aider='aider --model ollama_chat/gemma2 --env-file ~/.config/aider.env'
 
 # Function to get the current git branch
 parse_git_branch() {
@@ -93,4 +95,4 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && \. "/usr/local/opt/nvm/etc/bash_completion"
 
 export CODE_USER_DATA_DIR=~/.config/vscode
-
+export OLLAMA_API_BASE=http://127.0.0.1:11434

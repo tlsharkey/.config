@@ -1,3 +1,4 @@
+#!/bin/zsh
 #load script
 fpath=(~/ $fpath)
 
@@ -36,6 +37,7 @@ alias ll='ls -lh'
 alias la='ls -A'
 alias lal='ls -lha'
 alias ls='ls --color=auto'
+alias fzf='fzf --preview "bat --color=always {}"'
 
 #grep
 alias g='\grep --color=auto'
@@ -72,6 +74,7 @@ alias last='\last | less'
 alias tree='\tree -C'
 alias optipng='\optipng -o7 -zm1-9 -preserve'
 alias vim='nvim'
+alias cat='bat'
 
 # Azure
 autoload bashcompinit && bashcompinit
