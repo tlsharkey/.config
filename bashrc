@@ -28,6 +28,7 @@ unset rc
 
 ###alias###
 alias cat='bat'
+alias open='gnome-open'
 #ls
 alias ls='ls --color=auto'
 alias fzf='fzf --preview "bat --color=always {}"'
