@@ -40,6 +40,8 @@ alias egrep='\egrep --color=auto'
 
 #network tool
 alias ssh='ssh -F ~/.config/ssh/config -R 2222:localhost:22'
+alias scp='scp -F ~/.config/ssh/config'
+alias rsync='rsync -e "ssh -F /Users/tlsharkey/.config/ssh/config"'
 
 #cd
 alias cd..='\cd ..'
@@ -70,7 +72,8 @@ alias re-source='source ~/.config/zshrc'
 alias resource='source ~/.config/zshrc'
 alias .config='cd ~/.config'
 # ollama
-alias ?='ollama run gemma2 you are a smart command prompt that converts regular language into bash script. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
+alias llm='ollama run gemma2 you are a smart command prompt that converts regular language into bash script. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
+
 
 # Azure
 autoload bashcompinit && bashcompinit
@@ -88,6 +91,12 @@ function check_python_venv() {
     if [[ -n "$VIRTUAL_ENV" ]]; then
         echo $VIRTUAL_ENV | grep -oE "[^\/\\]+$"
     fi
+}
+
+# cats the ssh config file where it matches a given host
+function sshcat() {
+    local hostinfo=$(grep -A6 "$1" ~/.config/ssh/config)
+    echo "$hostinfo"
 }
 
 setopt PROMPT_SUBST
