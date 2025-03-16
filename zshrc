@@ -7,6 +7,7 @@ unalias -m "*"
 #default charset and language
 LANG='en_US.UTF-8'
 LC_ALL='en_US.UTF-8'
+export LS_COLORS="di=01;93:"
 
 #set default editor
 export EDITOR='vim'
@@ -19,6 +20,9 @@ alias tmux='\tmux -2'
 
 #uniq unicode issue
 alias uniq='LC_ALL=C uniq'
+
+#homebrew
+export PATH="/opt/homebrew/bin:$PATH"
 
 ## Completions
 autoload -U compinit
@@ -72,7 +76,7 @@ alias re-source='source ~/.config/zshrc'
 alias resource='source ~/.config/zshrc'
 alias .config='cd ~/.config'
 # ollama
-alias llm='ollama run gemma2 you are a smart command prompt that converts regular language into bash script. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
+alias llm='ollama run gemma3:12b you are a smart command prompt that converts regular language into zsh script for macos. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
 
 
 # Azure
