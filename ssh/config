@@ -62,13 +62,14 @@ Host lifesaver-s9-tab
     IdentityAgent none
 
 Host ucsd_lifesaverjupyter
-    HostName ec2-52-53-233-8.us-west-1.compute.amazonaws.com
+    # HostName ec2-52-53-233-8.us-west-1.compute.amazonaws.com
+    HostName 52.53.52.138
     User ubuntu
     IdentityFile ~/.config/ssh/lifesaver-jupyter-ucsd.pem
     IdentityAgent none
 
 Host ucsd_lifesaveraws
-    HostName ec2-54-177-253-119.us-west-1.compute.amazonaws.com
+    HostName 54.193.239.157
     User ubuntu
     IdentityFile ~/.config/ssh/lifesaver-jupyter-ucsd.pem
     IdentityAgent none
@@ -80,7 +81,7 @@ Host ucsd_resilient_deepresearch
     IdentityAgent none
 
 Host resilient_agents
-    HostName ec2-54-153-51-16.us-west-1.compute.amazonaws.com
+    HostName 52.9.168.22
     User ubuntu
     IdentityFile ~/.config/ssh/lifesaver-jupyter-ucsd.pem
     IdentityAgent none
