@@ -66,8 +66,18 @@ alias aider='aider --env-file ~/.config/aider.env'
 alias resource='source ~/.config/bashrc'
 alias re-source='source ~/.config/bashrc'
 # ollama alias for asking a question
-alias ?='ollama run deepseek-r1:7b you are a smart command prompt that converts regular language into bash script on fedora. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
+alias ?=ollama_run
 alias aider='aider --model ollama_chat/phi4 --env-file ~/.config/aider.env'
+
+# AI Stuff
+ollama_run() {
+    local base_prompt="you are a smart command prompt that assists a user primarily with bash script on fedora. When appropriate only respond in the command line code corresponding to the users query. respond in plain shell text. Output will be set to a markdown renderer. Avoid explanations unless requested, especially long ones."
+    local user_input="$*"
+    combined_input="SYSTEM PROMPT: ${base_prompt} USER INPUT: ${user_input}"
+    output=$(ollama run phi4:latest "$combined_input")
+    # echo "$output"
+    echo "$output" | glow
+}
 
 # Function to get the current git branch
 parse_git_branch() {

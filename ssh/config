@@ -1,3 +1,6 @@
+Host 172.233.136.239
+    ForwardAgent yes
+
 Host *
     UserKnownHostsFile ~/.config/ssh/known_hosts
 
