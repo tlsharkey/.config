@@ -64,11 +64,11 @@ require("lazy").setup({
                 virtual_text = {
                     enabled = true,
                     key_bindings = {
-                        accept = "<C-Down>", -- ctrl + enter/return button
-                        accept_word = "<C-S-Right>", -- ctrl + right
-                        accept_line = "<C-Right>", -- ctrl + shift + right
-                        next = "<C-Up>", -- ctrl + down
-                        -- prev = "<C-Up>", -- ctrl + up
+                        accept = "<C-Down>",
+                        accept_word = "<C-S-Right>",
+                        accept_line = "<C-Right>",
+                        next = "<C-Up>",
+                        -- prev = "<C-Up>",
                         dismiss = false,
                     },
                 },
