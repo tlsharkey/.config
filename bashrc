@@ -40,6 +40,8 @@ alias egrep='\egrep --color=auto'
 
 #network tool
 alias ssh='ssh -F ~/.config/ssh/config -R 2222:localhost:22'
+alias scp='scp -F ~/.config/ssh/config'
+alias rsync='rsync -e "ssh -F /Users/tlsharkey/.config/ssh/config"'
 
 #cd
 alias cd..='\cd ..'

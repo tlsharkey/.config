@@ -22,7 +22,8 @@ Host lifesaveraws
 
 Host lifesaverjupyter
     # HostName 34.212.133.20
-    HostName 34.217.117.20
+    # HostName 34.217.117.20
+    HostName 52.38.48.161
     User ubuntu
     IdentityFile ~/.config/ssh/lifesaver-pack-server-test.pem
     IdentityAgent none
@@ -32,4 +33,72 @@ Host ec2-13-57-201-32.us-west-1.compute.amazonaws.com
     IdentityFile ~/.config/ssh/wordlebotkey.pem
     User ubuntu
     IdentityAgent none
+
+Host resilient
+    HostName 132.249.238.178
+    User ubuntu
+    IdentityFile ~/.config/ssh/resilient.ppk
+    IdentityAgent none
+
+
+# Tailscale
+Host s22
+    # HostName 192.168.1.39
+    HostName 100.96.232.105
+    User u0_a364
+    IdentityFile ~/.config/ssh/s22
+    IdentityAgent none
+    Port 8022
+
+Host lifesaver-flip
+    HostName 100.123.36.14
+    User u0_a322
+    Port 8022
+    IdentityFile ~/.config/ssh/s22
+    IdentityAgent none
+
+Host lifesaver-s9-tab
+    HostName 100.97.107.86
+    User u0_a299
+    Port 8022
+    IdentityFile ~/.config/ssh/s22
+    IdentityAgent none
+
+Host ucsd_lifesaverjupyter
+    # HostName ec2-52-53-233-8.us-west-1.compute.amazonaws.com
+    HostName 52.53.52.138
+    User ubuntu
+    IdentityFile ~/.config/ssh/lifesaver-jupyter-ucsd.pem
+    IdentityAgent none
+
+Host ucsd_lifesaveraws
+    HostName 54.193.239.157
+    User ubuntu
+    IdentityFile ~/.config/ssh/lifesaver-jupyter-ucsd.pem
+    IdentityAgent none
+
+Host ucsd_resilient_deepresearch
+    HostName 54.153.41.61
+    User ubuntu
+    IdentityFile ~/.config/ssh/lifesaver-jupyter-ucsd.pem
+    IdentityAgent none
+
+Host resilient_agents
+    HostName 52.9.168.22
+    User ubuntu
+    IdentityFile ~/.config/ssh/lifesaver-jupyter-ucsd.pem
+    IdentityAgent none
+
+Host meltingtower
+    HostName 100.87.71.113
+
+Include ~/.config/ssh/config.private
+
+# Eli cheese grater
+Host eli
+    HostName eliahs-pro-5.dynamic.ucsd.edu
+    User eliaharonoff-spencer
+    IdentityFile ~/.config/ssh/eli
+    IdentityAgent none
+
 
