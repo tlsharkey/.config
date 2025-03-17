@@ -1,3 +1,4 @@
+#!/bin/bash
 # .bashrc
 
 # Source global definitions
@@ -26,9 +27,11 @@ unset rc
 
 
 ###alias###
-
+alias cat='bat'
+alias open='gnome-open'
 #ls
 alias ls='ls --color=auto'
+alias fzf='fzf --preview "bat --color=always {}"'
 
 #grep
 alias grep='\grep --color=auto'
@@ -65,8 +68,18 @@ alias aider='aider --env-file ~/.config/aider.env'
 alias resource='source ~/.config/bashrc'
 alias re-source='source ~/.config/bashrc'
 # ollama alias for asking a question
-alias ?='ollama run gemma2 you are a smart command prompt that converts regular language into bash script. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
+alias ?=ollama_run
+alias aider='aider --model ollama_chat/phi4 --env-file ~/.config/aider.env'
 
+# AI Stuff
+ollama_run() {
+    local base_prompt="you are a smart command prompt that assists a user primarily with bash script on fedora. When appropriate only respond in the command line code corresponding to the users query. respond in plain shell text. Output will be set to a markdown renderer. Avoid explanations unless requested, especially long ones."
+    local user_input="$*"
+    combined_input="SYSTEM PROMPT: ${base_prompt} USER INPUT: ${user_input}"
+    output=$(ollama run phi4:latest "$combined_input")
+    # echo "$output"
+    echo "$output" | glow
+}
 
 # Function to get the current git branch
 parse_git_branch() {
@@ -95,4 +108,5 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && \. "/usr/local/opt/nvm/etc/bash_completion"
 
 export CODE_USER_DATA_DIR=~/.config/vscode
+export OLLAMA_API_BASE=http://127.0.0.1:11434
 

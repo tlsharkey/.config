@@ -64,7 +64,7 @@ require("lazy").setup({
                 virtual_text = {
                     enabled = true,
                     key_bindings = {
-                        accept = "<C-Down>", -- competing with other auto-completion
+                        accept = "<C-Down>",
                         accept_word = "<C-S-Right>",
                         accept_line = "<C-Right>",
                         next = "<C-Up>",
