@@ -1,5 +1,6 @@
 [alias]
     adog = log --all --decorate --oneline --graph
+    adoga = log --all --decorate --oneline --graph --pretty=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%ar%C(reset) - %C(bold green)%an%C(reset) %s%C(reset)'
     tree = "! ~/.config/git/gitforest.sh --pretty=format:\"%C(red)%h %C(magenta)(%ar) %C(blue)%an %C(reset)%s\" --style=15 --reverse"
     status-tree = "!f() { git status --porcelain | awk \"{print substr(\\$0, 4)}\" | sed \"s/^\\\"//; s/\\\"$//\" | xargs -I {} dirname \"{}\" | sort | uniq | xargs -I {} tree ${1:--L 2} \"{}\"; }; f"
     push-incremental = git status -s | while IFS= read -r line; do; file=$(echo "$line" | cut -d " " -f 2- | tr -d '"'); git add "$file"; git commit -m "Committing $file"; git push || { git reset --soft HEAD~1; git stash; }; done;
