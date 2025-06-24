@@ -9,6 +9,12 @@ Host *
     IdentityAgent "~/.1password/agent.sock"
     # IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
+Host github
+    HostName github.com
+    User git
+    IdentityFile ~/.config/ssh/github
+    IdentityAgent none
+
 Host raspberrypi
     HostName raspberrypi
     User c4h
@@ -36,6 +42,12 @@ Host ec2-13-57-201-32.us-west-1.compute.amazonaws.com
 
 Host resilient
     HostName 132.249.238.178
+    User ubuntu
+    IdentityFile ~/.config/ssh/resilient.ppk
+    IdentityAgent none
+
+Host resilient-matrix
+    HostName matrix.resilienthub.org
     User ubuntu
     IdentityFile ~/.config/ssh/resilient.ppk
     IdentityAgent none
@@ -91,6 +103,18 @@ Host resilient_agents
 
 Host meltingtower
     HostName 100.87.71.113
+
+Host resilient-nextcloud
+    HostName 50.18.134.207
+    User ubuntu
+    IdentityFile ~/.config/ssh/lifesaver-jupyter-ucsd.pem
+    IdentityAgent none
+
+Host resilient-portainer
+    HostName resilientservice.mooo.com
+    User ubuntu
+    IdentityFile ~/.config/ssh/llm-hub
+    IdentityAgent none
 
 Include ~/.config/ssh/config.private
 
