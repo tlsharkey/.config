@@ -30,3 +30,11 @@ vim.keymap.set('n', '<C-Right>', ':vertical resize +2<CR>', opts)
 vim.keymap.set('v', '<', '<gv', opts)
 vim.keymap.set('v', '>', '>gv', opts)
 
+-- neo-tree
+vim.keymap.set('n', 'fe', ':Neotree<CR>', opts)
+
+-- telescope
+vim.keymap.set('n', '<leader>ff', ':Telescope find_files<CR>', opts)
+vim.keymap.set('n', '<leader>fg', ':Telescope live_grep<CR>', opts)
+vim.keymap.set('n', '<leader>fb', ':Telescope buffers<CR>', opts)
+vim.keymap.set('n', '<leader>fh', ':Telescope help_tags<CR>', opts)
