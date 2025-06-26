@@ -5,10 +5,15 @@ require("colorscheme")
 require("lsp")
 require('omnisharp_extended')
 require('diffview')
-require("render-markdown").setup({
-    enabled = true,
-    file_types = { "markdown", "quarto" },
-    render_modes = true -- { "n", "c", "t" },
-})
 require("neo-tree")
 
+vim.opt.termguicolors = true
+require("bufferline").setup{}
+require('nvim-treesitter.configs').setup {
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = { "markdown" },
+  },
+  ensure_installed = { "markdown", "markdown_inline", "lua", "vim", "vimdoc" },
+  auto_install = true,
+}

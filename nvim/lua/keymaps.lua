@@ -38,3 +38,15 @@ vim.keymap.set('n', '<leader>ff', ':Telescope find_files<CR>', opts)
 vim.keymap.set('n', '<leader>fg', ':Telescope live_grep<CR>', opts)
 vim.keymap.set('n', '<leader>fb', ':Telescope buffers<CR>', opts)
 vim.keymap.set('n', '<leader>fh', ':Telescope help_tags<CR>', opts)
+
+-- LSP and Copilots
+-- vim.keymap.set('n', '<leader>cc', ':Codeium Chat<CR>', opts)
+-- vim.keymap.set('i', '<C-S-I>', ':Codeium Insert<CR>', opts)
+
+
+-----------------
+-- Insert mode --
+-----------------
+-- vim.keymap.set('i', '<C-s>', '<Esc>:w<CR>i', opts)
+-- vim.keymap.set('v', '<C-s>', '<Esc>:w<CR>', opts)
+-- vim.keymap.set('n', '<C-s>', ':w<CR>', opts)

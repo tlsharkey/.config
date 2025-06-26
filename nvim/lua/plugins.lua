@@ -39,11 +39,26 @@ require("lazy").setup({
         version = "v2.*"
     },
     -- LSP manager
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
+    {
+        "mason-org/mason-lspconfig.nvim",
+        dependencies = {
+            { "mason-org/mason.nvim", opts = {
+                ui = {
+                    icons = {
+                        package_installed = "✓",
+                        package_pending = "➜",
+                        package_uninstalled = "✗"
+                    }
+                }
+            } },
+            "neovim/nvim-lspconfig",
+        },
+    },
     "neovim/nvim-lspconfig",
     "OmniSharp/omnisharp-vim",
     "Hoffs/omnisharp-extended-lsp.nvim",
+    "pangloss/vim-javascript",
+    "maxmellon/vim-jsx-pretty",
     -- Colorscheme
     "tanvirtin/monokai.nvim",
     "Mofiqul/vscode.nvim",
@@ -77,14 +92,59 @@ require("lazy").setup({
     },
     {
         'MeanderingProgrammer/render-markdown.nvim',
-        -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
-        dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-        -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
-        ---@module 'render-markdown'
-        ---@type render.md.UserConfig
-        opts = {},
+        dependencies = { 
+            'nvim-treesitter/nvim-treesitter', 
+            'nvim-tree/nvim-web-devicons',
+            'echasnovski/mini.icons'
+        },
+        ft = { "markdown", "quarto" },
+        config = function()
+            require("render-markdown").setup({
+                enabled = true,
+                file_types = { "markdown", "quarto" },
+                render_modes = true,
+                latex = { enabled = false },
+                html = { enabled = false },
+                -- Use the beautiful Unicode icons since your terminal supports them
+                heading = {
+                    enabled = true,
+                    icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
+                },
+                bullet = {
+                    enabled = true,
+                    icons = { "●", "○", "◆", "◇" },
+                },
+                checkbox = {
+                    enabled = true,
+                    checked = {
+                        icon = "󰱒 ",
+                        highlight = "RenderMarkdownChecked",
+                    },
+                    unchecked = {
+                        icon = "󰄱 ",
+                        highlight = "RenderMarkdownUnchecked",
+                    },
+                },
+                -- Enable debugging to see what's happening
+                log_level = "info",
+            })
+        end,
     },
-    -- File explorer
+    -- GUI Stuff
+    {
+        "echasnovski/mini.icons",
+        opts = {},
+        lazy = true,
+        specs = {
+            { "nvim-tree/nvim-web-devicons", enabled = false, optional = true },
+        },
+        init = function()
+            package.preload["nvim-web-devicons"] = function()
+                require("mini.icons").mock_nvim_web_devicons()
+                return package.loaded["nvim-web-devicons"]
+            end
+        end,
+    },
     {
         "nvim-neo-tree/neo-tree.nvim",
         branch = "v3.x",
@@ -105,6 +165,11 @@ require("lazy").setup({
         "nvim-telescope/telescope.nvim",
         tag = "0.1.8",
         dependencies = { "nvim-lua/plenary.nvim" }
+    },
+    {
+        "akinsho/bufferline.nvim",
+        version = "*",
+        dependencies = 'nvim-tree/nvim-web-devicons'
     }
 })
 
