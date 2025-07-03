@@ -117,13 +117,31 @@ require("lazy").setup({
                 checkbox = {
                     enabled = true,
                     checked = {
-                        icon = "󰱒 ",
+                        icon = " ",
                         highlight = "RenderMarkdownChecked",
                     },
                     unchecked = {
                         icon = "󰄱 ",
                         highlight = "RenderMarkdownUnchecked",
                     },
+                    custom = {
+                        -- inprogress = { raw = "[/]", hightlight="DiagnosticWarn" },
+                        in_progress = { raw = '[/]', rendered = '󱎖 ', highlight = 'Comment' },
+                        zero =  { raw = '[0]', rendered = '󰎡 ', highlight = 'RenderMarkdownCheckboxZero' },
+                        one =   { raw = '[1]', rendered = '󰎤 ', highlight = 'RenderMarkdownCheckboxOne' },
+                        two =   { raw = '[2]', rendered = '󰎧 ', highlight = 'RenderMarkdownCheckboxTwo' },
+                        three = { raw = '[3]', rendered = '󰎪 ', highlight = 'RenderMarkdownCheckboxThree' },
+                        four =  { raw = '[4]', rendered = '󰎭 ', highlight = 'RenderMarkdownCheckboxFour' },
+                        five =  { raw = '[5]', rendered = '󰎱 ', highlight = 'RenderMarkdownCheckboxFive' },
+                        six =   { raw = '[6]', rendered = '󰎳 ', highlight = 'RenderMarkdownCheckboxSix' },
+                        seven = { raw = '[7]', rendered = '󰎶 ', highlight = 'RenderMarkdownCheckboxSeven' },
+                        eight = { raw = '[8]', rendered = '󰎹 ', highlight = 'RenderMarkdownCheckboxEight' },
+                        nine =  { raw = '[9]', rendered = '󰎼 ', highlight = 'RenderMarkdownCheckboxNine' },
+                        cancelled = { raw = '[-]', rendered = ' ', highlight = 'Comment', scope_highlight = 'Strikethrough' },
+                        urgent = { raw = '[!]', rendered = ' ', highlight = 'ErrorMsg' }, -- Exclamation icon
+                        question = { raw = '[?]', rendered = ' ', highlight = 'Question' }, -- Questionmark icon
+
+                    }
                 },
                 -- Enable debugging to see what's happening
                 log_level = "info",
@@ -159,6 +177,24 @@ require("lazy").setup({
         ---@type neotree.Config?
         opts = {
             -- fill any relevant options here
+            window = {
+                width = 30,
+                mappings = {
+                    ["P"] = {
+                        "toggle_preview",
+                        config = {
+                            use_float = true,
+                        },
+                    },
+                },
+            },
+            filesystem = {
+                filtered_items = {
+                    visible = true,
+                    hide_dotfiles = false,
+                    hide_gitignored = false,
+                },
+            }
         },
     },
     {
@@ -170,6 +206,6 @@ require("lazy").setup({
         "akinsho/bufferline.nvim",
         version = "*",
         dependencies = 'nvim-tree/nvim-web-devicons'
-    }
+    },
 })
 
