@@ -9,7 +9,7 @@ Host *
     IdentityAgent "~/.1password/agent.sock"
     # IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
-Host github
+Host github github.com
     HostName github.com
     User git
     IdentityFile ~/.config/ssh/github
@@ -125,4 +125,10 @@ Host eli
     IdentityFile ~/.config/ssh/eli
     IdentityAgent none
 
-
+# Signal Website
+Host signal-website
+    # HostName 52.88.63.14
+    HostName 35.165.42.167
+    User ubuntu
+    IdentityFile ~/.config/ssh/signal-aws-resources.pem
+    IdentityAgent none
