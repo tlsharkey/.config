@@ -200,7 +200,25 @@ require("lazy").setup({
     {
         "nvim-telescope/telescope.nvim",
         tag = "0.1.8",
-        dependencies = { "nvim-lua/plenary.nvim" }
+        dependencies = { "nvim-lua/plenary.nvim" },
+        opts = {
+            defaults = {
+               file_ignore_patterns = {
+                   "node_modules",
+                   "build",
+                   "dist",
+                   "%.d%.ts$",
+                   "%.git/",
+                   "__pycache__/",
+                   "target/",
+                   "vendor/",
+                   "%.jar",
+                   "%.war",
+                   "%.lock",
+                   "%.DS_Store",
+               },
+           },
+       },
     },
     {
         "akinsho/bufferline.nvim",
