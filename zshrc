@@ -75,8 +75,9 @@ alias sourcedefault='source ~/.config/zshrc'
 alias re-source='source ~/.config/zshrc'
 alias resource='source ~/.config/zshrc'
 alias .config='cd ~/.config'
+alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
 # ollama
-alias llm='ollama run gemma3:12b you are a smart command prompt that converts regular language into zsh script for macos. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
+alias llm='ollama run gemma2:latest you are a smart command prompt that converts regular language into zsh script for macos. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
 
 
 # Azure
@@ -114,3 +115,6 @@ export NVM_DIR="$HOME/.nvm"
 
 export CODE_USER_DATA_DIR=~/.config/vscode
 
+
+# merge in ~/.config/zshrc.private if it exists
+[ -f ~/.config/zshrc.private ] && source ~/.config/zshrc.private
