@@ -69,3 +69,10 @@ zoom.conf
 zoomus.conf
 yelp
 config.private
+zshrc.private
+bashrc.private
+uv
+fish/conf.d
+op
+zellij
+ctags
