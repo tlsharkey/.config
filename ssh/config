@@ -1,3 +1,6 @@
+Include ~/.config/ssh/config.private
+
+
 Host 172.233.136.239
     ForwardAgent yes
 
@@ -29,7 +32,8 @@ Host lifesaveraws
 Host lifesaverjupyter
     # HostName 34.212.133.20
     # HostName 34.217.117.20
-    HostName 52.38.48.161
+    # HostName 52.38.48.161
+    HostName 52.53.52.138
     User ubuntu
     IdentityFile ~/.config/ssh/lifesaver-pack-server-test.pem
     IdentityAgent none
@@ -116,7 +120,18 @@ Host resilient-portainer
     IdentityFile ~/.config/ssh/llm-hub
     IdentityAgent none
 
-Include ~/.config/ssh/config.private
+Host resilient-matrix
+    HostName matrix.resilienthub.org
+    User ubuntu
+    IdentityFile ~/.config/ssh/llm-hub
+    IdentityAgent none
+
+Host llm-hub
+    HostName 10.128.111.35
+    User ubuntu
+    IdentityFile ~/.config/ssh/llm-hub
+    ProxyJump resilient-portainer
+
 
 # Eli cheese grater
 Host eli
