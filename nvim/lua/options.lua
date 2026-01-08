@@ -35,3 +35,4 @@ vim.opt.smartcase = true            -- but make it case sensitive if an uppercas
 vim.opt.wrap = true
 vim.opt.linebreak = true
 vim.opt.breakindent = true
+vim.opt.scrolloff = 0

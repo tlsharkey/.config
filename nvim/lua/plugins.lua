@@ -64,6 +64,7 @@ require("lazy").setup({
     "Mofiqul/vscode.nvim",
     "tomasiser/vim-code-dark",
     "olimorris/onedarkpro.nvim",
+    { import = "config.neoscroll" },
     -- merge tool
     "sindrets/diffview.nvim",
     -- gutentags (like intellisense)
