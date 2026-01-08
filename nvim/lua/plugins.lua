@@ -148,6 +148,20 @@ require("lazy").setup({
             })
         end,
     },
+    {
+        'jghauser/follow-md-links.nvim'
+    },
+    {
+        "lervag/vimtex",
+        lazy = false,     -- we don't want to lazy load VimTeX
+        init = function()
+          vim.g.vimtex_view_method = "skim"
+          -- vim.g.vimtex_view_general_viewer = "open"
+          vim.g.vimtex_compiler_latexmk = {
+              out_dir = ".latex",
+          }
+        end
+    },
     -- GUI Stuff
     {
         "echasnovski/mini.icons",
@@ -224,6 +238,22 @@ require("lazy").setup({
         "akinsho/bufferline.nvim",
         version = "*",
         dependencies = 'nvim-tree/nvim-web-devicons'
+    },
+    {
+        "img-paste-devs/img-paste.vim",
+    },
+    -- Python Notebooks
+    {
+        'goerz/jupytext.nvim',
+        version = '0.2.0',
+        opts = {},
+    },
+    {
+        "quarto-dev/quarto-nvim", -- code snippet code completion, execution
+        dependencies = {
+            "jmbuhr/otter.nvim",
+            "nvim-treesitter/nvim-treesitter",
+        },
     },
 })
 
