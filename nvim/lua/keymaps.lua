@@ -4,6 +4,16 @@ local opts = {
     silent = true,       -- do not show message
 }
 
+local modes = { "n", "v", "x", "o" }
+
+for _, mode in ipairs(modes) do
+    -- Scroll over wrapped lines
+    vim.keymap.set(mode, "<Down>", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+    vim.keymap.set(mode, "<Up>",   "v:count == 0 ? 'gk'   : 'k'",   { expr = true, silent = true })
+end
+vim.keymap.set("i", "<Up>",   "<C-o>gk", { silent = true })
+vim.keymap.set("i", "<Down>", "<C-o>gj", { silent = true })
+
 -----------------
 -- Normal mode --
 -----------------
