@@ -13,6 +13,7 @@ require('nvim-treesitter.configs').setup {
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = { "markdown" },
+    disable = { "latex" },
   },
   ensure_installed = { "markdown", "markdown_inline", "lua", "vim", "vimdoc" },
   auto_install = true,
