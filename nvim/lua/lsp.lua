@@ -1,11 +1,3 @@
-
--- Set different settings for different languages' LSP
--- LSP list: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
--- How to use setup({}): https://github.com/neovim/nvim-lspconfig/wiki/Understanding-setup-%7B%7D
---     - the settings table is sent to the LSP
---     - on_attach: a lua callback function to run after LSP attaches to a given buffer
-local lspconfig = require('lspconfig')
-
 -- Customized on_attach function
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local opts = { noremap = true, silent = true }
@@ -41,11 +33,9 @@ local on_attach = function(client, bufnr)
     end, bufopts)
 end
 
--- Configure each language
--- How to add LSP for a specific language?
--- 1. use `:Mason` to install corresponding LSP
--- 2. add configuration below
-lspconfig.pylsp.setup({
-    on_attach = on_attach,
-})
-
+if vim.lsp.config then
+  vim.lsp.config("pylsp", { on_attach = on_attach })
+  vim.lsp.enable("pylsp")
+else
+  require("lspconfig").pylsp.setup({ on_attach = on_attach })
+end
