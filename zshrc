@@ -111,10 +111,21 @@ export PROMPT='%F{grey}%n%f %F{cyan}%~%f %F{green}$(parse_git_branch)%f %F{norma
 export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"
 [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && \. "/usr/local/opt/nvm/etc/bash_completion"
-
+# PNPM
+export PNPM_HOME="/Users/tlsharkey/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
 
 export CODE_USER_DATA_DIR=~/.config/vscode
 
 
 # merge in ~/.config/zshrc.private if it exists
 [ -f ~/.config/zshrc.private ] && source ~/.config/zshrc.private
+
+eval $(thefuck --alias)
+
+# Azure
+autoload bashcompinit && bashcompinit
+source $(brew --prefix)/etc/bash_completion.d/az
