@@ -3,6 +3,7 @@
     graphColors = blue,green,yellow,red,magenta,cyan
 
 [alias]
+    dog = log --decorate --oneline --graph
     adog = log --all --decorate --oneline --graph
     adoga = log --all --decorate --oneline --graph --pretty=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%ar%C(reset) - %C(bold green)%an%C(reset) %s%C(reset)'
     adogab = log --all --decorate --oneline --graph --pretty=format:'%C(bold blue)%h%C(reset) - %C(bold green)%an%C(reset) - %C(bold cyan)%D%C(reset) %s'
@@ -51,4 +52,37 @@
     [mergetool "nvimdiff"]
         cmd = "nvim -d \"$LOCAL\" \"$MERGED\" \"$REMOTE\" -c 'wincmd w' -c 'wincmd J'"
 
-
+[alias]
+    sparse-download = "!f() { \
+        if [[ -z \"$1\" || ! \"$1\" =~ ^https://github.com/.*/.*/tree/.*/.*$ ]]; then \
+            echo '❌ Usage: git sparse-download <github_folder_url>'; \
+            return 1; \
+        fi; \
+        local repo_url=$(echo \"$1\" | sed -E 's|(https://github.com/[^/]+/[^/]+).*|\\1.git|'); \
+        local branch=$(echo \"$1\" | sed -E 's|.*/tree/([^/]+).*|\\1|'); \
+        local dir_path=$(echo \"$1\" | sed -E 's|.*/tree/[^/]+/(.*)|\\1|'); \
+        local target_dir=$(basename \"$dir_path\"); \
+        if ls \"$GIT_PREFIX$target_dir\" >/dev/null 2>&1; then \
+            echo \"❌ Error: A file or directory named '$target_dir' already exists in your current directory.\"; \
+            return 1; \
+        fi; \
+        local tmp_dir=$(mktemp -d); \
+        echo \"⬇️  Downloading '$target_dir' from branch '$branch'...\"; \
+        ( \
+            cd \"$tmp_dir\" && \
+            git init -q && \
+            git remote add origin \"$repo_url\" && \
+            git config core.sparseCheckout true && \
+            echo \"$dir_path\" > .git/info/sparse-checkout && \
+            git pull -q --depth=1 origin \"$branch\" \
+        ) &> /dev/null; \
+        if [ -d \"$tmp_dir/$dir_path\" ]; then \
+            mv \"$tmp_dir/$dir_path\" \"./$GIT_PREFIX$target_dir\"; \
+            rm -rf \"$tmp_dir\"; \
+            echo \"✅ Successfully downloaded to './$GIT_PREFIX$target_dir'\"; \
+        else \
+            rm -rf \"$tmp_dir\"; \
+            echo \"❌ Error: Could not find path '$dir_path' in the repository.\"; \
+            return 1; \
+        fi; \
+    }; f"
