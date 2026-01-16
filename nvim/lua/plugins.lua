@@ -59,6 +59,11 @@ require("lazy").setup({
     "Hoffs/omnisharp-extended-lsp.nvim",
     "pangloss/vim-javascript",
     "maxmellon/vim-jsx-pretty",
+    {
+        "numToStr/Comment.nvim",
+        opts = {},
+        lazy = false,
+    },
     -- Colorscheme
     "tanvirtin/monokai.nvim",
     "Mofiqul/vscode.nvim",
@@ -68,7 +73,28 @@ require("lazy").setup({
     -- merge tool
     "sindrets/diffview.nvim",
     -- gutentags (like intellisense)
-    "ludovicchabant/vim-gutentags",
+    {
+        "ludovicchabant/vim-gutentags",
+        config = function()
+            vim.g.gutentags_ctags_tagfile = ".tags"
+            vim.g.gutentags_enabled = 1
+            vim.g.gutentags_generate_on_new = 1
+            local ctags_config = vim.fn.expand("~/.config/ctags")
+            if vim.fn.filereadable(ctags_config) == 1 then
+                vim.g.gutentags_ctags_extra_args = { "--options=" .. ctags_config }
+            end
+            vim.g.gutentags_exclude_filetypes = {}
+            vim.g.gutentags_ctags_exclude_project_roots = {
+                "~/.config",
+                "/usr/local",
+                "/opt/homebrew",
+                "/home/linuxbrew/.linuxbrew",
+            }
+            -- vim.g.gutentags_ctags_tagfile = ".tags"
+            vim.g.gutentags_project_root = { ".git", ".hg", ".svn", ".bzr", ".root" }
+            -- vim.g.gutentags_trace = 1
+        end
+    },
     {
         "Exafunction/codeium.nvim",
         dependencies = {

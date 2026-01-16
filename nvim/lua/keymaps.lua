@@ -28,6 +28,28 @@ vim.api.nvim_exec([[
   autocmd FileType markdown nmap <buffer><silent> <leader>p :call mdip#MarkdownClipboardImage()<CR>
 ]], false)
 
+-- neo-tree
+vim.keymap.set('n', 'fe', ':Neotree<CR>', opts)
+
+-- telescope
+vim.keymap.set('n', '<leader>ff', ':Telescope find_files<CR>', opts)
+vim.keymap.set('n', '<leader>fg', ':Telescope live_grep<CR>', opts)
+vim.keymap.set('n', '<leader>fb', ':Telescope buffers<CR>', opts)
+vim.keymap.set('n', '<leader>fh', ':Telescope help_tags<CR>', opts)
+
+-- Strip whitespace
+local function strip_whitespace()
+    local save_cursor = vim.fn.getpos(".")
+    local old_query = vim.fn.getreg('/')
+    vim.cmd([[%s/\s\+$//e]])
+    vim.fn.setpos('.', save_cursor)
+    vim.fn.setreg('/', old_query)
+end
+
+vim.keymap.set("n", "<leader>ss", strip_whitespace, { desc = "Strip trailing whitespace" })
+
+-- Save as root
+vim.keymap.set("n", "<leader>W", ":w !sudo tee % > /dev/null<CR>", { silent = true })
 
 -----------------
 -- Visual mode --
@@ -37,14 +59,6 @@ vim.api.nvim_exec([[
 vim.keymap.set('v', '<', '<gv', opts)
 vim.keymap.set('v', '>', '>gv', opts)
 
--- neo-tree
-vim.keymap.set('n', 'fe', ':Neotree<CR>', opts)
-
--- telescope
-vim.keymap.set('n', '<leader>ff', ':Telescope find_files<CR>', opts)
-vim.keymap.set('n', '<leader>fg', ':Telescope live_grep<CR>', opts)
-vim.keymap.set('n', '<leader>fb', ':Telescope buffers<CR>', opts)
-vim.keymap.set('n', '<leader>fh', ':Telescope help_tags<CR>', opts)
 
 -- LSP and Copilots
 -- vim.keymap.set('n', '<leader>cc', ':Codeium Chat<CR>', opts)
@@ -57,3 +71,30 @@ vim.keymap.set('n', '<leader>fh', ':Telescope help_tags<CR>', opts)
 -- vim.keymap.set('i', '<C-s>', '<Esc>:w<CR>i', opts)
 -- vim.keymap.set('v', '<C-s>', '<Esc>:w<CR>', opts)
 -- vim.keymap.set('n', '<C-s>', ':w<CR>', opts)
+--
+
+
+-------------------
+-- Miscellaneous --
+-------------------
+
+-- Tab indentation (Visual and Normal)
+vim.keymap.set("n", "<tab>", "v> ", { noremap = true })
+vim.keymap.set("n", "<s-tab>", "v< ", { noremap = true })
+vim.keymap.set("v", "<tab>", ">gv", { noremap = true })
+vim.keymap.set("v", "<s-tab>", "<gv", { noremap = true })
+
+-- Comment out lines
+vim.keymap.set("n", "<C-/>", function()
+    require("Comment.api").toggle.linewise.current()
+end, { desc = "Comment line" })
+vim.keymap.set("v", "<C-/>", "<ESC><cmd>lua require('Comment.api').locked('toggle.linewise')(vim.fn.visualmode())<CR>gv", { desc = "Comment selection" })
+vim.keymap.set("i", "<C-/>", function()
+    require("Comment.api").toggle.linewise.current()
+    vim.cmd("startinsert")
+end, { desc = "Comment line" })
+
+-- Save
+vim.keymap.set("n", "<C-s>", "<cmd>w<CR>", { desc = "Save file" })
+vim.keymap.set("v", "<C-s>", "<cmd>w<CR>gv", { desc = "Save file and keep selection" })
+vim.keymap.set("i", "<C-s>", "<Esc><cmd>w<CR>gi", { desc = "Save file and stay in insert" })

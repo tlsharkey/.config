@@ -1,5 +1,10 @@
+-- General
+vim.opt.background = "dark"
+vim.opt.clipboard = "unnamedplus" -- uses system clipboard
+vim.opt.wildmenu = true -- show a navigation menu for tab completion
+
+
 -- Hint: use `:h <option>` to figure out the meaning if needed
-vim.opt.clipboard = 'unnamedplus'   -- use system clipboard 
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
 vim.opt.mouse = 'a'                 -- allow the mouse to be used in Nvim
 vim.opt.scrolloff = 3
@@ -36,3 +41,9 @@ vim.opt.wrap = true
 vim.opt.linebreak = true
 vim.opt.breakindent = true
 vim.opt.scrolloff = 0
+
+-- Undo directory
+local undodir = vim.fn.expand("~/.vim/undo")
+if vim.fn.isdirectory(undodir) == 1 then
+    opt.undodir = undodir
+end
