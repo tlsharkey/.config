@@ -1,0 +1,19 @@
+Include ~/.config/ssh/config.private
+
+Host 172.233.136.239
+    ForwardAgent yes
+
+Host *
+    UserKnownHostsFile ~/.config/ssh/known_hosts
+
+# 1 Password
+Host *
+    IdentityAgent "~/.1password/agent.sock"
+    # IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+
+Host github github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.config/ssh/github
+    IdentityAgent none
+

@@ -1,0 +1,49 @@
+-- General
+vim.opt.background = "dark"
+vim.opt.clipboard = "unnamedplus" -- uses system clipboard
+vim.opt.wildmenu = true -- show a navigation menu for tab completion
+
+
+-- Hint: use `:h <option>` to figure out the meaning if needed
+vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
+vim.opt.mouse = 'a'                 -- allow the mouse to be used in Nvim
+vim.opt.scrolloff = 3
+
+-- Tab
+vim.opt.tabstop = 4                 -- number of visual spaces per TAB
+vim.opt.softtabstop = 4             -- number of spacesin tab when editing
+vim.opt.shiftwidth = 4              -- insert 4 spaces on a tab
+vim.opt.expandtab = true            -- tabs are spaces, mainly because of python
+vim.opt.smarttab = true
+
+-- UI config
+vim.opt.number = true               -- show absolute number
+-- vim.opt.cursorline = true           -- highlight cursor line underneath the cursor horizontally
+vim.opt.splitbelow = true           -- open new vertical split bottom
+vim.opt.splitright = true           -- open new horizontal splits right
+-- vim.opt.termguicolors = true        -- enabl 24-bit RGB color in the TUI
+-- vim.opt.showmode = false            -- we are experienced, wo don't need the "-- INSERT --" mode hint
+-- show spaces as interpunc
+vim.opt.lcs = "trail:·"
+vim.opt.list = true
+vim.opt.foldmethod = "indent"
+vim.opt.foldnestmax = 5
+vim.opt.foldlevel = 5
+
+-- Searching
+vim.opt.incsearch = true            -- search as characters are entered
+-- vim.opt.hlsearch = false            -- do not highlight matches
+vim.opt.ignorecase = true           -- ignore case in searches by default
+vim.opt.smartcase = true            -- but make it case sensitive if an uppercase is entered
+
+-- Line wrapping
+vim.opt.wrap = true
+vim.opt.linebreak = true
+vim.opt.breakindent = true
+vim.opt.scrolloff = 0
+
+-- Undo directory
+local undodir = vim.fn.expand("~/.vim/undo")
+if vim.fn.isdirectory(undodir) == 1 then
+    opt.undodir = undodir
+end

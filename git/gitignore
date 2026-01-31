@@ -1,0 +1,8 @@
+# MacOS files
+.DS_Store
+
+# Visual Studio Code
+.vscode
+
+WIP.md
+tags
