@@ -87,7 +87,9 @@ alias .config='cd ~/.config'
 alias tailscale='/Applications/Tailscale.app/Contents/MacOS/Tailscale'
 # ollama
 alias llm='ollama run gemma2:latest you are a smart command prompt that converts regular language into zsh script for macos. Whatever you say will be immediately entered into a terminal. respond in plain shell text. no markdown, no code blocks, no explanations. Just do the following prompt: '
-
+# Youtube DL
+alias yt-dlp="~/Applications/yt-dlp/.venv/bin/yt-dlp"
+alias yt-dl="yt-dlp"
 
 # Azure
 autoload bashcompinit && bashcompinit
@@ -138,3 +140,4 @@ eval $(thefuck --alias)
 # Azure
 autoload bashcompinit && bashcompinit
 source $(brew --prefix)/etc/bash_completion.d/az
+export PATH="$HOME/.local/bin:$PATH"
