@@ -1,24 +1,29 @@
 # Overwrite bashrc location
 echo "source $HOME/.config/bashrc" > $HOME/.bash_profile
+echo "source $HOME/.config/zshrc" > $HOME/.zshrc
 
 # Overwrite git config location
 echo "" > $HOME/.gitconfig
 echo "[include]" >> $HOME/.gitconfig
 echo "    path = $HOME/.config/git/gitconfig" >> $HOME/.gitconfig
 # Git LFS
-# MacOS
+## MacOS
 brew install git-lfs
-# Ubuntu
+## Ubuntu
 sudo apt update
 sudo apt upgrade
 sudo apt install git-lfs
 
 # Bat
+## Ubuntu
 sudo apt install bat
 mkdir -p ~/.local/bin
 ln -s /usr/bin/batcat ~/.local/bin/bat
+## MacOS
+brew install bat
 
 # NEOVIM
+## Ubuntu
 sudo snap install nvim --classic
 # or
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
@@ -28,7 +33,18 @@ export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 # dependencies
 sudo apt install exuberant-ctags
 sudo apt install build-essential
-# xclip for pasting in images
+## MacOS
+brew install neovim
+brew install universal-ctags
+# for latex support: [skim](https://skim-app.sourceforge.io/)
+# and [MaxTex](https://www.tug.org/mactex/mactex-download.html)
+# for jupyter notebook support: [quarto](https://quarto.org/docs/get-started/)
+# for pasing images: [xclip](https://github.com/astrand/xclip)
+brew install xclip
+brew install tree-sitter
+brew install --cask mactex
+
+
 
 ## Lazygit
 # macos
@@ -53,6 +69,54 @@ sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyring
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 echo   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" |   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
+## MacOS - install docker desktop from https://docs.docker.com/desktop/setup/install/mac-install/
 
 # AWS cli
 sudo snap install aws-cli --classic
+## MacOS
+cd ~/Downloads
+curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+sudo installer -pkg ./AWSCLIV2.pkg -target /
+
+# Azure cli
+# MacOS
+brew install azure-cli
+
+# ls-tree
+brew install tree
+# bash completions
+brew install bash-completion
+# thefuck
+brew thefuck install cjson cmake gcc coreutils gh go imath
+
+# Youtube-DLP
+```zsh
+cd ~/Applications
+mkdir yt-dlp
+cd yt-dlp
+python -m venv venv
+source venv/bin/activate
+pip install yt-dlp
+
+echo "alias yt-dlp='~/Applications/yt-dlp/venv/bin/yt-dlp'" >> ~/.zshrc
+```
+or on ubuntu
+```bash
+cd ~/.local/bin
+mkdir yt-dlp
+cd yt-dlp
+python3 -m venv venv
+source venv/bin/activate
+pip install yt-dlp
+
+echo "alias yt-dlp='~/.local/bin/yt-dlp/venv/bin/yt-dlp'" >> ~/.bashrc
+```
+
+
+## 1 Password Setup
+
+## Signed Git Commits
+
+## Make ping, rsync, scp all use ssh config host names
+
+
