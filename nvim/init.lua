@@ -8,16 +8,27 @@ require('diffview')
 require("neo-tree")
 
 vim.opt.termguicolors = true
+
 require("bufferline").setup{}
-require('nvim-treesitter.configs').setup {
-  highlight = {
-    enable = true,
-    additional_vim_regex_highlighting = { "markdown" },
-    disable = { "latex" },
-  },
-  ensure_installed = { "markdown", "markdown_inline", "lua", "vim", "vimdoc" },
-  auto_install = true,
-}
+
+-- Install required parsers
+require('nvim-treesitter').install({ 'markdown', 'markdown_inline', 'lua', 'vim', 'vimdoc' })
+
+-- Enable treesitter highlighting for specific filetypes
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'markdown', 'lua', 'vim', 'vimdoc' },
+  callback = function()
+    vim.treesitter.start()
+  end,
+})
+
+-- Disable treesitter for latex
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'latex', 'tex' },
+  callback = function()
+    vim.treesitter.stop()
+  end,
+})
 
 vim.filetype.add({
   extension = {
