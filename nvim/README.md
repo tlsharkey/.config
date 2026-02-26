@@ -158,8 +158,6 @@ sudo apt install zathura
 sudo apt install okular
 ```
 
-> **Note:** If using a PDF viewer other than Skim on macOS, you'll need to update the `vimtex` configuration in `lua/plugins.lua` by changing `vim.g.vimtex_view_method`.
-
 #### Quarto Support
 
 Required only for Quarto notebook files.

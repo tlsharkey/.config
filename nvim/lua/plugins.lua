@@ -200,8 +200,17 @@ require("lazy").setup({
         "lervag/vimtex",
         lazy = false,     -- we don't want to lazy load VimTeX
         init = function()
-          vim.g.vimtex_view_method = "skim"
-          -- vim.g.vimtex_view_general_viewer = "open"
+          if vim.fn.executable("skim") == 1 then
+            vim.g.vimtex_view_method = "skim"
+          elseif vim.fn.executable("zathura") == 1 then
+            vim.g.vimtex_view_method = "zathura"
+          elseif vim.fn.executable("evince") == 1 then
+            vim.g.vimtex_view_method = "evince"
+          elseif vim.fn.executable("okular") == 1 then
+            vim.g.vimtex_view_method = "okular"
+          elseif vim.fn.executable("mupdf") == 1 then
+            vim.g.vimtex_view_method = "mupdf"
+          end
           vim.g.vimtex_compiler_latexmk = {
               out_dir = ".latex",
           }
