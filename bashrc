@@ -81,6 +81,48 @@ ollama_run() {
     echo "$output" | glow
 }
 
+# cats the ssh config file where it matches a given host
+sshcat() {
+    local search_pattern="$1"
+    local config_files=()
+    local main_configs=(~/.ssh/config ~/.config/ssh/config)
+
+    # Collect all config files including imported ones
+    for config in "${main_configs[@]}"; do
+        if [[ -f "$config" ]]; then
+            config_files+=("$config")
+            # Find and add any included files
+            while IFS= read -r include_line; do
+                # Extract the path from Include directive
+                local include_path=$(echo "$include_line" | sed -E 's/^[[:space:]]*Include[[:space:]]+//')
+                # Expand ~ to home directory
+                include_path="${include_path/#\~/$HOME}"
+                # Handle wildcards
+                for file in $include_path; do
+                    [[ -f "$file" ]] && config_files+=("$file")
+                done
+            done < <(grep -i '^[[:space:]]*Include' "$config" 2>/dev/null)
+        fi
+    done
+
+    # Search all collected config files
+    local found=false
+    for config in "${config_files[@]}"; do
+        local result=$(grep -iA6 "^[[:space:]]*Host[[:space:]].*$search_pattern" "$config" 2>/dev/null)
+        if [[ -n "$result" ]]; then
+            echo "# From: $config"
+            echo "$result"
+            echo ""
+            found=true
+        fi
+    done
+
+    if [[ "$found" = false ]]; then
+        echo "No host matching '$search_pattern' found in SSH config files"
+        return 1
+    fi
+}
+
 # Function to get the current git branch
 parse_git_branch() {
     if git rev-parse --git-dir > /dev/null 2>&1; then
