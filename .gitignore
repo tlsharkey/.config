@@ -83,3 +83,5 @@ thefuck/__pycache__
 .tags
 raycast/extensions
 pygpt-net
+cagent
+.claude
