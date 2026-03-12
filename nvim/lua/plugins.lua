@@ -48,18 +48,48 @@ require("lazy").setup({
             -- 1. Setup Mason to bridge with lspconfig
             require("mason-lspconfig").setup({
                 ensure_installed = {
-                    "jsonls",
-                    "eslint",
-                    "lua_ls",
-                    "pyright",
-                    "omnisharp",
+                    -- Web Development
+                    "html",           -- HTML
+                    "cssls",          -- CSS
+                    "ts_ls",          -- TypeScript/JavaScript
+                    "eslint",         -- JS/TS linting
+                    "tailwindcss",    -- Tailwind CSS
+
+                    -- Backend/Systems
+                    "rust_analyzer",  -- Rust
+                    "gopls",          -- Go
+                    "pyright",        -- Python
+                    "omnisharp",      -- C# (Unity, .NET)
+
+                    -- Config/Data formats
+                    "jsonls",         -- JSON
+                    "yamlls",         -- YAML
+                    "taplo",          -- TOML
+                    "lua_ls",         -- Lua (Neovim config)
+
+                    -- DevOps/Infrastructure
+                    "bashls",         -- Bash/Shell scripts
+                    "dockerls",       -- Dockerfile
+                    "docker_compose_language_service", -- Docker Compose
+
+                    -- Markup/Documentation
+                    "marksman",       -- Markdown
                 }
             })
             
             -- Ensure binaries for conform.nvim are also available
             require("mason").setup()
             local registry = require("mason-registry")
-            local formatters = { "prettier", "stylua", "black", "isort", "csharpier" }
+            local formatters = {
+                "prettier",    -- JS/TS/HTML/CSS/JSON/YAML/Markdown
+                "stylua",      -- Lua
+                "black",       -- Python
+                "isort",       -- Python imports
+                "csharpier",   -- C#
+                "rustfmt",     -- Rust (usually installed with Rust toolchain)
+                "gofumpt",     -- Go (stricter gofmt)
+                "shfmt",       -- Shell scripts
+            }
             for _, formatter in ipairs(formatters) do
                 local p = registry.get_package(formatter)
                 if not p:is_installed() then
@@ -87,17 +117,102 @@ require("lazy").setup({
                 },
             })
 
+            vim.lsp.config("ts_ls", {
+                filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+            })
+
+            vim.lsp.config("html", {
+                filetypes = { "html", "htmldjango" },
+            })
+
+            vim.lsp.config("cssls", {
+                filetypes = { "css", "scss", "less" },
+            })
+
+            vim.lsp.config("tailwindcss", {
+                filetypes = { "html", "css", "javascript", "javascriptreact", "typescript", "typescriptreact" },
+            })
+
+            vim.lsp.config("rust_analyzer", {
+                filetypes = { "rust" },
+                root_dir = vim.fs.root(0, { "Cargo.toml" }),
+                settings = {
+                    ["rust-analyzer"] = {
+                        cargo = { allFeatures = true },
+                        checkOnSave = { command = "clippy" },
+                    },
+                },
+            })
+
+            vim.lsp.config("gopls", {
+                filetypes = { "go", "gomod", "gowork", "gotmpl" },
+                root_dir = vim.fs.root(0, { "go.work", "go.mod", ".git" }),
+            })
+
+            vim.lsp.config("pyright", {
+                filetypes = { "python" },
+            })
+
             vim.lsp.config("omnisharp", {
                 filetypes = { "cs" },
                 root_dir = vim.fs.root(0, { ".git", ".sln", ".csproj" }),
             })
 
+            vim.lsp.config("yamlls", {
+                filetypes = { "yaml", "yaml.docker-compose" },
+            })
+
+            vim.lsp.config("taplo", {
+                filetypes = { "toml" },
+            })
+
+            vim.lsp.config("bashls", {
+                filetypes = { "sh", "bash", "zsh" },
+            })
+
+            vim.lsp.config("dockerls", {
+                filetypes = { "dockerfile" },
+            })
+
+            vim.lsp.config("docker_compose_language_service", {
+                filetypes = { "yaml.docker-compose" },
+            })
+
+            vim.lsp.config("marksman", {
+                filetypes = { "markdown" },
+            })
+
+            vim.lsp.config("lua_ls", {
+                filetypes = { "lua" },
+            })
+
             -- 3. To actually "start" the server automatically based on the config above
-            vim.lsp.enable("jsonls")
+            -- Web Development
+            vim.lsp.enable("html")
+            vim.lsp.enable("cssls")
+            vim.lsp.enable("ts_ls")
             vim.lsp.enable("eslint")
-            vim.lsp.enable("omnisharp")
-            vim.lsp.enable("lua_ls")
+            vim.lsp.enable("tailwindcss")
+
+            -- Backend/Systems
+            vim.lsp.enable("rust_analyzer")
+            vim.lsp.enable("gopls")
             vim.lsp.enable("pyright")
+            vim.lsp.enable("omnisharp")
+
+            -- Config/Data formats
+            vim.lsp.enable("jsonls")
+            vim.lsp.enable("yamlls")
+            vim.lsp.enable("taplo")
+            vim.lsp.enable("lua_ls")
+
+            -- DevOps/Infrastructure
+            vim.lsp.enable("bashls")
+            vim.lsp.enable("dockerls")
+            vim.lsp.enable("docker_compose_language_service")
+
+            -- Markup/Documentation
+            vim.lsp.enable("marksman")
         end
     },
 
@@ -171,13 +286,30 @@ require("lazy").setup({
         config = function()
             -- Install required parsers
             require('nvim-treesitter').install({
-                'markdown', 'markdown_inline', 'lua', 'vim', 'vimdoc',
-                'python', 'javascript', 'typescript', 'json', 'c_sharp'
+                -- Core/Config
+                'lua', 'vim', 'vimdoc',
+                -- Web Development
+                'html', 'css', 'scss', 'javascript', 'typescript', 'tsx', 'jsdoc',
+                -- Backend/Systems
+                'python', 'rust', 'go', 'c_sharp',
+                -- Config/Data formats
+                'json', 'jsonc', 'yaml', 'toml',
+                -- DevOps/Infrastructure
+                'bash', 'dockerfile',
+                -- Markup/Documentation
+                'markdown', 'markdown_inline',
             })
 
             -- Enable treesitter highlighting for specific filetypes
             vim.api.nvim_create_autocmd('FileType', {
-                pattern = { 'markdown', 'lua', 'vim', 'vimdoc', 'python', 'javascript', 'typescript', 'json' },
+                pattern = {
+                    'lua', 'vim', 'vimdoc',
+                    'html', 'css', 'scss', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact',
+                    'python', 'rust', 'go', 'cs',
+                    'json', 'jsonc', 'yaml', 'toml',
+                    'sh', 'bash', 'zsh', 'dockerfile',
+                    'markdown',
+                },
                 callback = function()
                     vim.treesitter.start()
                 end,
