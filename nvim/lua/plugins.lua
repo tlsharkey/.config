@@ -13,11 +13,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-    -- Vscode-like pictograms
-    {
-        "onsails/lspkind.nvim",
-        event = { "VimEnter" },
-    },
     -- Auto-completion engine
     {
         "hrsh7th/nvim-cmp",
@@ -33,10 +28,11 @@ require("lazy").setup({
             require("config.nvim-cmp")
         end,
     },
-    -- Code sippet engine
+    -- Code snippet engine
     {
         "L3MON4D3/LuaSnip",
-        version = "v2.*"
+        version = "v2.*",
+        event = "InsertEnter",
     },
     -- LSP manager
     {
@@ -51,18 +47,19 @@ require("lazy").setup({
         config = function()
             -- 1. Setup Mason to bridge with lspconfig
             require("mason-lspconfig").setup({
-                ensure_installed = { 
+                ensure_installed = {
                     "jsonls",
                     "eslint",
                     "lua_ls",
                     "pyright",
+                    "omnisharp",
                 }
             })
             
             -- Ensure binaries for conform.nvim are also available
             require("mason").setup()
             local registry = require("mason-registry")
-            local formatters = { "prettier", "stylua", "black", "isort" }
+            local formatters = { "prettier", "stylua", "black", "isort", "csharpier" }
             for _, formatter in ipairs(formatters) do
                 local p = registry.get_package(formatter)
                 if not p:is_installed() then
@@ -83,23 +80,34 @@ require("lazy").setup({
                 },
             })
 
+            vim.lsp.config("eslint", {
+                filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+                settings = {
+                    format = { enable = true },
+                },
+            })
+
+            vim.lsp.config("omnisharp", {
+                filetypes = { "cs" },
+                root_dir = vim.fs.root(0, { ".git", ".sln", ".csproj" }),
+            })
+
             -- 3. To actually "start" the server automatically based on the config above
             vim.lsp.enable("jsonls")
-            vim.lsp.enable("omnisharp")
             vim.lsp.enable("eslint")
+            vim.lsp.enable("omnisharp")
             vim.lsp.enable("lua_ls")
             vim.lsp.enable("pyright")
         end
     },
 
-    "OmniSharp/omnisharp-vim",
     "Hoffs/omnisharp-extended-lsp.nvim",
     -- "pangloss/vim-javascript",
     -- "maxmellon/vim-jsx-pretty",
     {
         "numToStr/Comment.nvim",
         opts = {},
-        lazy = false,
+        event = { "BufReadPost", "BufNewFile" },
     },
     -- Colorscheme
     "tanvirtin/monokai.nvim",
@@ -134,6 +142,7 @@ require("lazy").setup({
     },
     {
         "Exafunction/codeium.nvim",
+        event = "InsertEnter",
         dependencies = {
             "nvim-lua/plenary.nvim",
             "hrsh7th/nvim-cmp",

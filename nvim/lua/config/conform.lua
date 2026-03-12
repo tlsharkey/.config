@@ -12,6 +12,8 @@ require("conform").setup({
     yaml = { { "prettierd", "prettier" } },
     markdown = { { "prettierd", "prettier" } },
     python = { "isort", "black" },
+    cs = { "csharpier" },
+    csharp = { "csharpier" },
   },
   format_on_save = {
     -- These options will be passed to conform.format()

@@ -262,8 +262,16 @@ This configuration uses `,` (comma) as the leader key.
 | `<C-/>` | Toggle comment | Normal, Insert, Visual |
 | `<leader>ss` | Strip trailing whitespace | Normal |
 | `<leader>W` | Save file as root (sudo) | Normal |
-| `<Tab>` | Indent line/selection | Normal, Visual |
-| `<S-Tab>` | Unindent line/selection | Normal, Visual |
+
+### Indentation
+| Shortcut | Action | Mode |
+|----------|--------|------|
+| `>` | Indent selection | Visual |
+| `<` | Unindent selection | Visual |
+| `>>` | Indent current line | Normal |
+| `<<` | Unindent current line | Normal |
+
+> **Note:** `<Tab>` and `<Shift-Tab>` are reserved for code completion navigation in insert mode.
 
 ### Navigation & Search
 | Shortcut | Action | Mode |

@@ -23,8 +23,7 @@ vim.keymap.set({"n", "v", "i"}, "<M-Up>", "<Up>", { silent = true })
 -- insert mode is used for ai autocomplete
 vim.keymap.set({"n", "v"}, "<C-Left>", "<Home>", { silent = true })
 vim.keymap.set({"n", "v"}, "<C-Right>", "<End>", { silent = true })
-vim.keymap.set({"n", "v"}, "<C-Up>", "<PageUp>", { silent = true })
-vim.keymap.set({"n", "v"}, "<C-Down>", "<PageDown>", { silent = true })
+-- C-Up/C-Down reserved for Codeium AI navigation
 
 -----------------
 -- Normal mode --
@@ -90,11 +89,8 @@ vim.keymap.set('v', '>', '>gv', opts)
 -- Miscellaneous --
 -------------------
 
--- Tab indentation (Visual and Normal)
-vim.keymap.set("n", "<tab>", "v> ", { noremap = true })
-vim.keymap.set("n", "<s-tab>", "v< ", { noremap = true })
-vim.keymap.set("v", "<tab>", ">gv", { noremap = true })
-vim.keymap.set("v", "<s-tab>", "<gv", { noremap = true })
+-- Tab is reserved for completion navigation in insert mode
+-- Use >> and << in normal mode, > and < in visual mode for indentation
 
 -- Comment out lines
 vim.keymap.set("n", "<C-/>", function()

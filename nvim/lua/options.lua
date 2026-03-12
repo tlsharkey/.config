@@ -7,7 +7,6 @@ vim.opt.wildmenu = true -- show a navigation menu for tab completion
 -- Hint: use `:h <option>` to figure out the meaning if needed
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
 vim.opt.mouse = 'a'                 -- allow the mouse to be used in Nvim
-vim.opt.scrolloff = 3
 
 -- Tab
 vim.opt.tabstop = 4                 -- number of visual spaces per TAB
@@ -21,7 +20,7 @@ vim.opt.number = true               -- show absolute number
 -- vim.opt.cursorline = true           -- highlight cursor line underneath the cursor horizontally
 vim.opt.splitbelow = true           -- open new vertical split bottom
 vim.opt.splitright = true           -- open new horizontal splits right
--- vim.opt.termguicolors = true        -- enabl 24-bit RGB color in the TUI
+vim.opt.termguicolors = true        -- enable 24-bit RGB color in the TUI
 -- vim.opt.showmode = false            -- we are experienced, wo don't need the "-- INSERT --" mode hint
 -- show spaces as interpunc
 vim.opt.lcs = "trail:·"
@@ -40,10 +39,10 @@ vim.opt.smartcase = true            -- but make it case sensitive if an uppercas
 vim.opt.wrap = true
 vim.opt.linebreak = true
 vim.opt.breakindent = true
-vim.opt.scrolloff = 0
+vim.opt.scrolloff = 3
 
 -- Undo directory
 local undodir = vim.fn.expand("~/.vim/undo")
 if vim.fn.isdirectory(undodir) == 1 then
-    opt.undodir = undodir
+    vim.opt.undodir = undodir
 end
