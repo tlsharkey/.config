@@ -251,6 +251,52 @@ The old API (`require('nvim-treesitter.configs')`) has been replaced with:
 
 If you're running on Ubuntu with an older Neovim version, you may need to use the previous commit which works with the legacy treesitter API.
 
+## Keybindings
+
+This configuration uses `,` (comma) as the leader key.
+
+### General
+| Shortcut | Action | Mode |
+|----------|--------|------|
+| `<C-s>` | Save file | Normal, Insert, Visual |
+| `<C-/>` | Toggle comment | Normal, Insert, Visual |
+| `<leader>ss` | Strip trailing whitespace | Normal |
+| `<leader>W` | Save file as root (sudo) | Normal |
+| `<Tab>` | Indent line/selection | Normal, Visual |
+| `<S-Tab>` | Unindent line/selection | Normal, Visual |
+
+### Navigation & Search
+| Shortcut | Action | Mode |
+|----------|--------|------|
+| `fe` | Toggle Neo-tree (File Explorer) | Normal |
+| `<C-h/j/k/l>` | Navigate between windows | Normal |
+| `<leader>ff` | Find files (Telescope) | Normal |
+| `<leader>fg` | Live grep / Search text (Telescope) | Normal |
+| `<leader>fb` | List open buffers (Telescope) | Normal |
+| `<leader>fh` | Help tags (Telescope) | Normal |
+
+### Code Intelligence (LSP & Gutentags)
+| Shortcut | Action | Mode | Provider |
+|----------|--------|------|----------|
+| `gd` | **G**o to **D**efinition (Context-aware) | Normal | LSP |
+| `gr` | **G**o to **R**eferences (Find all usage) | Normal | LSP |
+| `K` | Show hover information (Docs) | Normal | LSP |
+| `<space>rn` | Rename symbol (Project-wide) | Normal | LSP |
+| `<space>ca` | Code actions (Quick fixes) | Normal | LSP |
+| `<space>f` | Format buffer | Normal | `conform.nvim` |
+| `<space>e` | Open diagnostic float (View error) | Normal | LSP |
+| `[d` / `]d` | Previous / Next diagnostic error | Normal | LSP |
+| `<C-]>` | Jump to definition (Static) | Normal | Gutentags |
+| `<C-t>` | Jump back from definition | Normal | Gutentags |
+
+### AI Completion (Codeium)
+| Shortcut | Action | Mode |
+|----------|--------|------|
+| `<C-Down>` | Accept suggestion | Insert |
+| `<C-Up>` | Next suggestion | Insert |
+| `<C-S-Right>` | Accept word | Insert |
+| `<C-Right>` | Accept line | Insert |
+
 ## Usage & Features
 
 ### File Navigation

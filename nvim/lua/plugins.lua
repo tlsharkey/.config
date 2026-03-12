@@ -51,8 +51,24 @@ require("lazy").setup({
         config = function()
             -- 1. Setup Mason to bridge with lspconfig
             require("mason-lspconfig").setup({
-                ensure_installed = { "jsonls" }
+                ensure_installed = { 
+                    "jsonls",
+                    "eslint",
+                    "lua_ls",
+                    "pyright",
+                }
             })
+            
+            -- Ensure binaries for conform.nvim are also available
+            require("mason").setup()
+            local registry = require("mason-registry")
+            local formatters = { "prettier", "stylua", "black", "isort" }
+            for _, formatter in ipairs(formatters) do
+                local p = registry.get_package(formatter)
+                if not p:is_installed() then
+                    p:install()
+                end
+            end
 
             -- 2. New 0.11+ / v3.0 syntax: Use vim.lsp.config
             -- We define the configuration for jsonls
@@ -308,6 +324,14 @@ require("lazy").setup({
             "jmbuhr/otter.nvim",
             "nvim-treesitter/nvim-treesitter",
         },
+    },
+    {
+        "stevearc/conform.nvim",
+        event = { "BufWritePre" },
+        cmd = { "ConformInfo" },
+        config = function()
+            require("config.conform")
+        end,
     },
 })
 
