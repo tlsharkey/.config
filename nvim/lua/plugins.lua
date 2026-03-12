@@ -86,6 +86,9 @@ require("lazy").setup({
             -- 3. To actually "start" the server automatically based on the config above
             vim.lsp.enable("jsonls")
             vim.lsp.enable("omnisharp")
+            vim.lsp.enable("eslint")
+            vim.lsp.enable("lua_ls")
+            vim.lsp.enable("pyright")
         end
     },
 
@@ -150,6 +153,35 @@ require("lazy").setup({
                 },
             })
         end
+    },
+    -- Tree-sitter for syntax highlighting
+    {
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
+        event = { "BufReadPost", "BufNewFile" },
+        config = function()
+            -- Install required parsers
+            require('nvim-treesitter').install({
+                'markdown', 'markdown_inline', 'lua', 'vim', 'vimdoc',
+                'python', 'javascript', 'typescript', 'json', 'c_sharp'
+            })
+
+            -- Enable treesitter highlighting for specific filetypes
+            vim.api.nvim_create_autocmd('FileType', {
+                pattern = { 'markdown', 'lua', 'vim', 'vimdoc', 'python', 'javascript', 'typescript', 'json' },
+                callback = function()
+                    vim.treesitter.start()
+                end,
+            })
+
+            -- Disable treesitter for latex
+            vim.api.nvim_create_autocmd('FileType', {
+                pattern = { 'latex', 'tex' },
+                callback = function()
+                    vim.treesitter.stop()
+                end,
+            })
+        end,
     },
     {
         'MeanderingProgrammer/render-markdown.nvim',
@@ -285,24 +317,38 @@ require("lazy").setup({
         "nvim-telescope/telescope.nvim",
         tag = "0.1.8",
         dependencies = { "nvim-lua/plenary.nvim" },
-        opts = {
-            defaults = {
-               file_ignore_patterns = {
-                   "node_modules",
-                   "build",
-                   "dist",
-                   "%.d%.ts$",
-                   "%.git/",
-                   "__pycache__/",
-                   "target/",
-                   "vendor/",
-                   "%.jar",
-                   "%.war",
-                   "%.lock",
-                   "%.DS_Store",
-               },
-           },
-       },
+        config = function()
+            local previewers_utils = require('telescope.previewers.utils')
+
+            -- Override the default highlighter to not use treesitter
+            -- This fixes compatibility with treesitter v3.0+ API changes
+            previewers_utils.highlighter = function(bufnr, ft)
+                -- Use vim's regex-based syntax highlighting instead of treesitter
+                vim.bo[bufnr].syntax = 'on'
+                if ft and ft ~= '' then
+                    pcall(vim.cmd, 'setlocal filetype=' .. ft)
+                end
+            end
+
+            require('telescope').setup({
+                defaults = {
+                    file_ignore_patterns = {
+                        "node_modules",
+                        "build",
+                        "dist",
+                        "%.d%.ts$",
+                        "%.git/",
+                        "__pycache__/",
+                        "target/",
+                        "vendor/",
+                        "%.jar",
+                        "%.war",
+                        "%.lock",
+                        "%.DS_Store",
+                    },
+                },
+            })
+        end,
     },
     {
         "akinsho/bufferline.nvim",
