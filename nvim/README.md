@@ -321,6 +321,7 @@ This configuration uses `,` (comma) as the leader key.
 | `gd`                     | **G**o to **D**efinition (Context-aware)  | Normal | LSP            |
 | `gr`                     | **G**o to **R**eferences (Find all usage) | Normal | LSP            |
 | `K`                      | Show hover information (Docs)             | Normal | LSP            |
+| `<C-k>`                  | Signature help (Function parameters)      | Normal | LSP            |
 | `<space>rn`              | Rename symbol (Project-wide)              | Normal | LSP            |
 | `<space>ca`              | Code actions (Quick fixes)                | Normal | LSP            |
 | `<space>f`               | Format buffer                             | Normal | `conform.nvim` |
@@ -331,6 +332,15 @@ This configuration uses `,` (comma) as the leader key.
 | `<C-]>`                  | Jump to definition (Static)               | Normal | Gutentags      |
 | `<C-t>`                  | Jump back from definition                 | Normal | Gutentags      |
 
+### Diagnostics Panel (Trouble)
+
+| Shortcut      | Action                            | Mode   |
+| ------------- | --------------------------------- | ------ |
+| `<leader>xx`  | Toggle workspace diagnostics      | Normal |
+| `<leader>xd`  | Toggle buffer diagnostics         | Normal |
+| `<leader>xl`  | Toggle location list              | Normal |
+| `<leader>xq`  | Toggle quickfix list              | Normal |
+
 ### AI Completion (Codeium)
 
 | Shortcut      | Action            | Mode   |
@@ -339,6 +349,15 @@ This configuration uses `,` (comma) as the leader key.
 | `<C-Up>`      | Next suggestion   | Insert |
 | `<C-S-Right>` | Accept word       | Insert |
 | `<C-Right>`   | Accept line       | Insert |
+
+### Keybinding Helper (Which-key)
+
+| Shortcut    | Action                      | Mode   |
+| ----------- | --------------------------- | ------ |
+| `<leader>`  | Shows available keybindings | Normal |
+| `<leader>?` | Show buffer-local keymaps   | Normal |
+
+> **Note:** When you press `<leader>` (comma), which-key will automatically popup after a short delay showing all available commands.
 
 ## Usage & Features
 
