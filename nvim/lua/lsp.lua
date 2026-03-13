@@ -2,6 +2,53 @@
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local opts = { noremap = true, silent = true }
 
+-- Helper to jump to definition from within floating windows
+local function goto_definition_from_float()
+    local word = vim.fn.expand('<cword>')
+    -- Close all floating windows
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.api.nvim_win_is_valid(win) then
+            local success, config = pcall(vim.api.nvim_win_get_config, win)
+            if success and config.relative ~= "" then
+                pcall(vim.api.nvim_win_close, win, false)
+            end
+        end
+    end
+    -- Search for the word in the current buffer and go to definition
+    vim.fn.search(word, 'w')
+    vim.lsp.buf.definition()
+end
+
+-- Setup autocmd to add keymap when entering floating windows
+vim.api.nvim_create_autocmd("WinEnter", {
+    pattern = "*",
+    callback = function()
+        local win = vim.api.nvim_get_current_win()
+        -- Check if window is valid before getting config
+        if not vim.api.nvim_win_is_valid(win) then
+            return
+        end
+
+        local success, config = pcall(vim.api.nvim_win_get_config, win)
+        if success and config.relative ~= "" then  -- We're in a floating window
+            vim.keymap.set('n', 'gd', goto_definition_from_float, { buffer = true, silent = true })
+            vim.keymap.set('n', '<space>D', function()
+                local word = vim.fn.expand('<cword>')
+                for _, w in ipairs(vim.api.nvim_list_wins()) do
+                    if vim.api.nvim_win_is_valid(w) then
+                        local ok, cfg = pcall(vim.api.nvim_win_get_config, w)
+                        if ok and cfg.relative ~= "" then
+                            vim.api.nvim_win_close(w, false)
+                        end
+                    end
+                end
+                vim.fn.search(word, 'w')
+                vim.lsp.buf.type_definition()
+            end, { buffer = true, silent = true })
+        end
+    end,
+})
+
 -- Configure LSP hover window size dynamically based on terminal size
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
     vim.lsp.handlers.hover, {
