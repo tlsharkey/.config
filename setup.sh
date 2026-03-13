@@ -33,9 +33,11 @@ export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 # dependencies
 sudo apt install exuberant-ctags
 sudo apt install build-essential
+sudo apt install ripgrep
 ## MacOS
 brew install neovim
 brew install universal-ctags
+brew install ripgrep
 # for latex support: [skim](https://skim-app.sourceforge.io/)
 # and [MaxTex](https://www.tug.org/mactex/mactex-download.html)
 # for jupyter notebook support: [quarto](https://quarto.org/docs/get-started/)

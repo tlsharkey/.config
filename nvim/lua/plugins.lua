@@ -494,7 +494,10 @@ require("lazy").setup({
     {
         "akinsho/bufferline.nvim",
         version = "*",
-        dependencies = 'nvim-tree/nvim-web-devicons'
+        dependencies = 'nvim-tree/nvim-web-devicons',
+        config = function()
+            require("bufferline").setup{}
+        end,
     },
     {
         "img-paste-devs/img-paste.vim",
