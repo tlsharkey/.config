@@ -28,6 +28,19 @@ require("conform").setup({
     bash = { "shfmt" },
     zsh = { "shfmt" },
   },
+  formatters = {
+    -- Configure prettier to use 4 spaces by default
+    prettier = {
+      prepend_args = { "--tab-width", "4" },
+    },
+    prettierd = {
+      prepend_args = { "--tab-width", "4" },
+    },
+    -- Configure shfmt to use spaces instead of tabs
+    shfmt = {
+      prepend_args = { "-i", "4", "-s" }, -- indent 4 spaces, simplify code
+    },
+  },
   format_on_save = {
     -- These options will be passed to conform.format()
     timeout_ms = 500,

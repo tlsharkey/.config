@@ -114,6 +114,9 @@ require("lazy").setup({
                 filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
                 settings = {
                     format = { enable = true },
+                    rules = {
+                        indent = { "error", 4 },
+                    },
                 },
             })
 
@@ -284,22 +287,6 @@ require("lazy").setup({
         build = ":TSUpdate",
         event = { "BufReadPost", "BufNewFile" },
         config = function()
-            -- Install required parsers
-            require('nvim-treesitter').install({
-                -- Core/Config
-                'lua', 'vim', 'vimdoc',
-                -- Web Development
-                'html', 'css', 'scss', 'javascript', 'typescript', 'tsx', 'jsdoc',
-                -- Backend/Systems
-                'python', 'rust', 'go', 'c_sharp',
-                -- Config/Data formats
-                'json', 'jsonc', 'yaml', 'toml',
-                -- DevOps/Infrastructure
-                'bash', 'dockerfile',
-                -- Markup/Documentation
-                'markdown', 'markdown_inline',
-            })
-
             -- Enable treesitter highlighting for specific filetypes
             vim.api.nvim_create_autocmd('FileType', {
                 pattern = {
@@ -496,7 +483,7 @@ require("lazy").setup({
         version = "*",
         dependencies = 'nvim-tree/nvim-web-devicons',
         config = function()
-            require("bufferline").setup{}
+            require("config.bufferline")
         end,
     },
     {
