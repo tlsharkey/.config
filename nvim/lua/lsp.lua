@@ -1,6 +1,35 @@
 -- Customized on_attach function
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local opts = { noremap = true, silent = true }
+
+-- Configure LSP hover window size dynamically based on terminal size
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
+    vim.lsp.handlers.hover, {
+        border = "rounded",
+        max_width = math.floor(vim.o.columns * 0.8),  -- 80% of terminal width
+        max_height = math.floor(vim.o.lines * 0.5),   -- 50% of terminal height
+    }
+)
+
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
+    vim.lsp.handlers.signature_help, {
+        border = "rounded",
+        max_width = math.floor(vim.o.columns * 0.8),
+        max_height = math.floor(vim.o.lines * 0.3),   -- Signature help is usually shorter
+    }
+)
+
+-- Configure diagnostic float windows with same styling
+vim.diagnostic.config({
+    float = {
+        border = "rounded",
+        max_width = math.floor(vim.o.columns * 0.8),
+        max_height = math.floor(vim.o.lines * 0.4),
+        source = "always",  -- Show source of diagnostic (e.g., "eslint", "typescript")
+        header = "",        -- No header text
+        prefix = "",        -- No prefix for each line
+    },
+})
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)

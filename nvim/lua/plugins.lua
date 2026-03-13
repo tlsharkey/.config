@@ -520,7 +520,29 @@ require("lazy").setup({
                 timeout = 3000,
                 background_colour = "#000000",
             })
-            vim.notify = notify
+
+            -- Wrap vim.notify to log filetype messages before they're filtered by noice
+            local original_notify = notify
+            vim.notify = function(msg, level, opts)
+                local msg_str = tostring(msg)
+                local lower_msg = msg_str:lower()
+
+                -- Log filetype-related messages to file
+                if lower_msg:match("filetype") or lower_msg:match("unknown") then
+                    local log_file = vim.fn.expand("~/.config/nvim/unknownfiletypes.txt")
+                    local file = io.open(log_file, "a")
+                    if file then
+                        file:write(string.format("[%s] Level: %s - %s\n",
+                            os.date("%Y-%m-%d %H:%M:%S"),
+                            tostring(level or "INFO"),
+                            msg_str))
+                        file:close()
+                    end
+                end
+
+                -- Still call original notify (noice will filter it for display)
+                original_notify(msg, level, opts)
+            end
         end,
     },
     {
@@ -543,7 +565,27 @@ require("lazy").setup({
                 command_palette = true,
                 long_message_to_split = true,
                 inc_rename = false,
-                lsp_doc_border = false,
+                lsp_doc_border = true,
+            },
+            routes = {
+                {
+                    filter = {
+                        event = "notify",
+                        find = "filetype",
+                    },
+                    opts = { skip = true },
+                },
+                {
+                    filter = {
+                        event = "notify",
+                        find = "unknown",
+                    },
+                    view = "mini",
+                    opts = {
+                        -- Log it but show in cmdline instead of popup
+                        skip = false,
+                    },
+                },
             },
         },
     },
@@ -570,6 +612,71 @@ require("lazy").setup({
                 },
             })
         end,
+    },
+    {
+        "folke/trouble.nvim",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        cmd = "Trouble",
+        keys = {
+            { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
+            { "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
+            { "<leader>xl", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
+            { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
+        },
+        opts = {},
+    },
+    {
+        "lukas-reineke/indent-blankline.nvim",
+        main = "ibl",
+        event = { "BufReadPost", "BufNewFile" },
+        opts = {
+            indent = {
+                char = "│",
+            },
+            scope = {
+                enabled = true,
+                show_start = true,
+                show_end = false,
+            },
+        },
+    },
+    {
+        "nvim-lualine/lualine.nvim",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        event = "VeryLazy",
+        opts = {
+            options = {
+                theme = "auto",
+                component_separators = { left = "", right = "" },
+                section_separators = { left = "", right = "" },
+                globalstatus = true,
+            },
+            sections = {
+                lualine_a = { "mode" },
+                lualine_b = { "branch", "diff", "diagnostics" },
+                lualine_c = { { "filename", path = 1 } },
+                lualine_x = { "encoding", "fileformat", "filetype" },
+                lualine_y = { "progress" },
+                lualine_z = { "location" },
+            },
+        },
+    },
+    {
+        "folke/which-key.nvim",
+        event = "VeryLazy",
+        opts = {
+            preset = "modern",
+            delay = 500,
+        },
+        keys = {
+            {
+                "<leader>?",
+                function()
+                    require("which-key").show({ global = false })
+                end,
+                desc = "Buffer Local Keymaps (which-key)",
+            },
+        },
     },
 })
 

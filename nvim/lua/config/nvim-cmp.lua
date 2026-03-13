@@ -21,9 +21,10 @@ cmp.setup({
         -- Use <C-k/j> to switch in items
         ['<C-k>'] = cmp.mapping.select_prev_item(),
         ['<C-j>'] = cmp.mapping.select_next_item(),
-        -- Use <CR>(Enter) to confirm selection
-        -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-        ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        -- Use <CR>(Enter) to create newlines - only confirms if explicitly selected
+        ['<CR>'] = cmp.mapping.confirm({ select = false }),
+        -- Use <C-y> to explicitly accept completion
+        ['<C-y>'] = cmp.mapping.confirm({ select = true }),
 
         -- A super tab
         -- sourc: https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings#luasnip
