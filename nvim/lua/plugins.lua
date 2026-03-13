@@ -510,5 +510,66 @@ require("lazy").setup({
             require("config.conform")
         end,
     },
+    -- UI Enhancements
+    {
+        "rcarriga/nvim-notify",
+        config = function()
+            local notify = require("notify")
+            notify.setup({
+                stages = "fade",
+                timeout = 3000,
+                background_colour = "#000000",
+            })
+            vim.notify = notify
+        end,
+    },
+    {
+        "folke/noice.nvim",
+        event = "VeryLazy",
+        dependencies = {
+            "MunifTanjim/nui.nvim",
+            "rcarriga/nvim-notify",
+        },
+        opts = {
+            lsp = {
+                override = {
+                    ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+                    ["vim.lsp.util.stylize_markdown"] = true,
+                    ["cmp.entry.get_documentation"] = true,
+                },
+            },
+            presets = {
+                bottom_search = true,
+                command_palette = true,
+                long_message_to_split = true,
+                inc_rename = false,
+                lsp_doc_border = false,
+            },
+        },
+    },
+    {
+        "stevearc/dressing.nvim",
+        event = "VeryLazy",
+        opts = {},
+    },
+    {
+        "petertriho/nvim-scrollbar",
+        event = { "BufReadPost", "BufNewFile" },
+        config = function()
+            require("scrollbar").setup({
+                handle = {
+                    color = "#3b4261",
+                },
+                marks = {
+                    Search = { color = "#ff9e64" },
+                    Error = { color = "#db4b4b" },
+                    Warn = { color = "#e0af68" },
+                    Info = { color = "#0db9d7" },
+                    Hint = { color = "#1abc9c" },
+                    Misc = { color = "#9d7cd8" },
+                },
+            })
+        end,
+    },
 })
 
