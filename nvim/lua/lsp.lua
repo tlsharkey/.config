@@ -5,6 +5,10 @@ local opts = { noremap = true, silent = true }
 -- Helper to jump to definition from within floating windows
 local function goto_definition_from_float()
     local word = vim.fn.expand('<cword>')
+
+    -- Save current position for jumplist
+    vim.cmd('normal! m`')
+
     -- Close all floating windows
     for _, win in ipairs(vim.api.nvim_list_wins()) do
         if vim.api.nvim_win_is_valid(win) then
@@ -14,8 +18,9 @@ local function goto_definition_from_float()
             end
         end
     end
-    -- Search for the word in the current buffer and go to definition
-    vim.fn.search(word, 'w')
+
+    -- Search for the word without adding to jumplist, then jump to definition
+    vim.cmd('keepjumps normal! /' .. vim.fn.escape(word, '/\\') .. '\r')
     vim.lsp.buf.definition()
 end
 
@@ -34,15 +39,21 @@ vim.api.nvim_create_autocmd("WinEnter", {
             vim.keymap.set('n', 'gd', goto_definition_from_float, { buffer = true, silent = true })
             vim.keymap.set('n', '<space>D', function()
                 local word = vim.fn.expand('<cword>')
+
+                -- Save current position for jumplist
+                vim.cmd('normal! m`')
+
                 for _, w in ipairs(vim.api.nvim_list_wins()) do
                     if vim.api.nvim_win_is_valid(w) then
                         local ok, cfg = pcall(vim.api.nvim_win_get_config, w)
                         if ok and cfg.relative ~= "" then
-                            vim.api.nvim_win_close(w, false)
+                            pcall(vim.api.nvim_win_close, w, false)
                         end
                     end
                 end
-                vim.fn.search(word, 'w')
+
+                -- Search for the word without adding to jumplist, then jump to type definition
+                vim.cmd('keepjumps normal! /' .. vim.fn.escape(word, '/\\') .. '\r')
                 vim.lsp.buf.type_definition()
             end, { buffer = true, silent = true })
         end
