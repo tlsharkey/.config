@@ -27,6 +27,9 @@ require("conform").setup({
     sh = { "shfmt" },
     bash = { "shfmt" },
     zsh = { "shfmt" },
+
+    -- Config files
+    toml = { "taplo" },
   },
   formatters = {
     -- Configure prettier to use 4 spaces by default
@@ -39,6 +42,10 @@ require("conform").setup({
     -- Configure shfmt to use spaces instead of tabs
     shfmt = {
       prepend_args = { "-i", "4", "-s" }, -- indent 4 spaces, simplify code
+    },
+    -- Configure taplo to use 4 space indentation
+    taplo = {
+      prepend_args = { "fmt", "--option", "indent_string=    " }, -- 4 spaces
     },
   },
   format_on_save = {
