@@ -224,7 +224,14 @@ require("lazy").setup({
     -- "maxmellon/vim-jsx-pretty",
     {
         "numToStr/Comment.nvim",
-        opts = {},
+        dependencies = {
+            "JoosepAlviste/nvim-ts-context-commentstring",
+        },
+        opts = function()
+            return {
+                pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+            }
+        end,
         event = { "BufReadPost", "BufNewFile" },
     },
     -- Colorscheme
@@ -286,7 +293,15 @@ require("lazy").setup({
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
         event = { "BufReadPost", "BufNewFile" },
+        dependencies = {
+            "JoosepAlviste/nvim-ts-context-commentstring",
+        },
         config = function()
+            -- Configure context commentstring for TSX/JSX
+            require('ts_context_commentstring').setup({
+                enable_autocmd = false,
+            })
+
             -- Enable treesitter highlighting for specific filetypes
             vim.api.nvim_create_autocmd('FileType', {
                 pattern = {
