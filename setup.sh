@@ -1,11 +1,11 @@
 # Overwrite bashrc location
-echo "source $HOME/.config/bashrc" > $HOME/.bash_profile
-echo "source $HOME/.config/zshrc" > $HOME/.zshrc
+echo "source $HOME/.config/bashrc" >$HOME/.bash_profile
+echo "source $HOME/.config/zshrc" >$HOME/.zshrc
 
 # Overwrite git config location
-echo "" > $HOME/.gitconfig
-echo "[include]" >> $HOME/.gitconfig
-echo "    path = $HOME/.config/git/gitconfig" >> $HOME/.gitconfig
+echo "" >$HOME/.gitconfig
+echo "[include]" >>$HOME/.gitconfig
+echo "    path = $HOME/.config/git/gitconfig" >>$HOME/.gitconfig
 # Git LFS
 ## MacOS
 brew install git-lfs
@@ -41,12 +41,29 @@ brew install ripgrep
 # for latex support: [skim](https://skim-app.sourceforge.io/)
 # and [MaxTex](https://www.tug.org/mactex/mactex-download.html)
 # for jupyter notebook support: [quarto](https://quarto.org/docs/get-started/)
-# for pasing images: [xclip](https://github.com/astrand/xclip)
+# for pasting images: [xclip](https://github.com/astrand/xclip)
 brew install xclip
 brew install tree-sitter
 brew install --cask mactex
-
-
+# for image preview in markdown (optional - enables inline image rendering)
+# there are two options here. One is the crossplatform ueberzugpp that has some jank:
+## MacOS
+brew install ueberzugpp
+## Fedora
+sudo dnf install ueberzugpp
+## Ubuntu/Debian (may need to build from source if not in repos)
+# See: https://github.com/jstkdng/ueberzugpp
+sudo apt install libvips-dev libsixel-dev chafa
+git clone https://github.com/jstkdng/ueberzugpp.git /tmp/ueberzugpp
+cd /tmp/ueberzugpp
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build .
+sudo cmake --install .
+# the other markdown image preview option is to use a kitty terminal
+brew install luarocks imagemagick
+luarocks install --local magick
+luarocks search magick --porcelain
 
 ## Lazygit
 # macos
@@ -62,14 +79,14 @@ sudo install lazygit -D -t /usr/local/bin/
 
 # Node Version Manager
 NVM_INSTALL_OUTPUT=$(curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh" | bash)
-echo "$NVM_INSTALL_OUTPUT" | tail -n 4 | tee -a "$HOME/.config/bashrc.private" "$HOME/.config/zshrc.private" > /dev/null
+echo "$NVM_INSTALL_OUTPUT" | tail -n 4 | tee -a "$HOME/.config/bashrc.private" "$HOME/.config/zshrc.private" >/dev/null
 
 # Docker
 sudo apt-get install ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
-echo   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" |   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 sudo apt-get update
 ## MacOS - install docker desktop from https://docs.docker.com/desktop/setup/install/mac-install/
 
@@ -92,33 +109,37 @@ brew install bash-completion
 brew thefuck install cjson cmake gcc coreutils gh go imath
 
 # Youtube-DLP
-```zsh
-cd ~/Applications
-mkdir yt-dlp
-cd yt-dlp
-python -m venv venv
-source venv/bin/activate
-pip install yt-dlp
+$()$(
+    zsh
+    cd ~/Applications
+    mkdir yt-dlp
+    cd yt-dlp
+    python -m venv venv
+    source venv/bin/activate
+    pip install yt-dlp
 
-echo "alias yt-dlp='~/Applications/yt-dlp/venv/bin/yt-dlp'" >> ~/.zshrc
-```
+    echo "alias yt-dlp='~/Applications/yt-dlp/venv/bin/yt-dlp'" >>~/.zshrc
+)$()
 or on ubuntu
-```bash
-cd ~/.local/bin
-mkdir yt-dlp
-cd yt-dlp
-python3 -m venv venv
-source venv/bin/activate
-pip install yt-dlp
+$()$(
+    bash
+    cd ~/.local/bin
+    mkdir yt-dlp
+    cd yt-dlp
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install yt-dlp
 
-echo "alias yt-dlp='~/.local/bin/yt-dlp/venv/bin/yt-dlp'" >> ~/.bashrc
-```
+    echo "alias yt-dlp='~/.local/bin/yt-dlp/venv/bin/yt-dlp'" >>~/.bashrc
+)$()
 
+## Claude or other agents tool
+curl -fsSL https://claude.ai/install.sh | bash
+# use agency-agents files
+git clone https://github.com/msitarzewski/agency-agents ~/.claude/agents
 
 ## 1 Password Setup
 
 ## Signed Git Commits
 
 ## Make ping, rsync, scp all use ssh config host names
-
-

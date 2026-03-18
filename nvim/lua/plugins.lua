@@ -327,11 +327,43 @@ require("lazy").setup({
         end,
     },
     {
+        "3rd/image.nvim",
+        ft = { "markdown", "quarto" },
+        -- Only enable if we have imagemagick and terminal supports images
+        cond = function()
+            -- Check if imagemagick is installed
+            if vim.fn.executable("magick") == 0 and vim.fn.executable("convert") == 0 then
+                return false
+            end
+            -- Check terminal support
+            local term = vim.env.TERM_PROGRAM or vim.env.TERM or ""
+            return term:match("iTerm") or term:match("kitty") or term:match("WezTerm") or vim.fn.executable("ueberzugpp") == 1
+        end,
+        build = false,  -- Don't auto-build, let it manage itself
+        opts = {
+            backend = "kitty",  -- iTerm2 supports kitty protocol
+            integrations = {
+                markdown = {
+                    enabled = true,
+                    clear_in_insert_mode = false,
+                    download_remote_images = true,
+                    only_render_image_at_cursor = false,
+                },
+            },
+            max_width = 100,
+            max_height = 12,
+            max_height_window_percentage = 50,
+            window_overlap_clear_enabled = false,
+            window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
+        },
+    },
+    {
         'MeanderingProgrammer/render-markdown.nvim',
-        dependencies = { 
-            'nvim-treesitter/nvim-treesitter', 
+        dependencies = {
+            'nvim-treesitter/nvim-treesitter',
             'nvim-tree/nvim-web-devicons',
-            'echasnovski/mini.icons'
+            'echasnovski/mini.icons',
+            '3rd/image.nvim'
         },
         ft = { "markdown", "quarto" },
         config = function()
@@ -503,6 +535,7 @@ require("lazy").setup({
     },
     {
         "img-paste-devs/img-paste.vim",
+        ft = { "markdown", "quarto" },
     },
     -- Python Notebooks
     {

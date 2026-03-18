@@ -305,14 +305,15 @@ This configuration uses `,` (comma) as the leader key.
 
 ### Navigation & Search
 
-| Shortcut      | Action                              | Mode   |
-| ------------- | ----------------------------------- | ------ |
-| `fe`          | Toggle Neo-tree (File Explorer)     | Normal |
-| `<C-h/j/k/l>` | Navigate between windows            | Normal |
-| `<leader>ff`  | Find files (Telescope)              | Normal |
-| `<leader>fg`  | Live grep / Search text (Telescope) | Normal |
-| `<leader>fb`  | List open buffers (Telescope)       | Normal |
-| `<leader>fh`  | Help tags (Telescope)               | Normal |
+| Shortcut      | Action                                   | Mode   |
+| ------------- | ---------------------------------------- | ------ |
+| `fe`          | Toggle Neo-tree (File Explorer)          | Normal |
+| `<C-h/j/k/l>` | Navigate between windows                 | Normal |
+| `<leader>ff`  | Find files (Telescope)                   | Normal |
+| `<leader>fg`  | Live grep / Search text (Telescope)      | Normal |
+| `<leader>fb`  | List open buffers (Telescope)            | Normal |
+| `<leader>fh`  | Help tags (Telescope)                    | Normal |
+| `gx`          | Open link under cursor (markdown images) | Normal |
 
 ### Code Intelligence (LSP & Gutentags)
 
@@ -334,12 +335,12 @@ This configuration uses `,` (comma) as the leader key.
 
 ### Diagnostics Panel (Trouble)
 
-| Shortcut      | Action                            | Mode   |
-| ------------- | --------------------------------- | ------ |
-| `<leader>xx`  | Toggle workspace diagnostics      | Normal |
-| `<leader>xd`  | Toggle buffer diagnostics         | Normal |
-| `<leader>xl`  | Toggle location list              | Normal |
-| `<leader>xq`  | Toggle quickfix list              | Normal |
+| Shortcut     | Action                       | Mode   |
+| ------------ | ---------------------------- | ------ |
+| `<leader>xx` | Toggle workspace diagnostics | Normal |
+| `<leader>xd` | Toggle buffer diagnostics    | Normal |
+| `<leader>xl` | Toggle location list         | Normal |
+| `<leader>xq` | Toggle quickfix list         | Normal |
 
 ### AI Completion (Codeium)
 
@@ -364,30 +365,30 @@ This configuration uses `,` (comma) as the leader key.
 ### File Navigation
 
 - **Neo-tree**: File explorer sidebar
-  - Toggle with custom keymaps (check `lua/keymaps.lua`)
-  - Navigate with `hjkl`, press `P` to preview files
+    - Toggle with custom keymaps (check `lua/keymaps.lua`)
+    - Navigate with `hjkl`, press `P` to preview files
 
 - **Telescope**: Fuzzy finder
-  - Find files, search text, browse git history
-  - Configured to ignore build artifacts and dependencies
+    - Find files, search text, browse git history
+    - Configured to ignore build artifacts and dependencies
 
 ### Language Support
 
 - **LSP**: Automatic language server support via Mason
-  - JSON and C# (OmniSharp) pre-configured
-  - Install additional servers with `:Mason`
+    - JSON and C# (OmniSharp) pre-configured
+    - Install additional servers with `:Mason`
 
 - **Treesitter**: Syntax highlighting for many languages
-  - Parsers auto-install on first use
-  - Enhanced markdown rendering with `render-markdown.nvim`
+    - Parsers auto-install on first use
+    - Enhanced markdown rendering with `render-markdown.nvim`
 
 ### LaTeX Editing
 
 - **VimTeX**: Comprehensive LaTeX support
-  - `:VimtexCompile` to compile and auto-preview
-  - PDF updates automatically on save
-  - See [VimTeX docs](https://github.com/lervag/vimtex/blob/master/VISUALS.md) for keyboard shortcuts
-  - `]]` / `[[` to navigate between sections
+    - `:VimtexCompile` to compile and auto-preview
+    - PDF updates automatically on save
+    - See [VimTeX docs](https://github.com/lervag/vimtex/blob/master/VISUALS.md) for keyboard shortcuts
+    - `]]` / `[[` to navigate between sections
 
 ### Markdown Features
 
@@ -399,23 +400,23 @@ This configuration uses `,` (comma) as the leader key.
 ### Code Navigation
 
 - **vim-gutentags**: Automatic tag generation
-  - Jump to definition with `<C-]>`
-  - Jump back with `<C-t>`
-  - Works with universal-ctags
+    - Jump to definition with `<C-]>`
+    - Jump back with `<C-t>`
+    - Works with universal-ctags
 
 ### AI Assistance
 
 - **Codeium**: AI-powered code completion
-  - Accept suggestions: `<C-Down>`
-  - Next suggestion: `<C-Up>`
-  - Accept word: `<C-S-Right>`
-  - Accept line: `<C-Right>`
+    - Accept suggestions: `<C-Down>`
+    - Next suggestion: `<C-Up>`
+    - Accept word: `<C-S-Right>`
+    - Accept line: `<C-Right>`
 
 ### Version Control
 
 - **diffview.nvim**: Advanced diff and merge tool
-  - View diffs, resolve merge conflicts
-  - Better than default git diff
+    - View diffs, resolve merge conflicts
+    - Better than default git diff
 
 ## Troubleshooting
 
@@ -430,13 +431,13 @@ If you see parser errors, try:
 ### LSP not working
 
 1. Check if the language server is installed:
-   ```vim
-   :Mason
-   ```
+    ```vim
+    :Mason
+    ```
 2. Check LSP status:
-   ```vim
-   :LspInfo
-   ```
+    ```vim
+    :LspInfo
+    ```
 
 ### Fonts not displaying correctly
 

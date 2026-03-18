@@ -35,9 +35,54 @@ vim.keymap.set('n', '<C-h>', '<C-w>h', opts)
 vim.keymap.set('n', '<C-j>', '<C-w>j', opts)
 vim.keymap.set('n', '<C-k>', '<C-w>k', opts)
 vim.keymap.set('n', '<C-l>', '<C-w>l', opts)
+-- Configure img-paste.vim before the autocmd
+vim.g.mdip_imgdir = '.attachments'
+vim.g.mdip_imgname = 'img'
+
 vim.api.nvim_exec([[
   autocmd FileType markdown nmap <buffer><silent> <leader>p :call mdip#MarkdownClipboardImage()<CR>
 ]], false)
+
+-- Open image under cursor in external viewer
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "markdown", "quarto" },
+    callback = function()
+        vim.keymap.set("n", "gx", function()
+            -- Get the word under cursor (image path)
+            local line = vim.api.nvim_get_current_line()
+            local col = vim.api.nvim_win_get_cursor(0)[2]
+            -- Match markdown image: ![alt](...) or just file path
+            local path = line:match("!%[.-%]%((.-)%)")
+            if not path then
+                -- Try to get word under cursor as fallback
+                path = vim.fn.expand("<cfile>")
+            end
+
+            if path and path ~= "" then
+                -- Handle relative paths
+                if not path:match("^/") and not path:match("^%w+://") then
+                    local current_file = vim.fn.expand("%:p:h")
+                    path = current_file .. "/" .. path
+                end
+
+                -- Open with system default viewer
+                local cmd
+                if vim.fn.has("mac") == 1 then
+                    cmd = "open"
+                elseif vim.fn.has("unix") == 1 then
+                    cmd = "xdg-open"
+                elseif vim.fn.has("win32") == 1 then
+                    cmd = "start"
+                end
+
+                if cmd then
+                    vim.fn.jobstart({cmd, path}, {detach = true})
+                end
+            end
+        end, { buffer = true, desc = "Open image under cursor" })
+    end,
+})
+
 
 -- neo-tree
 vim.keymap.set('n', 'fe', ':Neotree<CR>', opts)
