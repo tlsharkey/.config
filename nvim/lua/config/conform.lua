@@ -4,17 +4,17 @@ require("conform").setup({
     lua = { "stylua" },
 
     -- Web Development (use stop_after_first to run only the first available formatter)
-    javascript = { "prettierd", "prettier", stop_after_first = true },
-    typescript = { "prettierd", "prettier", stop_after_first = true },
-    javascriptreact = { "prettierd", "prettier", stop_after_first = true },
-    typescriptreact = { "prettierd", "prettier", stop_after_first = true },
-    css = { "prettierd", "prettier", stop_after_first = true },
-    scss = { "prettierd", "prettier", stop_after_first = true },
-    html = { "prettierd", "prettier", stop_after_first = true },
-    json = { "prettierd", "prettier", stop_after_first = true },
-    jsonc = { "prettierd", "prettier", stop_after_first = true },
-    yaml = { "prettierd", "prettier", stop_after_first = true },
-    markdown = { "prettierd", "prettier", stop_after_first = true },
+    javascript = { "prettier", "prettierd", stop_after_first = true },
+    typescript = { "prettier", "prettierd", stop_after_first = true },
+    javascriptreact = { "prettier", "prettierd", stop_after_first = true },
+    typescriptreact = { "prettier", "prettierd", stop_after_first = true },
+    css = { "prettier", "prettierd", stop_after_first = true },
+    scss = { "prettier", "prettierd", stop_after_first = true },
+    html = { "prettier", "prettierd", stop_after_first = true },
+    json = { "prettier", "prettierd", stop_after_first = true },
+    jsonc = { "prettier", "prettierd", stop_after_first = true },
+    yaml = { "prettier", "prettierd", stop_after_first = true },
+    markdown = { "prettier", "prettierd", stop_after_first = true },
 
     -- Backend/Systems
     python = { "isort", "black" },
@@ -34,9 +34,6 @@ require("conform").setup({
   formatters = {
     -- Configure prettier to use 4 spaces by default
     prettier = {
-      prepend_args = { "--tab-width", "4" },
-    },
-    prettierd = {
       prepend_args = { "--tab-width", "4" },
     },
     -- Configure shfmt to use spaces instead of tabs
