@@ -79,6 +79,7 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
 
 -- Configure diagnostic float windows with same styling
 vim.diagnostic.config({
+    update_in_insert = true,  -- Show diagnostics while typing in insert mode
     float = {
         border = "rounded",
         max_width = math.floor(vim.o.columns * 0.8),
@@ -94,6 +95,9 @@ vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '[e', function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, opts)
 vim.keymap.set('n', ']e', function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR }) end, opts)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
+
+-- Make <C-t> in insert mode jump back (same as normal mode)
+vim.keymap.set('i', '<C-t>', '<Esc><C-t>', { noremap = true, silent = true })
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
