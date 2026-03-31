@@ -91,9 +91,12 @@ require("lazy").setup({
                 "shfmt",       -- Shell scripts
             }
             for _, formatter in ipairs(formatters) do
-                local p = registry.get_package(formatter)
-                if not p:is_installed() then
-                    p:install()
+                local ok, p = pcall(registry.get_package, registry, formatter)
+                if ok and not p:is_installed() then
+                    -- Install async so it doesn't block startup/shutdown
+                    vim.schedule(function()
+                        pcall(function() p:install() end)
+                    end)
                 end
             end
 
@@ -564,9 +567,40 @@ require("lazy").setup({
         config = function()
             local notify = require("notify")
             notify.setup({
-                stages = "fade",
+                stages = "slide",  -- Smooth slide animation from right edge
                 timeout = 3000,
                 background_colour = "#000000",
+                top_down = false,  -- Default to bottom-right, will override if cursor is at top
+                on_open = function(win)
+                    -- Get cursor position in the current window
+                    local cursor_line = vim.fn.line('.')
+                    local win_height = vim.fn.winheight(0)
+                    local win_top = vim.fn.line('w0')
+
+                    -- Calculate if cursor is in top 30% of visible window
+                    local cursor_relative = cursor_line - win_top + 1
+                    local is_cursor_at_top = (cursor_relative / win_height) < 0.3
+
+                    -- If cursor is at top, move notification to bottom
+                    -- If cursor is at bottom/middle, move notification to top
+                    if is_cursor_at_top then
+                        -- Position at bottom-right
+                        vim.api.nvim_win_set_config(win, {
+                            relative = "editor",
+                            anchor = "SE",
+                            row = vim.o.lines - 2,
+                            col = vim.o.columns,
+                        })
+                    else
+                        -- Position at top-right (default)
+                        vim.api.nvim_win_set_config(win, {
+                            relative = "editor",
+                            anchor = "NE",
+                            row = 1,
+                            col = vim.o.columns,
+                        })
+                    end
+                end,
             })
 
             -- Wrap vim.notify to log filetype messages before they're filtered by noice
