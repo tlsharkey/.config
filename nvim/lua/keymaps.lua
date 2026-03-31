@@ -151,3 +151,8 @@ end, { desc = "Comment line" })
 vim.keymap.set("n", "<C-s>", "<cmd>w<CR>", { desc = "Save file" })
 vim.keymap.set("v", "<C-s>", "<cmd>w<CR>gv", { desc = "Save file and keep selection" })
 vim.keymap.set("i", "<C-s>", "<Esc><cmd>w<CR>gi", { desc = "Save file and stay in insert" })
+
+-- Dismiss notifications
+vim.keymap.set("n", "<leader>nd", function()
+    require("notify").dismiss({ silent = true, pending = true })
+end, { desc = "Dismiss all notifications" })
