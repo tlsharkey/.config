@@ -1,14 +1,14 @@
 --- lazy.nvim installation
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -17,7 +17,7 @@ require("lazy").setup({
     {
         "hrsh7th/nvim-cmp",
         dependencies = {
-            "lspkind.nvim",
+            "onsails/lspkind.nvim",
             "neovim/nvim-lspconfig",
             "hrsh7th/cmp-nvim-lsp", -- lsp auto-completion
             "hrsh7th/cmp-buffer", -- buffer auto-completion
@@ -38,9 +38,9 @@ require("lazy").setup({
     {
         "neovim/nvim-lspconfig",
         dependencies = {
-            { 
-                "mason-org/mason.nvim", 
-                opts = { ui = { icons = { package_installed = "✓" } } } 
+            {
+                "mason-org/mason.nvim",
+                opts = { ui = { icons = { package_installed = "✓" } } },
             },
             "mason-org/mason-lspconfig.nvim",
         },
@@ -49,53 +49,55 @@ require("lazy").setup({
             require("mason-lspconfig").setup({
                 ensure_installed = {
                     -- Web Development
-                    "html",           -- HTML
-                    "cssls",          -- CSS
-                    "ts_ls",          -- TypeScript/JavaScript
-                    "eslint",         -- JS/TS linting
-                    "tailwindcss",    -- Tailwind CSS
+                    "html", -- HTML
+                    "cssls", -- CSS
+                    "ts_ls", -- TypeScript/JavaScript
+                    "eslint", -- JS/TS linting
+                    "tailwindcss", -- Tailwind CSS
 
                     -- Backend/Systems
-                    "rust_analyzer",  -- Rust
-                    "gopls",          -- Go
-                    "pyright",        -- Python
-                    "omnisharp",      -- C# (Unity, .NET)
+                    "rust_analyzer", -- Rust
+                    "gopls", -- Go
+                    "pyright", -- Python
+                    "omnisharp", -- C# (Unity, .NET)
 
                     -- Config/Data formats
-                    "jsonls",         -- JSON
-                    "yamlls",         -- YAML
-                    "taplo",          -- TOML
-                    "lua_ls",         -- Lua (Neovim config)
+                    "jsonls", -- JSON
+                    "yamlls", -- YAML
+                    "taplo", -- TOML
+                    "lua_ls", -- Lua (Neovim config)
 
                     -- DevOps/Infrastructure
-                    "bashls",         -- Bash/Shell scripts
-                    "dockerls",       -- Dockerfile
+                    "bashls", -- Bash/Shell scripts
+                    "dockerls", -- Dockerfile
                     "docker_compose_language_service", -- Docker Compose
 
                     -- Markup/Documentation
-                    "marksman",       -- Markdown
-                }
+                    "marksman", -- Markdown
+                },
             })
-            
+
             -- Ensure binaries for conform.nvim are also available
             require("mason").setup()
             local registry = require("mason-registry")
             local formatters = {
-                "prettier",    -- JS/TS/HTML/CSS/JSON/YAML/Markdown
-                "stylua",      -- Lua
-                "black",       -- Python
-                "isort",       -- Python imports
-                "csharpier",   -- C#
-                "rustfmt",     -- Rust (usually installed with Rust toolchain)
-                "gofumpt",     -- Go (stricter gofmt)
-                "shfmt",       -- Shell scripts
+                "prettier", -- JS/TS/HTML/CSS/JSON/YAML/Markdown
+                "stylua", -- Lua
+                "black", -- Python
+                "isort", -- Python imports
+                "csharpier", -- C#
+                "rustfmt", -- Rust (usually installed with Rust toolchain)
+                "gofumpt", -- Go (stricter gofmt)
+                "shfmt", -- Shell scripts
             }
             for _, formatter in ipairs(formatters) do
                 local ok, p = pcall(registry.get_package, registry, formatter)
                 if ok and not p:is_installed() then
                     -- Install async so it doesn't block startup/shutdown
                     vim.schedule(function()
-                        pcall(function() p:install() end)
+                        pcall(function()
+                            p:install()
+                        end)
                     end)
                 end
             end
@@ -219,7 +221,7 @@ require("lazy").setup({
 
             -- Markup/Documentation
             vim.lsp.enable("marksman")
-        end
+        end,
     },
 
     "Hoffs/omnisharp-extended-lsp.nvim",
@@ -232,7 +234,7 @@ require("lazy").setup({
         },
         opts = function()
             return {
-                pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+                pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
             }
         end,
         event = { "BufReadPost", "BufNewFile" },
@@ -266,7 +268,7 @@ require("lazy").setup({
             -- vim.g.gutentags_ctags_tagfile = ".tags"
             vim.g.gutentags_project_root = { ".git", ".hg", ".svn", ".bzr", ".root" }
             -- vim.g.gutentags_trace = 1
-        end
+        end,
     },
     {
         "Exafunction/codeium.nvim",
@@ -289,7 +291,7 @@ require("lazy").setup({
                     },
                 },
             })
-        end
+        end,
     },
     -- Tree-sitter for syntax highlighting
     {
@@ -301,19 +303,36 @@ require("lazy").setup({
         },
         config = function()
             -- Configure context commentstring for TSX/JSX
-            require('ts_context_commentstring').setup({
+            require("ts_context_commentstring").setup({
                 enable_autocmd = false,
             })
 
             -- Enable treesitter highlighting for specific filetypes
-            vim.api.nvim_create_autocmd('FileType', {
+            vim.api.nvim_create_autocmd("FileType", {
                 pattern = {
-                    'lua', 'vim', 'vimdoc',
-                    'html', 'css', 'scss', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact',
-                    'python', 'rust', 'go', 'cs',
-                    'json', 'jsonc', 'yaml', 'toml',
-                    'sh', 'bash', 'zsh', 'dockerfile',
-                    'markdown',
+                    "lua",
+                    "vim",
+                    "vimdoc",
+                    "html",
+                    "css",
+                    "scss",
+                    "javascript",
+                    "javascriptreact",
+                    "typescript",
+                    "typescriptreact",
+                    "python",
+                    "rust",
+                    "go",
+                    "cs",
+                    "json",
+                    "jsonc",
+                    "yaml",
+                    "toml",
+                    "sh",
+                    "bash",
+                    "zsh",
+                    "dockerfile",
+                    "markdown",
                 },
                 callback = function()
                     vim.treesitter.start()
@@ -321,8 +340,8 @@ require("lazy").setup({
             })
 
             -- Disable treesitter for latex
-            vim.api.nvim_create_autocmd('FileType', {
-                pattern = { 'latex', 'tex' },
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = { "latex", "tex" },
                 callback = function()
                     vim.treesitter.stop()
                 end,
@@ -340,11 +359,14 @@ require("lazy").setup({
             end
             -- Check terminal support
             local term = vim.env.TERM_PROGRAM or vim.env.TERM or ""
-            return term:match("iTerm") or term:match("kitty") or term:match("WezTerm") or vim.fn.executable("ueberzugpp") == 1
+            return term:match("iTerm")
+                or term:match("kitty")
+                or term:match("WezTerm")
+                or vim.fn.executable("ueberzugpp") == 1
         end,
-        build = false,  -- Don't auto-build, let it manage itself
+        build = false, -- Don't auto-build, let it manage itself
         opts = {
-            backend = "kitty",  -- iTerm2 supports kitty protocol
+            backend = "kitty", -- iTerm2 supports kitty protocol
             integrations = {
                 markdown = {
                     enabled = true,
@@ -361,12 +383,12 @@ require("lazy").setup({
         },
     },
     {
-        'MeanderingProgrammer/render-markdown.nvim',
+        "MeanderingProgrammer/render-markdown.nvim",
         dependencies = {
-            'nvim-treesitter/nvim-treesitter',
-            'nvim-tree/nvim-web-devicons',
-            'echasnovski/mini.icons',
-            '3rd/image.nvim'
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-tree/nvim-web-devicons",
+            "echasnovski/mini.icons",
+            "3rd/image.nvim",
         },
         ft = { "markdown", "quarto" },
         config = function()
@@ -397,44 +419,48 @@ require("lazy").setup({
                     },
                     custom = {
                         -- inprogress = { raw = "[/]", hightlight="DiagnosticWarn" },
-                        in_progress = { raw = '[/]', rendered = '󱎖 ', highlight = 'Comment' },
-                        zero =  { raw = '[0]', rendered = '󰎡 ', highlight = 'RenderMarkdownCheckboxZero' },
-                        one =   { raw = '[1]', rendered = '󰎤 ', highlight = 'RenderMarkdownCheckboxOne' },
-                        two =   { raw = '[2]', rendered = '󰎧 ', highlight = 'RenderMarkdownCheckboxTwo' },
-                        three = { raw = '[3]', rendered = '󰎪 ', highlight = 'RenderMarkdownCheckboxThree' },
-                        four =  { raw = '[4]', rendered = '󰎭 ', highlight = 'RenderMarkdownCheckboxFour' },
-                        five =  { raw = '[5]', rendered = '󰎱 ', highlight = 'RenderMarkdownCheckboxFive' },
-                        six =   { raw = '[6]', rendered = '󰎳 ', highlight = 'RenderMarkdownCheckboxSix' },
-                        seven = { raw = '[7]', rendered = '󰎶 ', highlight = 'RenderMarkdownCheckboxSeven' },
-                        eight = { raw = '[8]', rendered = '󰎹 ', highlight = 'RenderMarkdownCheckboxEight' },
-                        nine =  { raw = '[9]', rendered = '󰎼 ', highlight = 'RenderMarkdownCheckboxNine' },
-                        cancelled = { raw = '[-]', rendered = ' ', highlight = 'Comment', scope_highlight = 'Strikethrough' },
-                        urgent = { raw = '[!]', rendered = ' ', highlight = 'ErrorMsg' }, -- Exclamation icon
-                        question = { raw = '[?]', rendered = ' ', highlight = 'Question' }, -- Questionmark icon
-
-                    }
+                        in_progress = { raw = "[/]", rendered = "󱎖 ", highlight = "Comment" },
+                        zero = { raw = "[0]", rendered = "󰎡 ", highlight = "RenderMarkdownCheckboxZero" },
+                        one = { raw = "[1]", rendered = "󰎤 ", highlight = "RenderMarkdownCheckboxOne" },
+                        two = { raw = "[2]", rendered = "󰎧 ", highlight = "RenderMarkdownCheckboxTwo" },
+                        three = { raw = "[3]", rendered = "󰎪 ", highlight = "RenderMarkdownCheckboxThree" },
+                        four = { raw = "[4]", rendered = "󰎭 ", highlight = "RenderMarkdownCheckboxFour" },
+                        five = { raw = "[5]", rendered = "󰎱 ", highlight = "RenderMarkdownCheckboxFive" },
+                        six = { raw = "[6]", rendered = "󰎳 ", highlight = "RenderMarkdownCheckboxSix" },
+                        seven = { raw = "[7]", rendered = "󰎶 ", highlight = "RenderMarkdownCheckboxSeven" },
+                        eight = { raw = "[8]", rendered = "󰎹 ", highlight = "RenderMarkdownCheckboxEight" },
+                        nine = { raw = "[9]", rendered = "󰎼 ", highlight = "RenderMarkdownCheckboxNine" },
+                        cancelled = {
+                            raw = "[-]",
+                            rendered = " ",
+                            highlight = "Comment",
+                            scope_highlight = "Strikethrough",
+                        },
+                        urgent = { raw = "[!]", rendered = " ", highlight = "ErrorMsg" }, -- Exclamation icon
+                        question = { raw = "[?]", rendered = " ", highlight = "Question" }, -- Questionmark icon
+                    },
                 },
                 -- Mermaid diagram support
                 code = {
                     enabled = true,
                     sign = true,
-                    style = 'full',
-                    position = 'left',
-                    width = 'block',
+                    style = "full",
+                    position = "left",
+                    width = "block",
                     left_pad = 0,
                     right_pad = 0,
                     min_width = 0,
                     language_pad = 0,
-                    border = 'thin',
-                    above = '▄',
-                    below = '▀',
-                    highlight = 'RenderMarkdownCode',
-                    highlight_inline = 'RenderMarkdownCodeInline',
+                    border = "thin",
+                    above = "▄",
+                    below = "▀",
+                    highlight = "RenderMarkdownCode",
+                    highlight_inline = "RenderMarkdownCodeInline",
                 },
                 pipe_table = {
                     enabled = true,
-                    preset = 'round',
-                    style = 'full',
+                    preset = "round",
+                    style = "full",
                 },
                 -- Enable debugging to see what's happening
                 log_level = "info",
@@ -442,43 +468,43 @@ require("lazy").setup({
         end,
     },
     {
-        'jghauser/follow-md-links.nvim'
+        "jghauser/follow-md-links.nvim",
     },
     {
-        'iamcco/markdown-preview.nvim',
-        cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-        ft = { 'markdown' },
-        build = 'cd app && npm install && git checkout .',
+        "iamcco/markdown-preview.nvim",
+        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+        ft = { "markdown" },
+        build = "cd app && npm install && git checkout .",
         config = function()
-            vim.g.mkdp_auto_close = 0  -- Don't auto-close preview when switching buffers
-            vim.g.mkdp_theme = 'dark'
-            vim.g.mkdp_filetypes = { 'markdown' }
-            vim.g.mkdp_browser = ''  -- Use system default browser
+            vim.g.mkdp_auto_close = 0 -- Don't auto-close preview when switching buffers
+            vim.g.mkdp_theme = "dark"
+            vim.g.mkdp_filetypes = { "markdown" }
+            vim.g.mkdp_browser = "" -- Use system default browser
 
             -- Keymaps
-            vim.keymap.set('n', '<leader>mp', '<cmd>MarkdownPreview<cr>', { desc = 'Markdown Preview (browser)' })
-            vim.keymap.set('n', '<leader>ms', '<cmd>MarkdownPreviewStop<cr>', { desc = 'Stop Markdown Preview' })
+            vim.keymap.set("n", "<leader>mp", "<cmd>MarkdownPreview<cr>", { desc = "Markdown Preview (browser)" })
+            vim.keymap.set("n", "<leader>ms", "<cmd>MarkdownPreviewStop<cr>", { desc = "Stop Markdown Preview" })
         end,
     },
     {
         "lervag/vimtex",
-        lazy = false,     -- we don't want to lazy load VimTeX
+        lazy = false, -- we don't want to lazy load VimTeX
         init = function()
-          if vim.fn.executable("skim") == 1 then
-            vim.g.vimtex_view_method = "skim"
-          elseif vim.fn.executable("zathura") == 1 then
-            vim.g.vimtex_view_method = "zathura"
-          elseif vim.fn.executable("evince") == 1 then
-            vim.g.vimtex_view_method = "evince"
-          elseif vim.fn.executable("okular") == 1 then
-            vim.g.vimtex_view_method = "okular"
-          elseif vim.fn.executable("mupdf") == 1 then
-            vim.g.vimtex_view_method = "mupdf"
-          end
-          vim.g.vimtex_compiler_latexmk = {
-              out_dir = ".latex",
-          }
-        end
+            if vim.fn.executable("skim") == 1 then
+                vim.g.vimtex_view_method = "skim"
+            elseif vim.fn.executable("zathura") == 1 then
+                vim.g.vimtex_view_method = "zathura"
+            elseif vim.fn.executable("evince") == 1 then
+                vim.g.vimtex_view_method = "evince"
+            elseif vim.fn.executable("okular") == 1 then
+                vim.g.vimtex_view_method = "okular"
+            elseif vim.fn.executable("mupdf") == 1 then
+                vim.g.vimtex_view_method = "mupdf"
+            end
+            vim.g.vimtex_compiler_latexmk = {
+                out_dir = ".latex",
+            }
+        end,
     },
     -- GUI Stuff
     {
@@ -526,7 +552,7 @@ require("lazy").setup({
                     hide_dotfiles = false,
                     hide_gitignored = false,
                 },
-            }
+            },
         },
     },
     {
@@ -534,19 +560,19 @@ require("lazy").setup({
         tag = "0.1.8",
         dependencies = { "nvim-lua/plenary.nvim" },
         config = function()
-            local previewers_utils = require('telescope.previewers.utils')
+            local previewers_utils = require("telescope.previewers.utils")
 
             -- Override the default highlighter to not use treesitter
             -- This fixes compatibility with treesitter v3.0+ API changes
             previewers_utils.highlighter = function(bufnr, ft)
                 -- Use vim's regex-based syntax highlighting instead of treesitter
-                vim.bo[bufnr].syntax = 'on'
-                if ft and ft ~= '' then
-                    pcall(vim.cmd, 'setlocal filetype=' .. ft)
+                vim.bo[bufnr].syntax = "on"
+                if ft and ft ~= "" then
+                    pcall(vim.cmd, "setlocal filetype=" .. ft)
                 end
             end
 
-            require('telescope').setup({
+            require("telescope").setup({
                 defaults = {
                     file_ignore_patterns = {
                         "node_modules",
@@ -569,7 +595,7 @@ require("lazy").setup({
     {
         "akinsho/bufferline.nvim",
         version = "*",
-        dependencies = 'nvim-tree/nvim-web-devicons',
+        dependencies = "nvim-tree/nvim-web-devicons",
         config = function()
             require("config.bufferline")
         end,
@@ -580,8 +606,8 @@ require("lazy").setup({
     },
     -- Python Notebooks
     {
-        'goerz/jupytext.nvim',
-        version = '0.2.0',
+        "goerz/jupytext.nvim",
+        version = "0.2.0",
         opts = {},
     },
     {
@@ -605,15 +631,15 @@ require("lazy").setup({
         config = function()
             local notify = require("notify")
             notify.setup({
-                stages = "slide",  -- Smooth slide animation from right edge
+                stages = "slide", -- Smooth slide animation from right edge
                 timeout = 3000,
                 background_colour = "#000000",
-                top_down = false,  -- Default to bottom-right, will override if cursor is at top
+                top_down = false, -- Default to bottom-right, will override if cursor is at top
                 on_open = function(win)
                     -- Get cursor position in the current window
-                    local cursor_line = vim.fn.line('.')
+                    local cursor_line = vim.fn.line(".")
                     local win_height = vim.fn.winheight(0)
-                    local win_top = vim.fn.line('w0')
+                    local win_top = vim.fn.line("w0")
 
                     -- Calculate if cursor is in top 30% of visible window
                     local cursor_relative = cursor_line - win_top + 1
@@ -652,10 +678,14 @@ require("lazy").setup({
                     local log_file = vim.fn.expand("~/.config/nvim/unknownfiletypes.txt")
                     local file = io.open(log_file, "a")
                     if file then
-                        file:write(string.format("[%s] Level: %s - %s\n",
-                            os.date("%Y-%m-%d %H:%M:%S"),
-                            tostring(level or "INFO"),
-                            msg_str))
+                        file:write(
+                            string.format(
+                                "[%s] Level: %s - %s\n",
+                                os.date("%Y-%m-%d %H:%M:%S"),
+                                tostring(level or "INFO"),
+                                msg_str
+                            )
+                        )
                         file:close()
                     end
                 end
@@ -799,4 +829,3 @@ require("lazy").setup({
         },
     },
 })
-
