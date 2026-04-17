@@ -414,6 +414,28 @@ require("lazy").setup({
 
                     }
                 },
+                -- Mermaid diagram support
+                code = {
+                    enabled = true,
+                    sign = true,
+                    style = 'full',
+                    position = 'left',
+                    width = 'block',
+                    left_pad = 0,
+                    right_pad = 0,
+                    min_width = 0,
+                    language_pad = 0,
+                    border = 'thin',
+                    above = '▄',
+                    below = '▀',
+                    highlight = 'RenderMarkdownCode',
+                    highlight_inline = 'RenderMarkdownCodeInline',
+                },
+                pipe_table = {
+                    enabled = true,
+                    preset = 'round',
+                    style = 'full',
+                },
                 -- Enable debugging to see what's happening
                 log_level = "info",
             })
@@ -421,6 +443,22 @@ require("lazy").setup({
     },
     {
         'jghauser/follow-md-links.nvim'
+    },
+    {
+        'iamcco/markdown-preview.nvim',
+        cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+        ft = { 'markdown' },
+        build = 'cd app && npm install && git checkout .',
+        config = function()
+            vim.g.mkdp_auto_close = 0  -- Don't auto-close preview when switching buffers
+            vim.g.mkdp_theme = 'dark'
+            vim.g.mkdp_filetypes = { 'markdown' }
+            vim.g.mkdp_browser = ''  -- Use system default browser
+
+            -- Keymaps
+            vim.keymap.set('n', '<leader>mp', '<cmd>MarkdownPreview<cr>', { desc = 'Markdown Preview (browser)' })
+            vim.keymap.set('n', '<leader>ms', '<cmd>MarkdownPreviewStop<cr>', { desc = 'Stop Markdown Preview' })
+        end,
     },
     {
         "lervag/vimtex",

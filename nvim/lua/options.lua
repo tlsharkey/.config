@@ -25,9 +25,62 @@ vim.opt.termguicolors = true        -- enable 24-bit RGB color in the TUI
 -- show spaces as interpunc
 vim.opt.lcs = "trail:·"
 vim.opt.list = true
+
+-- Folding configuration - use indent by default (reliable everywhere)
 vim.opt.foldmethod = "indent"
 vim.opt.foldnestmax = 5
-vim.opt.foldlevel = 5
+vim.opt.foldlevel = 99  -- Start with all folds open
+vim.opt.foldlevelstart = 99
+
+-- Custom markdown folding based on headers
+function _G.markdown_fold_expr()
+    local line = vim.fn.getline(vim.v.lnum)
+    local next_line = vim.fn.getline(vim.v.lnum + 1)
+
+    -- Check if current line is a header (starts with #)
+    local header_level = line:match("^(#+)%s")
+    if header_level then
+        return ">" .. #header_level
+    end
+
+    -- Check for setext-style headers (underlined with = or -)
+    if next_line:match("^=+%s*$") then
+        return ">1"
+    elseif next_line:match("^-+%s*$") then
+        return ">2"
+    end
+
+    -- For all other lines (including code blocks), maintain the current fold level
+    -- This ensures long code blocks stay within their parent header's fold
+    return "="
+end
+
+-- Try treesitter folding for code languages
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = {
+        'lua', 'vim', 'python', 'javascript', 'javascriptreact',
+        'typescript', 'typescriptreact', 'rust', 'go', 'c', 'cpp', 'cs',
+    },
+    callback = function()
+        -- Try to use treesitter folding if available
+        local ok, _ = pcall(vim.treesitter.get_parser)
+        if ok then
+            vim.opt_local.foldmethod = "expr"
+            vim.opt_local.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+            vim.opt_local.foldlevel = 99
+        end
+    end,
+})
+
+-- Use custom markdown folding
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "markdown",
+    callback = function()
+        vim.opt_local.foldmethod = "expr"
+        vim.opt_local.foldexpr = "v:lua.markdown_fold_expr()"
+        vim.opt_local.foldlevel = 99  -- Start with all folds open
+    end,
+})
 
 -- Searching
 vim.opt.incsearch = true            -- search as characters are entered

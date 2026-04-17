@@ -208,6 +208,30 @@ brew install pngpaste
 sudo apt install xclip
 ```
 
+#### Parquet File Support (parquet-tools)
+
+Required only for viewing and inspecting Parquet files.
+
+**macOS:**
+
+```bash
+brew install parquet-tools
+```
+
+**Linux:**
+
+```bash
+# Download from https://github.com/hangxie/parquet-tools/releases
+# Or install via Go:
+go install github.com/hangxie/parquet-tools@latest
+```
+
+#### Mermaid Diagram Rendering
+
+The `markdown-preview.nvim` plugin provides live markdown preview in your browser with full mermaid diagram support. No additional installation required.
+
+Press `<leader>mp` to open the browser preview and see rendered mermaid diagrams.
+
 ### Font Installation
 
 A Nerd Font is required for icons in the UI.
@@ -315,6 +339,13 @@ This configuration uses `,` (comma) as the leader key.
 | `<leader>fh`  | Help tags (Telescope)                    | Normal |
 | `gx`          | Open link under cursor (markdown images) | Normal |
 
+### Markdown
+
+| Shortcut     | Action                             | Mode   |
+| ------------ | ---------------------------------- | ------ |
+| `<leader>mp` | Open live preview in browser       | Normal |
+| `<leader>ms` | Stop markdown preview server       | Normal |
+
 ### Code Intelligence (LSP & Gutentags)
 
 | Shortcut                 | Action                                    | Mode   | Provider       |
@@ -395,7 +426,17 @@ This configuration uses `,` (comma) as the leader key.
 - **Follow links**: `<Ctrl> + <click>` to open links
 - **Rich rendering**: Custom checkboxes and beautiful formatting
 - **Image pasting**: Paste images directly with `img-paste.vim`
+- **Browser preview**: Live markdown preview with mermaid diagram support
+    - `<leader>mp` - Open live preview in browser
+    - `<leader>ms` - Stop preview server
 - **Quarto**: Full support for Quarto notebooks
+
+### Parquet File Viewing
+
+- **Automatic display**: Open `.parquet` files directly in Neovim
+- **Schema inspection**: View the Parquet file schema and data structure
+- **Data preview**: See the actual data content in the file
+- Requires `parquet-tools` to be installed (see Optional Features section)
 
 ### Code Navigation
 
