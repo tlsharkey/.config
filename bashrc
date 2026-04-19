@@ -10,6 +10,8 @@ fi
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
+# Add kitty to PATH
+PATH="$HOME/.local/kitty.app/bin:$PATH"
 export PATH
 
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
@@ -151,4 +153,4 @@ export NVM_DIR="$HOME/.nvm"
 
 export CODE_USER_DATA_DIR=~/.config/vscode
 export OLLAMA_API_BASE=http://127.0.0.1:11434
-
+export EDITOR=nvim
