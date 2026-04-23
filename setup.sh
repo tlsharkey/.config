@@ -38,6 +38,8 @@ sudo apt install ripgrep
 brew install neovim
 brew install universal-ctags
 brew install ripgrep
+# Create ctags config symlink
+ln -sf ~/.config/ctags.d ~/.ctags.d
 # for latex support: [skim](https://skim-app.sourceforge.io/)
 # and [MaxTex](https://www.tug.org/mactex/mactex-download.html)
 # for jupyter notebook support: [quarto](https://quarto.org/docs/get-started/)

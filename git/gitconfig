@@ -42,7 +42,7 @@
     defaultBranch = main
 
 [core]
-    excludesfile = ~/.config/git/gitignore
+    excludesfile = ~/.config/git/ignore
     sshCommand = "ssh -F ~/.config/ssh/config"
 
 

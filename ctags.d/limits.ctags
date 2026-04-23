@@ -1,0 +1,42 @@
+# Performance limits for large codebases
+
+# Allow deep directory traversal (10 levels)
+--maxdepth=10
+
+# Exclude large/generated files
+--exclude=*.min.js
+--exclude=*.min.css
+--exclude=*.bundle.js
+--exclude=*.chunk.js
+--exclude=*.map
+--exclude=*.svg
+--exclude=*.lock
+--exclude=package-lock.json
+--exclude=yarn.lock
+--exclude=pnpm-lock.yaml
+--exclude=Cargo.lock
+--exclude=Gemfile.lock
+--exclude=poetry.lock
+--exclude=*.generated.*
+--exclude=*.gen.*
+--exclude=*_pb2.py
+--exclude=*_pb2_grpc.py
+
+# Exclude binary and data files
+--exclude=*.png
+--exclude=*.jpg
+--exclude=*.jpeg
+--exclude=*.gif
+--exclude=*.ico
+--exclude=*.pdf
+--exclude=*.woff
+--exclude=*.woff2
+--exclude=*.ttf
+--exclude=*.eot
+--exclude=*.parquet
+--exclude=*.db
+--exclude=*.sqlite
+--exclude=*.log
+
+# Note: universal-ctags doesn't support --maxsize
+# Large files are typically excluded via patterns above

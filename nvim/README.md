@@ -114,6 +114,16 @@ brew install universal-ctags
 sudo apt install universal-ctags
 ```
 
+**Configuration:**
+
+The ctags configuration is stored in `~/.config/ctags.d/` and symlinked to `~/.ctags.d/`. After cloning this repo, create the symlink:
+
+```bash
+ln -sf ~/.config/ctags.d ~/.ctags.d
+```
+
+This configuration excludes common directories (node_modules, build outputs, caches) and files (minified JS, lock files, assets) to improve performance in large monorepos.
+
 ### Language-Specific Tools
 
 #### C# Development (OmniSharp)
