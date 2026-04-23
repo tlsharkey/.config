@@ -38,14 +38,16 @@ require("lazy").setup({
     {
         "neovim/nvim-lspconfig",
         dependencies = {
-            {
-                "mason-org/mason.nvim",
-                opts = { ui = { icons = { package_installed = "✓" } } },
-            },
+            "mason-org/mason.nvim",
             "mason-org/mason-lspconfig.nvim",
         },
         config = function()
-            -- 1. Setup Mason to bridge with lspconfig
+            -- 1. Setup Mason
+            require("mason").setup({
+                ui = { icons = { package_installed = "✓" } },
+            })
+
+            -- 2. Setup Mason-lspconfig to bridge with lspconfig
             require("mason-lspconfig").setup({
                 ensure_installed = {
                     -- Web Development
@@ -78,7 +80,6 @@ require("lazy").setup({
             })
 
             -- Ensure binaries for conform.nvim are also available
-            require("mason").setup()
             local registry = require("mason-registry")
             local formatters = {
                 "prettier", -- JS/TS/HTML/CSS/JSON/YAML/Markdown
@@ -86,12 +87,11 @@ require("lazy").setup({
                 "black", -- Python
                 "isort", -- Python imports
                 "csharpier", -- C#
-                "rustfmt", -- Rust (usually installed with Rust toolchain)
                 "gofumpt", -- Go (stricter gofmt)
                 "shfmt", -- Shell scripts
             }
             for _, formatter in ipairs(formatters) do
-                local ok, p = pcall(registry.get_package, registry, formatter)
+                local ok, p = pcall(registry.get_package, formatter)
                 if ok and not p:is_installed() then
                     -- Install async so it doesn't block startup/shutdown
                     vim.schedule(function()
@@ -296,7 +296,9 @@ require("lazy").setup({
     -- Tree-sitter for syntax highlighting
     {
         "nvim-treesitter/nvim-treesitter",
+        branch = "main",
         build = ":TSUpdate",
+        lazy = false, -- The new main branch API requires lazy = false
         event = { "BufReadPost", "BufNewFile" },
         dependencies = {
             "JoosepAlviste/nvim-ts-context-commentstring",
@@ -305,6 +307,39 @@ require("lazy").setup({
             -- Configure context commentstring for TSX/JSX
             require("ts_context_commentstring").setup({
                 enable_autocmd = false,
+            })
+
+            -- New nvim-treesitter v3.0+ API for parser installation
+            -- Using setup({ install = { ... } }) is the standard way to ensure parsers are present
+            require("nvim-treesitter").setup({
+                install = {
+                    "lua",
+                    "vim",
+                    "vimdoc",
+                    "html",
+                    "css",
+                    "scss",
+                    "javascript",
+                    "typescript",
+                    "tsx",
+                    "python",
+                    "rust",
+                    "go",
+                    "c_sharp",
+                    "json",
+                    "yaml",
+                    "toml",
+                    "bash",
+                    "dockerfile",
+                    "markdown",
+                    "markdown_inline",
+                },
+                highlight = {
+                    enable = true,
+                },
+                indent = {
+                    enable = true,
+                },
             })
 
             -- Enable treesitter highlighting for specific filetypes
@@ -335,7 +370,7 @@ require("lazy").setup({
                     "markdown",
                 },
                 callback = function()
-                    vim.treesitter.start()
+                    pcall(vim.treesitter.start)
                 end,
             })
 
