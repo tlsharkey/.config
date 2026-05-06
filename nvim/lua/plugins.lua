@@ -646,11 +646,49 @@ require("lazy").setup({
         opts = {},
     },
     {
+        "benlubas/molten-nvim",
+        version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
+        dependencies = { "3rd/image.nvim" },
+        build = ":UpdateRemotePlugins",
+        init = function()
+            -- Configuration for molten-nvim
+            vim.g.molten_image_provider = "image.nvim"
+            vim.g.molten_output_win_max_height = 20
+            vim.g.molten_auto_open_output = false
+            vim.g.molten_wrap_output = true
+            vim.g.molten_virt_text_output = true
+            vim.g.molten_virt_lines_off_by_1 = true
+        end,
+    },
+    {
         "quarto-dev/quarto-nvim", -- code snippet code completion, execution
         dependencies = {
             "jmbuhr/otter.nvim",
             "nvim-treesitter/nvim-treesitter",
         },
+        ft = { "quarto", "markdown", "python" },
+        config = function()
+            require("quarto").setup({
+                lspFeatures = {
+                    enabled = true,
+                    chunks = "all", -- recognize all cell marker styles
+                    languages = { "python", "r", "julia", "bash" },
+                    diagnostics = {
+                        enabled = true,
+                        triggers = { "BufWritePost" },
+                    },
+                    completion = {
+                        enabled = true,
+                    },
+                },
+                codeRunner = {
+                    enabled = true,
+                    default_method = "molten",
+                    -- Never run YAML/metadata blocks
+                    never_run = { "yaml" },
+                },
+            })
+        end,
     },
     {
         "stevearc/conform.nvim",

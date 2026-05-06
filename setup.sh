@@ -25,19 +25,25 @@ brew install bat
 # NEOVIM
 ## Ubuntu
 sudo snap install nvim --classic
-# or
-curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-sudo rm -rf /opt/nvim
-sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
-export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 # dependencies
-sudo apt install exuberant-ctags
-sudo apt install build-essential
-sudo apt install ripgrep
+sudo apt install universal-ctags -y
+sudo apt install build-essential -y
+sudo apt install ripgrep -y
+sudo apt install fd-find -y
+sudo apt install unzip -y
+sudo apt install golang-go -y
+sudo apt install dotnet-sdk-8.0 -y
+sudo apt install python3-venv -y
+sudo apt install nodejs npm -y
+
 ## MacOS
 brew install neovim
 brew install universal-ctags
 brew install ripgrep
+brew install fd
+brew install unzip
+brew install go
+brew install dotnet-sdk
 # Create ctags config symlink
 ln -sf ~/.config/ctags.d ~/.ctags.d
 # for latex support: [skim](https://skim-app.sourceforge.io/)
@@ -66,6 +72,24 @@ sudo cmake --install .
 brew install luarocks imagemagick
 luarocks install --local magick
 luarocks search magick --porcelain
+
+## Common - Jupyter Notebook Support
+# Install jupytext for .ipynb to text conversion
+pipx install jupytext
+
+# Install Jupyter with molten-nvim dependencies
+pipx install --include-deps jupyter
+pipx inject jupyter pynvim ipykernel cairosvg pnglatex plotly kaleido pyperclip
+
+# Create Neovim Python environment for pynvim provider
+python3 -m venv ~/.config/nvim/.venv
+~/.config/nvim/.venv/bin/pip install pynvim jupyter-client
+
+# Install Python kernel globally (discoverable by all environments)
+~/.local/pipx/venvs/jupyter/bin/python3 -m ipykernel install --user --name python3 --display-name "Python 3"
+
+# Verify kernel installation
+jupyter kernelspec list
 
 ## Lazygit
 # macos
