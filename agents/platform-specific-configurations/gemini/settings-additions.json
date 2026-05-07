@@ -1,0 +1,21 @@
+{
+  "comment": "Suggested permission additions for ~/.gemini/settings.json",
+  "description": "These settings allow read-only access to the global agents configuration without prompting",
+  "suggested_permissions": {
+    "read": [
+      {
+        "pattern": "~/.config/agents/**/*.md",
+        "reason": "Allow reading global agent conventions and templates"
+      },
+      {
+        "pattern": "~/.config/agents/templates/**",
+        "reason": "Allow accessing reusable document templates"
+      },
+      {
+        "pattern": "~/.config/agents/workflows/**",
+        "reason": "Allow reading standard workflow documentation"
+      }
+    ]
+  },
+  "instructions": "Add these patterns to your ~/.gemini/settings.json file's permission configuration"
+}
