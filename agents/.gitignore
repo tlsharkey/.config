@@ -1,3 +1,7 @@
 # Shadow copies used for change detection
 .generated/
 backups/
+
+!GEMINI.md
+!CLAUDE.md
+
