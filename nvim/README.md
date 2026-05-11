@@ -31,6 +31,12 @@ sudo apt update
 sudo apt install neovim
 ```
 
+**Fedora:**
+
+```bash
+sudo dnf install neovim
+```
+
 **Other Linux:**
 Download the latest appimage from [Neovim releases](https://github.com/neovim/neovim/releases)
 
@@ -80,6 +86,10 @@ brew install ripgrep
 sudo apt install ripgrep
 ```
 
+**Fedora:**
+
+pre-installed
+
 #### fd
 
 Fast file finder used by Telescope.
@@ -98,6 +108,11 @@ sudo apt install fd-find
 sudo ln -s $(which fdfind) /usr/local/bin/fd
 ```
 
+**Fedora:**
+```bash
+sudo dnf install fd-find
+```
+
 #### universal-ctags
 
 Used by `vim-gutentags` for code navigation and tag generation.
@@ -113,6 +128,10 @@ brew install universal-ctags
 ```bash
 sudo apt install universal-ctags
 ```
+
+**Fedora:**
+
+Comes pre-installed with exuberant-ctags
 
 **Configuration:**
 
@@ -167,6 +186,15 @@ sudo apt install texlive-full
 sudo apt install texlive-latex-base texlive-latex-extra
 ```
 
+**Fedora:**
+
+Pick one of the following
+```bash
+sudo dnf install texlive-scheme-basic
+sudo dnf install texlive-scheme-medium
+sudo dnf install texlive-scheme-full
+```
+
 #### PDF Viewer for LaTeX
 
 **macOS (Skim - recommended):**
@@ -201,6 +229,10 @@ brew install quarto
 # Download from https://quarto.org/docs/get-started/
 sudo apt install ./quarto-linux-amd64.deb
 ```
+
+**Fedora:**
+
+Download from [Quarto.org](https://quarto.org/docs/get-started/) then extract into `~/Applications` and `ln -s ~/Applications/quarto-xxx/bin/quarto ~/.local/bin/quarto` and re-source.
 
 #### Image Pasting (img-paste.vim)
 
@@ -315,7 +347,7 @@ If you're running on Ubuntu with an older Neovim version, you may need to use th
 
 ## Keybindings
 
-This configuration uses `,` (comma) as the leader key.
+This configuration uses `\` (backslash) as the leader key.
 
 ### General
 
@@ -399,7 +431,7 @@ This configuration uses `,` (comma) as the leader key.
 | `<leader>`  | Shows available keybindings | Normal |
 | `<leader>?` | Show buffer-local keymaps   | Normal |
 
-> **Note:** When you press `<leader>` (comma), which-key will automatically popup after a short delay showing all available commands.
+> **Note:** When you press `<leader>` (backlash), which-key will automatically popup after a short delay showing all available commands.
 
 ## Usage & Features
 

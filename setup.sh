@@ -23,6 +23,7 @@ ln -s /usr/bin/batcat ~/.local/bin/bat
 brew install bat
 
 # NEOVIM
+
 ## Ubuntu
 sudo snap install nvim --classic
 # or
@@ -34,6 +35,7 @@ export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 sudo apt install exuberant-ctags
 sudo apt install build-essential
 sudo apt install ripgrep
+
 ## MacOS
 brew install neovim
 brew install universal-ctags
@@ -49,10 +51,18 @@ brew install tree-sitter
 brew install --cask mactex
 # for image preview in markdown (optional - enables inline image rendering)
 # there are two options here. One is the crossplatform ueberzugpp that has some jank:
+
+## Fedora
+sudo dnf install neovim
+sudo dnf install golang
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+
 ## MacOS
 brew install ueberzugpp
+
 ## Fedora
 sudo dnf install ueberzugpp
+
 ## Ubuntu/Debian (may need to build from source if not in repos)
 # See: https://github.com/jstkdng/ueberzugpp
 sudo apt install libvips-dev libsixel-dev chafa
@@ -62,7 +72,8 @@ mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 sudo cmake --install .
-# the other markdown image preview option is to use a kitty terminal
+
+### the other markdown image preview option is to use a kitty terminal
 brew install luarocks imagemagick
 luarocks install --local magick
 luarocks search magick --porcelain
@@ -84,12 +95,14 @@ NVM_INSTALL_OUTPUT=$(curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v0.4
 echo "$NVM_INSTALL_OUTPUT" | tail -n 4 | tee -a "$HOME/.config/bashrc.private" "$HOME/.config/zshrc.private" >/dev/null
 
 # Docker
+## Ubuntu
 sudo apt-get install ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 sudo apt-get update
+
 ## MacOS - install docker desktop from https://docs.docker.com/desktop/setup/install/mac-install/
 
 # AWS cli
@@ -109,6 +122,15 @@ brew install tree
 brew install bash-completion
 # thefuck
 brew thefuck install cjson cmake gcc coreutils gh go imath
+# fedora
+# install pyenv
+curl -fsSL https://pyenv.run | bash
+# update bashrc with path
+pyenv install 3.11
+pyenv global system 3.11.x
+sudo dnf install pipx
+pipx ensurepath # may need to add force and add to bashrc
+pipx install thefuck --python python3.11
 
 # Youtube-DLP
 $()$(
