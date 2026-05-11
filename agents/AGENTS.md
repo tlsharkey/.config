@@ -1,4 +1,4 @@
-# Multi-Agent Conventions
+# Agent Conventions
 
 ## Documentation Structure
 
@@ -19,9 +19,10 @@ When working in a project, check for documentation in this order:
 
 1. **Project-specific**: `./.agents/` (always check here first)
 2. **Project instructions**: `./.agents/AGENTS.md` (if exists, contains project-specific conventions)
-3. **Global templates**: `~/.config/agents/templates/` (reusable templates for new documents)
+3. **Global conventions**: `~/.config/agents/AGENTS.md` (your personal working style)
+4. **Templates**: `~/.config/agents/templates/` (starting points for new documents)
 
-## File Naming Conventions
+## Markdown File Naming Conventions
 
 - **Use kebab-case**: `user-authentication.md`, `api-refactor.md`
 - **Date implementation plans**: `2026-05-06-api-refactor.md`

@@ -1,21 +1,12 @@
 {
-  "comment": "Suggested permission additions for ~/.claude/settings.json",
-  "description": "These settings allow read-only access to the global agents configuration without prompting",
-  "suggested_permissions": {
-    "Read": [
-      {
-        "pattern": "~/.config/agents/**/*.md",
-        "reason": "Allow reading global agent conventions and templates"
-      },
-      {
-        "pattern": "~/.config/agents/templates/**",
-        "reason": "Allow accessing reusable document templates"
-      },
-      {
-        "pattern": "~/.config/agents/workflows/**",
-        "reason": "Allow reading standard workflow documentation"
-      }
+  "comment": "Permission additions for ~/.claude/settings.json",
+  "description": "Auto-approve Read tool for agents configuration files",
+  "merge_strategy": {
+    "target_path": "permissions.allow",
+    "method": "array_append_unique",
+    "values": [
+      "Read(~/.config/agents/**)",
+      "Grep(~/.config/agents/**)"
     ]
-  },
-  "instructions": "Add these patterns to the 'autoApprove' section of your ~/.claude/settings.json file under the appropriate tool names (Read, etc.)"
+  }
 }

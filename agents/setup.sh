@@ -1,342 +1,573 @@
 #!/usr/bin/env bash
-# Setup script for multi-agent configuration system
-# Detects installed coding assistants and configures them to reference shared conventions
-
 set -euo pipefail
 
-# Color codes for output
+# Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# Directory paths
+echo -e "${BLUE}Multi-Agent Configuration Setup${NC}"
+echo ""
+
 AGENTS_DIR="$HOME/.config/agents"
+GENERATED_DIR="$AGENTS_DIR/.generated"
 
-# Marker for detecting existing configuration blocks
-REFERENCE_MARKER="<!-- AUTO-GENERATED: Reference to AGENTS.md -->"
+# Check if processor is available
+check_processor() {
+    local processor="$1"
+    command -v "$processor" >/dev/null 2>&1
+}
 
-# Tool registry: name|config_dir|config_file|source_template
-# Format: Each entry defines where a tool's config lives and which template to use
-TOOLS=(
-  "Claude Code|$HOME/.claude|CLAUDE.md|platform-specific-configurations/claude/CLAUDE.md"
-  "Gemini CLI|$HOME/.gemini|GEMINI.md|platform-specific-configurations/gemini/GEMINI.md"
-  "OpenClaw|$HOME/.openclaw|OPENCLAW.md|platform-specific-configurations/openclaw/OPENCLAW.md"
-  "Cursor|$HOME/.cursor|rules.md|platform-specific-configurations/cursor/rules.md"
-  "Aider|$HOME/.aider|CONVENTIONS.md|platform-specific-configurations/aider/CONVENTIONS.md"
-  "Windsurf|$HOME/.windsurf|rules.md|platform-specific-configurations/windsurf/rules.md"
-)
+# Get merge strategy by file extension
+get_merge_strategy() {
+    local filename="$1"
+    local ext="${filename##*.}"
+
+    # Handle special case: settings-additions.json → target is settings.json
+    if [[ "$filename" == "settings-additions.json" ]]; then
+        if check_processor jq; then
+            echo "json:settings.json"
+        else
+            echo "skip:no-jq"
+        fi
+        return
+    fi
+
+    case "$ext" in
+        md)
+            # Uppercase .md files get AGENTS.md prepended
+            if [[ "$filename" =~ ^[A-Z] ]]; then
+                echo "concat_with_agents"
+            else
+                echo "copy"
+            fi
+            ;;
+        txt)
+            echo "copy"
+            ;;
+        json)
+            if check_processor jq; then
+                echo "json"
+            else
+                echo "skip:no-jq"
+            fi
+            ;;
+        yaml|yml)
+            if check_processor yq; then
+                echo "yaml"
+            else
+                echo "skip:no-yq"
+            fi
+            ;;
+        *)
+            echo "skip:unknown-format"
+            ;;
+    esac
+}
+
+# Get target path for a platform and filename
+get_target_path() {
+    local platform="$1"
+    local filename="$2"
+    echo "$HOME/.$platform/$filename"
+}
+
+# Get shadow path
+get_shadow_path() {
+    local platform="$1"
+    local filename="$2"
+    echo "$GENERATED_DIR/$platform/$filename"
+}
 
 # Verify AGENTS.md exists
-if [[ ! -f "$AGENTS_DIR/AGENTS.md" ]]; then
-  echo -e "${RED}Error: AGENTS.md not found at $AGENTS_DIR/AGENTS.md${NC}"
-  echo "Please ensure the agents directory is properly set up with AGENTS.md"
-  exit 1
+if [ ! -f "$AGENTS_DIR/AGENTS.md" ]; then
+    echo -e "${RED}Error: AGENTS.md not found in $AGENTS_DIR${NC}"
+    echo "Ensure ~/.config/agents/ is set up with AGENTS.md before running."
+    exit 1
 fi
 
-echo -e "${GREEN}✓ AGENTS.md found${NC}"
-echo -e "${BLUE}Setup script initialized successfully${NC}"
+echo -e "${GREEN}[ok]${NC} Found configuration directory: $AGENTS_DIR"
 
-# ============================================================================
-# Helper Functions - All designed to be idempotent
-# ============================================================================
+# Compare files based on format
+files_equal() {
+    local file1="$1"
+    local file2="$2"
+    local format="$3"
 
-# Check if path is a regular file (not a symlink)
-is_regular_file() {
-  local path="$1"
-  [[ -f "$path" && ! -L "$path" ]]
+    case "$format" in
+        json)
+            # Normalize and compare JSON structure
+            local norm1=$(jq --sort-keys -c '.' "$file1" 2>/dev/null)
+            local norm2=$(jq --sort-keys -c '.' "$file2" 2>/dev/null)
+            [[ "$norm1" == "$norm2" ]]
+            ;;
+        yaml)
+            # Normalize and compare YAML structure
+            local norm1=$(yq eval --prettyPrint=false '.' "$file1" 2>/dev/null | sort)
+            local norm2=$(yq eval --prettyPrint=false '.' "$file2" 2>/dev/null | sort)
+            [[ "$norm1" == "$norm2" ]]
+            ;;
+        concat_with_agents|copy)
+            # Byte comparison for text files
+            cmp -s "$file1" "$file2"
+            ;;
+        *)
+            return 1
+            ;;
+    esac
 }
 
-# Check if path is a symlink pointing to the expected target
-is_correct_symlink() {
-  local path="$1"
-  local expected_target="$2"
+# Generate merged config from AGENTS.md + tool template
+generate_config() {
+    local source_template="$1"
+    local output_file="$2"
 
-  if [[ -L "$path" ]]; then
-    local actual_target
-    actual_target=$(readlink "$path")
-    [[ "$actual_target" == "$expected_target" ]]
-  else
-    return 1
-  fi
+    local temp_file="${output_file}.tmp"
+
+    # AGENTS.md content
+    cat "$AGENTS_DIR/AGENTS.md" > "$temp_file"
+
+    # Separator
+    echo "" >> "$temp_file"
+    echo "---" >> "$temp_file"
+    echo "" >> "$temp_file"
+
+    # Tool-specific content
+    cat "$source_template" >> "$temp_file"
+
+    echo "$temp_file"
 }
 
-# Check if file already contains the reference block marker
-has_reference_block() {
-  local file="$1"
+# Perform merge based on strategy
+perform_merge() {
+    local source="$1"
+    local target="$2"
+    local output="$3"
+    local strategy="$4"
 
-  if [[ -f "$file" ]]; then
-    grep -qF "$REFERENCE_MARKER" "$file"
-  else
-    return 1
-  fi
+    case "$strategy" in
+        concat_with_agents)
+            # Concatenate AGENTS.md + source
+            cat "$AGENTS_DIR/AGENTS.md" > "$output"
+            echo "" >> "$output"
+            echo "---" >> "$output"
+            echo "" >> "$output"
+            cat "$source" >> "$output"
+            ;;
+        copy)
+            # Simple copy
+            cp "$source" "$output"
+            ;;
+        json)
+            # JSON merge with strategy
+            if jq -e '.merge_strategy' "$source" >/dev/null 2>&1; then
+                # Structured merge
+                local target_path=$(jq -r '.merge_strategy.target_path' "$source")
+                local method=$(jq -r '.merge_strategy.method' "$source")
+                local values=$(jq -c '.merge_strategy.values' "$source")
+
+                case "$method" in
+                    array_append_unique)
+                        jq --argjson new_values "$values" \
+                           --arg path "$target_path" \
+                           'getpath($path | split(".")) as $current |
+                            setpath($path | split("."); ($current + $new_values | unique))' \
+                           "$target" > "$output"
+                        ;;
+                    *)
+                        echo "ERROR: Unknown merge method: $method"
+                        return 1
+                        ;;
+                esac
+            else
+                # No merge strategy - copy source
+                cp "$source" "$output"
+            fi
+            ;;
+        yaml)
+            # YAML merge with strategy
+            if yq eval -e '.merge_strategy' "$source" >/dev/null 2>&1; then
+                # Structured merge
+                local target_path=$(yq eval '.merge_strategy.target_path' "$source")
+                local method=$(yq eval '.merge_strategy.method' "$source")
+
+                case "$method" in
+                    array_append_unique)
+                        # yq syntax for array merge
+                        yq eval-all "
+                            .${target_path} = (.${target_path} + load(\"$source\").merge_strategy.values | unique)
+                        " "$target" > "$output"
+                        ;;
+                    *)
+                        echo "ERROR: Unknown merge method: $method"
+                        return 1
+                        ;;
+                esac
+            else
+                # No merge strategy - copy source
+                cp "$source" "$output"
+            fi
+            ;;
+        *)
+            echo "ERROR: Unknown merge strategy: $strategy"
+            return 1
+            ;;
+    esac
 }
 
-# Create backup of file (idempotent - only creates if backup doesn't exist)
-backup_file() {
-  local file="$1"
-  local backup="${file}.backup"
+# Validate merged output
+validate_merge() {
+    local file="$1"
+    local format="$2"
 
-  if [[ -f "$backup" ]]; then
-    echo -e "${YELLOW}  Backup already exists: $backup${NC}"
-    return 0
-  fi
-
-  if [[ -f "$file" ]]; then
-    cp "$file" "$backup"
-    echo -e "${GREEN}  Created backup: $backup${NC}"
-  else
-    echo -e "${YELLOW}  No file to backup: $file${NC}"
-    return 1
-  fi
+    case "$format" in
+        json)
+            jq empty "$file" 2>/dev/null
+            ;;
+        yaml)
+            yq eval '.' "$file" >/dev/null 2>&1
+            ;;
+        *)
+            # Text files - just check readable
+            [[ -r "$file" ]]
+            ;;
+    esac
 }
 
-# Prepend reference block to file (idempotent - only adds if not present)
-prepend_reference_block() {
-  local file="$1"
-
-  # Check if reference block already exists
-  if has_reference_block "$file"; then
-    echo -e "${BLUE}  Reference block already present in $file${NC}"
-    return 0
-  fi
-
-  # Create reference block content
-  local reference_block="$REFERENCE_MARKER
-# IMPORTANT: Read Global Conventions First
-
-**Before proceeding, read:** \`~/.config/agents/AGENTS.md\`
-
-This file contains all shared conventions, style preferences, and working practices.
-The instructions below are tool-specific technical features only.
-
----
-
-"
-
-  # Create temporary file with reference block + original content
-  local temp_file="${file}.tmp"
-  echo "$reference_block" > "$temp_file"
-
-  if [[ -f "$file" ]]; then
-    cat "$file" >> "$temp_file"
-  fi
-
-  # Replace original with new content
-  mv "$temp_file" "$file"
-  echo -e "${GREEN}  Prepended reference block to $file${NC}"
+# Get path to shadow copy for a tool (legacy - kept for compatibility)
+get_baseline_path() {
+    local tool_slug="$1"
+    local config_file="$2"
+    echo "$GENERATED_DIR/$tool_slug/${config_file##*/}"
 }
 
-# Create symlink (idempotent - only creates if not already correct)
-create_config_symlink() {
-  local link_path="$1"
-  local target_path="$2"
+# Install new config and update baseline
+install_config() {
+    local new_file="$1"
+    local target_file="$2"
+    local baseline_file="$3"
 
-  # Check if correct symlink already exists
-  if is_correct_symlink "$link_path" "$target_path"; then
-    echo -e "${BLUE}  Symlink already correct: $link_path -> $target_path${NC}"
-    return 0
-  fi
+    # Ensure baseline directory exists
+    mkdir -p "$(dirname "$baseline_file")"
 
-  # If something exists at link_path but isn't the correct symlink
-  if [[ -e "$link_path" || -L "$link_path" ]]; then
-    echo -e "${YELLOW}  Removing existing file/symlink at $link_path${NC}"
-    rm "$link_path"
-  fi
-
-  # Create the symlink
-  ln -s "$target_path" "$link_path"
-  echo -e "${GREEN}  Created symlink: $link_path -> $target_path${NC}"
+    # Install to both locations
+    cp "$new_file" "$target_file"
+    cp "$new_file" "$baseline_file"
 }
 
-# Show summary of what was set up and next steps
-show_summary() {
-  echo -e "${GREEN}✓ Setup Complete!${NC}"
-  echo ""
+# Apply three-way merge with shadow copy
+apply_three_way_merge() {
+    local platform="$1"
+    local filename="$2"
+    local source_file="$3"
+    local target_file="$4"
+    local shadow_file="$5"
+    local strategy="$6"
 
-  echo -e "${BLUE}=== Global Configuration ===${NC}"
-  echo "  Core conventions: ~/.config/agents/AGENTS.md"
-  echo "  Templates:        ~/.config/agents/templates/"
-  echo "  Workflows:        ~/.config/agents/workflows/"
-  echo ""
-
-  # Detect which tools were actually configured
-  local configured_tools=()
-  if [[ -f "$HOME/.claude/CLAUDE.md" || -L "$HOME/.claude/CLAUDE.md" ]]; then
-    configured_tools+=("~/.claude/CLAUDE.md")
-  fi
-  if [[ -f "$HOME/.gemini/GEMINI.md" || -L "$HOME/.gemini/GEMINI.md" ]]; then
-    configured_tools+=("~/.gemini/GEMINI.md")
-  fi
-  if [[ -f "$HOME/.openclaw/OPENCLAW.md" || -L "$HOME/.openclaw/OPENCLAW.md" ]]; then
-    configured_tools+=("~/.openclaw/OPENCLAW.md")
-  fi
-  if [[ -f "$HOME/.cursor/rules.md" || -L "$HOME/.cursor/rules.md" ]]; then
-    configured_tools+=("~/.cursor/rules.md")
-  fi
-  if [[ -f "$HOME/.aider/CONVENTIONS.md" || -L "$HOME/.aider/CONVENTIONS.md" ]]; then
-    configured_tools+=("~/.aider/CONVENTIONS.md")
-  fi
-  if [[ -f "$HOME/.windsurf/rules.md" || -L "$HOME/.windsurf/rules.md" ]]; then
-    configured_tools+=("~/.windsurf/rules.md")
-  fi
-
-  if [[ ${#configured_tools[@]} -gt 0 ]]; then
-    echo -e "${BLUE}=== Tool Configurations ===${NC}"
-    for tool_config in "${configured_tools[@]}"; do
-      echo "  $tool_config"
-    done
-    echo ""
-  fi
-
-  echo -e "${BLUE}=== Quick Start for New Projects ===${NC}"
-  echo "  1. Navigate to your project directory"
-  echo "  2. Create project-specific agents directory:"
-  echo "     mkdir .agents"
-  echo "  3. Subdirectories (specs/, plans/, workflows/) are created automatically"
-  echo ""
-
-  echo -e "${BLUE}=== Learn More ===${NC}"
-  echo "  cat ~/.config/agents/README.md"
-  echo ""
-
-  echo "Your coding assistants are now configured to reference shared conventions."
-  echo "Happy building!"
-  echo ""
-}
-
-# Show permission configuration suggestions to reduce prompts
-show_permission_suggestions() {
-  echo -e "${BLUE}=== Permission Configuration Suggestions ===${NC}"
-  echo ""
-  echo "To reduce permission prompts when agents read from ~/.config/agents/,"
-  echo "you can configure auto-approval patterns in your settings files."
-  echo ""
-
-  echo -e "${YELLOW}Claude Code${NC}"
-  echo -e "  Settings file: ${YELLOW}~/.claude/settings.json${NC}"
-  echo "  Add these patterns to: autoApprove → Read"
-  echo "    - ~/.config/agents/**/*.md"
-  echo "    - ~/.config/agents/templates/**"
-  echo "    - ~/.config/agents/workflows/**"
-  echo ""
-
-  echo -e "${YELLOW}Gemini CLI${NC}"
-  echo -e "  Settings file: ${YELLOW}~/.gemini/settings.json${NC}"
-  echo "  Add similar patterns to reduce prompts"
-  echo ""
-
-  echo "For details, see the settings-additions.json files in each"
-  echo "platform-specific configuration directory."
-  echo ""
-}
-
-# ============================================================================
-# Main Configuration Loop
-# ============================================================================
-
-# Initialize counters
-configured_count=0
-skipped_count=0
-
-echo ""
-echo -e "${BLUE}=== Detecting Installed Coding Assistants ===${NC}"
-echo ""
-
-# Loop through all registered tools
-for tool_entry in "${TOOLS[@]}"; do
-  # Parse pipe-delimited fields
-  IFS='|' read -r tool_name config_dir config_file source_template <<< "$tool_entry"
-
-  echo -e "${BLUE}Checking: $tool_name${NC}"
-
-  # Check if config directory exists
-  if [[ ! -d "$config_dir" ]]; then
-    echo -e "${YELLOW}  Skipped: Directory not found ($config_dir)${NC}"
-    ((skipped_count++))
-    echo ""
-    continue
-  fi
-
-  echo -e "${GREEN}  Detected: $tool_name is installed${NC}"
-
-  # Full path to config file
-  config_path="$config_dir/$config_file"
-
-  # Full path to source template
-  source_path="$AGENTS_DIR/$source_template"
-
-  # ---- FILE STATE HANDLING ----
-
-  # Case 1: Config file exists as regular file
-  if is_regular_file "$config_path"; then
-    echo -e "${BLUE}  Found existing $config_file${NC}"
-
-    # Backup the existing file
-    backup_file "$config_path"
-
-    # Prepend reference block
-    prepend_reference_block "$config_path"
-
-    echo -e "${GREEN}  ✓ Configured $tool_name (modified existing file)${NC}"
-    ((configured_count++))
-
-  # Case 2: Config file is already correct symlink
-  elif is_correct_symlink "$config_path" "$source_path"; then
-    echo -e "${BLUE}  Already configured (symlink to $source_template)${NC}"
-    ((configured_count++))
-
-  # Case 3: Config file doesn't exist and source template exists
-  elif [[ ! -e "$config_path" && -f "$source_path" ]]; then
-    echo -e "${YELLOW}  No existing $config_file found${NC}"
-
-    # Create symlink to template
-    create_config_symlink "$config_path" "$source_path"
-
-    echo -e "${GREEN}  ✓ Configured $tool_name (created symlink)${NC}"
-    ((configured_count++))
-
-  # Case 4: Config file doesn't exist and source template missing
-  elif [[ ! -e "$config_path" && ! -f "$source_path" ]]; then
-    echo -e "${RED}  Warning: No existing $config_file and template not found at $source_template${NC}"
-
-  # Case 5: File exists but is wrong symlink or other unexpected state
-  else
-    if [[ -L "$config_path" ]]; then
-      actual_target=$(readlink "$config_path")
-      echo -e "${YELLOW}  Found symlink to unexpected target: $actual_target${NC}"
-      echo -e "${YELLOW}  Updating to correct target...${NC}"
-
-      # Use helper to fix symlink
-      create_config_symlink "$config_path" "$source_path"
-
-      echo -e "${GREEN}  ✓ Configured $tool_name (fixed symlink)${NC}"
-      ((configured_count++))
-    else
-      echo -e "${RED}  Warning: Unexpected file state for $config_path${NC}"
+    # Check if target exists
+    if [[ ! -f "$target_file" ]]; then
+        echo "      ⚠ Target $target_file does not exist, skipping"
+        return 1
     fi
-  fi
 
-  echo ""
-done
+    # Generate what the merged result should be
+    local temp_merged=$(mktemp)
+    if ! perform_merge "$source_file" "$target_file" "$temp_merged" "$strategy"; then
+        rm -f "$temp_merged"
+        return 1
+    fi
 
-# ============================================================================
-# Summary Report
-# ============================================================================
+    # Validate merged result
+    if ! validate_merge "$temp_merged" "$strategy"; then
+        echo "      ✗ Merge produced invalid $strategy file"
+        rm -f "$temp_merged"
+        return 1
+    fi
 
-echo -e "${BLUE}=== Configuration Summary ===${NC}"
-echo -e "${GREEN}  Configured: $configured_count tool(s)${NC}"
-echo -e "${YELLOW}  Skipped: $skipped_count tool(s) (not installed)${NC}"
+    # First merge (no shadow)
+    if [[ ! -f "$shadow_file" ]]; then
+        echo "      → First merge (no shadow)"
+
+        # Backup target
+        cp "$target_file" "${target_file}.backup"
+
+        # Install merged result
+        mkdir -p "$(dirname "$shadow_file")"
+        cp "$temp_merged" "$target_file"
+        cp "$temp_merged" "$shadow_file"
+
+        rm -f "$temp_merged"
+        echo "      ${GREEN}✓ Merged${NC} (backup: ${target_file}.backup)"
+        return 0
+    fi
+
+    # Three-way merge
+    if files_equal "$target_file" "$shadow_file" "$strategy"; then
+        # User unchanged
+        if files_equal "$temp_merged" "$shadow_file" "$strategy"; then
+            # Source unchanged too
+            echo "      ${BLUE}→ No changes needed${NC}"
+            rm -f "$temp_merged"
+            return 0
+        else
+            # Source changed - auto-update
+            echo "      ${GREEN}→ Auto-updating${NC} (source changed, user unchanged)"
+            cp "$target_file" "${target_file}.backup"
+            cp "$temp_merged" "$target_file"
+            cp "$temp_merged" "$shadow_file"
+            rm -f "$temp_merged"
+            echo "      ${GREEN}✓ Updated${NC}"
+            return 0
+        fi
+    else
+        # User modified
+        if files_equal "$temp_merged" "$shadow_file" "$strategy"; then
+            # Source unchanged - preserve user changes
+            echo "      ${YELLOW}→ Preserving user changes${NC} (source unchanged)"
+            rm -f "$temp_merged"
+            return 0
+        else
+            # Both changed - conflict
+            echo "      ${YELLOW}⚠ CONFLICT${NC}: Both user and source changed"
+            echo "        User:   $target_file"
+            echo "        Source: $source_file"
+            echo "        Shadow: $shadow_file"
+            echo "        Please merge manually"
+            rm -f "$temp_merged"
+            return 1
+        fi
+    fi
+}
+
+# Handle conflict when both user and AGENTS.md changed
+handle_conflict() {
+    local baseline="$1"
+    local current="$2"
+    local new="$3"
+    local tool_name="$4"
+
+    echo ""
+    echo -e "${YELLOW}⚠ Conflict detected for $tool_name:${NC}"
+    echo "  - Your config has been modified"
+    echo "  - AGENTS.md has also changed"
+    echo ""
+    echo "Options:"
+    echo "  [v] View diff between versions"
+    echo "  [a] Accept new (lose your changes)"
+    echo "  [k] Keep current (skip AGENTS.md updates)"
+    echo "  [m] Merge interactively"
+    echo "  [s] Skip (decide later)"
+    echo ""
+    read -p "Choose: " -n 1 -r </dev/tty 2>/dev/null || { echo "k"; REPLY="k"; }
+    echo
+
+    case "$REPLY" in
+        v)
+            echo ""
+            echo -e "${BLUE}--- Your changes (vs baseline) ---${NC}"
+            diff -u "$baseline" "$current" || true
+            echo ""
+            echo -e "${BLUE}--- AGENTS.md changes (vs baseline) ---${NC}"
+            diff -u "$baseline" "$new" || true
+            echo ""
+            handle_conflict "$baseline" "$current" "$new" "$tool_name"  # Re-prompt
+            ;;
+        a)
+            install_config "$new" "$current" "$baseline"
+            echo -e "${GREEN}✓${NC} Installed new version"
+            return 0
+            ;;
+        k)
+            echo -e "${YELLOW}⊘${NC} Keeping current version (will ask again next run)"
+            return 1
+            ;;
+        m)
+            # Use git mergetool for proper 3-way merge
+            if command -v git >/dev/null 2>&1; then
+                # Create temporary git repo for merge
+                local merge_dir=$(mktemp -d)
+                cp "$baseline" "$merge_dir/file"
+                (
+                    cd "$merge_dir"
+                    git init -q
+                    git config user.email "setup@config"
+                    git config user.name "Setup Script"
+                    git config commit.gpgsign false
+                    git add file
+                    git commit -q -m "baseline"
+
+                    # Create "ours" branch with user's version
+                    cp "$current" file
+                    git commit -q -am "current"
+
+                    # Create "theirs" branch with new version
+                    git checkout -q -b theirs HEAD~1
+                    cp "$new" file
+                    git commit -q -am "new"
+
+                    # Merge and resolve with mergetool
+                    git checkout -q main 2>/dev/null || git checkout -q master
+                    git merge theirs -q --no-commit || true
+
+                    if git diff --quiet; then
+                        echo -e "${GREEN}✓${NC} No conflicts - changes merged automatically"
+                    else
+                        git mergetool
+                    fi
+
+                    # Copy result back
+                    cp file "$current"
+                )
+                rm -rf "$merge_dir"
+                cp "$current" "$baseline"  # Update baseline to merged result
+                echo -e "${GREEN}✓${NC} Merged and updated baseline"
+                return 0
+            else
+                echo -e "${RED}git not found (required for merge)${NC}"
+                handle_conflict "$baseline" "$current" "$new" "$tool_name"
+                return $?
+            fi
+            ;;
+        s)
+            echo -e "${YELLOW}⊘${NC} Skipped"
+            return 1
+            ;;
+        *)
+            echo "Invalid choice"
+            handle_conflict "$baseline" "$current" "$new" "$tool_name"
+            return $?
+            ;;
+    esac
+}
+
+# Main universal configuration merge
+merge_all_configs() {
+    echo ""
+    echo -e "${BLUE}=== Universal Configuration Merge ===${NC}"
+    echo ""
+
+    local platform_dir="$AGENTS_DIR/platform-specific-configurations"
+    local total_processed=0
+    local total_updated=0
+    local total_preserved=0
+    local total_skipped=0
+    local total_conflicts=0
+
+    # Find all platform directories
+    for platform_path in "$platform_dir"/*; do
+        [[ ! -d "$platform_path" ]] && continue
+
+        local platform=$(basename "$platform_path")
+        local tool_dir="$HOME/.$platform"
+
+        # Check if tool is installed
+        if [[ ! -d "$tool_dir" ]]; then
+            echo -e "${YELLOW}[-]${NC} $platform: not installed, skipping"
+            ((total_skipped++))
+            continue
+        fi
+
+        echo -e "${GREEN}[+]${NC} $platform: processing..."
+
+        # Find all files in platform config dir
+        local processed=0
+        local updated=0
+        local preserved=0
+        local skipped=0
+        local conflicts=0
+
+        for source_file in "$platform_path"/*; do
+            [[ ! -f "$source_file" ]] && continue
+
+            local filename=$(basename "$source_file")
+
+            # Skip metadata files
+            case "$filename" in
+                README.*|.*)
+                    continue
+                    ;;
+            esac
+
+            # Determine merge strategy
+            local strategy_result=$(get_merge_strategy "$filename")
+
+            # Handle special case: settings-additions.json
+            local target_filename="$filename"
+            local strategy="$strategy_result"
+            if [[ "$strategy_result" == json:* ]]; then
+                target_filename="${strategy_result#json:}"
+                strategy="json"
+            fi
+
+            case "$strategy" in
+                skip:*)
+                    local reason="${strategy#skip:}"
+                    echo "    [$filename] Skipping: $reason"
+                    ((skipped++))
+                    continue
+                    ;;
+            esac
+
+            # Get paths
+            local target_file=$(get_target_path "$platform" "$target_filename")
+            local shadow_file=$(get_shadow_path "$platform" "$target_filename")
+
+            echo "    [$filename] → $target_filename (strategy: $strategy)"
+
+            # Apply three-way merge
+            ((processed++))
+            if apply_three_way_merge "$platform" "$target_filename" "$source_file" "$target_file" "$shadow_file" "$strategy"; then
+                # Check if actually updated (new backup exists)
+                if [[ -f "${target_file}.backup" ]] && [[ "${target_file}.backup" -nt "$shadow_file" ]]; then
+                    ((updated++))
+                fi
+            else
+                # Check if preserved or conflict
+                if files_equal "$target_file" "$shadow_file" "$strategy" 2>/dev/null; then
+                    ((preserved++))
+                else
+                    ((conflicts++))
+                fi
+            fi
+        done
+
+        # Platform summary
+        echo "    Summary: processed=$processed, updated=$updated, preserved=$preserved, skipped=$skipped, conflicts=$conflicts"
+        echo ""
+
+        total_processed=$((total_processed + processed))
+        total_updated=$((total_updated + updated))
+        total_preserved=$((total_preserved + preserved))
+        total_skipped=$((total_skipped + skipped))
+        total_conflicts=$((total_conflicts + conflicts))
+    done
+
+    # Global summary
+    echo -e "${BLUE}---${NC}"
+    echo ""
+    echo -e "${GREEN}Setup complete.${NC}"
+    echo "  Processed: $total_processed"
+    echo "  Updated: $total_updated"
+    echo "  Preserved (user-modified): $total_preserved"
+    echo "  Skipped: $total_skipped"
+    echo "  Conflicts: $total_conflicts"
+}
+
+# Run the merge
+merge_all_configs
+
+# Additional info
 echo ""
-
-if [[ $configured_count -gt 0 ]]; then
-  echo -e "${GREEN}✓ Setup complete! Your coding assistants are now configured.${NC}"
-  echo -e "${BLUE}All tools will reference: $AGENTS_DIR/AGENTS.md${NC}"
-else
-  echo -e "${YELLOW}No tools were configured. Install a supported coding assistant and run this script again.${NC}"
-fi
-
+echo -e "${BLUE}Global configuration:${NC}"
+echo "  $AGENTS_DIR/AGENTS.md"
 echo ""
-show_summary
-show_permission_suggestions
+echo -e "${BLUE}Shadow copies (change detection):${NC}"
+echo "  $GENERATED_DIR/"
+echo ""
+echo -e "${BLUE}For new projects:${NC}"
+echo "  mkdir .agents"
+echo ""
+echo -e "${BLUE}Learn more:${NC}"
+echo "  cat $AGENTS_DIR/README.md"

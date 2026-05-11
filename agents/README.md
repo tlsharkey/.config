@@ -27,15 +27,20 @@ Unified configuration and conventions for AI coding assistants (Claude Code, Gem
 
 ### First Time Setup
 
-Run the setup script (when created):
+Run the setup script:
 ```bash
 ~/.config/agents/setup.sh
 ```
 
-This will:
-- Back up existing `~/.claude/CLAUDE.md` and `~/.gemini/GEMINI.md` (if they exist)
-- Either prepend references to AGENTS.md or create symlinks
-- Suggest permission additions for easier access
+**How it works:**
+- Keeps shadow copies in `.generated/` to track changes
+- Auto-updates configs when AGENTS.md changes (if you haven't customized)
+- Detects conflicts when both you and AGENTS.md changed
+- Interactive merge when conflicts occur
+
+Safe to run multiple times (idempotent).
+
+Supported tools: Claude Code, Gemini CLI, OpenClaw, Cursor, Aider, Windsurf
 
 ### Using in Projects
 
@@ -111,11 +116,32 @@ Systematic approach to investigating and fixing bugs.
 ## Maintenance
 
 ### Updating Conventions
-Edit `AGENTS.md` directly. Changes will be picked up on next read by both tools.
+Edit `AGENTS.md` directly, then run:
+```bash
+~/.config/agents/setup.sh
+```
+
+This will:
+- Auto-update tool configs you haven't modified
+- Preserve tool configs you have customized
+- Prompt for merge if both you and AGENTS.md changed
+
+### Shadow Copy System
+The setup script uses `.generated/` to track which configs are auto-generated vs user-customized:
+
+- **Auto-generated configs**: Get automatic updates when AGENTS.md changes
+- **User-customized configs**: Preserved (won't be overwritten)
+- **Conflicts**: When both changed, script offers interactive merge options
+
+To reset a customized config to auto-generated:
+```bash
+rm ~/.claude/CLAUDE.md  # or ~/.gemini/GEMINI.md
+~/.config/agents/setup.sh
+```
 
 ### Updating Tool Configs
-- **If symlinked**: Edit files in `platform-specific-configurations/`, changes apply immediately
-- **If customized**: Edit `~/.claude/CLAUDE.md` or `~/.gemini/GEMINI.md` directly
+- **Auto-generated**: Don't edit directly - changes will be lost. Edit AGENTS.md or the template in `platform-specific-configurations/`
+- **User-customized**: Edit `~/.claude/CLAUDE.md` or `~/.gemini/GEMINI.md` directly. You own these files.
 
 ### Adding Templates
 Add new `.md` files to `templates/` directory. Reference them in AGENTS.md or tool configs as needed.
