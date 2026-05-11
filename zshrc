@@ -22,7 +22,7 @@ bindkey "[3~" delete-char
 export EDITOR='vim'
 
 #GPG passphrase input workaround
-export GPG_TTY=`tty`
+export GPG_TTY=$(tty)
 
 #tmux color issue
 alias tmux='\tmux -2'
@@ -90,6 +90,7 @@ alias llm='ollama run gemma2:latest you are a smart command prompt that converts
 # Youtube DL
 alias yt-dlp="~/Applications/yt-dlp/.venv/bin/yt-dlp"
 alias yt-dl="yt-dlp"
+alias bell="echo -e '\a'"
 
 # Azure
 autoload bashcompinit && bashcompinit
@@ -100,11 +101,11 @@ export PERLLIB=/Library/Developer/CommandLineTools/usr/share/git-core/perl:$PERL
 
 # Add git branch if its present to PS1
 function parse_git_branch() {
-    git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/[\1]/p'
+    git branch 2>/dev/null | sed -n -e 's/^\* \(.*\)/[\1]/p'
 }
 
 function check_python_venv() {
-    if [[ -n "$VIRTUAL_ENV" ]]; then
+    if [[ -n $VIRTUAL_ENV ]]; then
         echo $VIRTUAL_ENV | grep -oE "[^\/\\]+$"
     fi
 }
@@ -117,7 +118,7 @@ function sshcat() {
 
     # Collect all config files including imported ones
     for config in "${main_configs[@]}"; do
-        if [[ -f "$config" ]]; then
+        if [[ -f $config ]]; then
             config_files+=("$config")
             # Find and add any included files
             while IFS= read -r include_line; do
@@ -127,7 +128,7 @@ function sshcat() {
                 include_path="${include_path/#\~/$HOME}"
                 # Handle wildcards
                 for file in $~include_path; do
-                    [[ -f "$file" ]] && config_files+=("$file")
+                    [[ -f $file ]] && config_files+=("$file")
                 done
             done < <(grep -i '^[[:space:]]*Include' "$config" 2>/dev/null)
         fi
@@ -137,7 +138,7 @@ function sshcat() {
     local found=false
     for config in "${config_files[@]}"; do
         local result=$(grep -iA6 "^[[:space:]]*Host[[:space:]].*$search_pattern" "$config" 2>/dev/null)
-        if [[ -n "$result" ]]; then
+        if [[ -n $result ]]; then
             echo "# From: $config"
             echo "$result"
             echo ""
@@ -145,7 +146,7 @@ function sshcat() {
         fi
     done
 
-    if [[ "$found" = false ]]; then
+    if [[ $found == false ]]; then
         echo "No host matching '$search_pattern' found in SSH config files"
         return 1
     fi
@@ -158,15 +159,36 @@ export PROMPT='%F{grey}%n%f %F{cyan}%~%f %F{green}$(parse_git_branch)%f %F{norma
 export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"
 [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && \. "/usr/local/opt/nvm/etc/bash_completion"
+
+# Automatically switch node version when .nvmrc is present
+autoload -U add-zsh-hook
+function load-nvmrc() {
+  # Skip if nvm isn't loaded yet
+  type nvm_find_nvmrc &>/dev/null || return 0
+
+  local nvmrc_path="$(nvm_find_nvmrc)"
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
+      nvm use
+    fi
+  elif [ -n "$(PWD=$OLDPWD nvm_find_nvmrc)" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
 # PNPM
 export PNPM_HOME="/Users/tlsharkey/Library/pnpm"
 case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
+*":$PNPM_HOME:"*) ;;
+*) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
 export CODE_USER_DATA_DIR=~/.config/vscode
-
 
 # merge in ~/.config/zshrc.private if it exists
 [ -f ~/.config/zshrc.private ] && source ~/.config/zshrc.private

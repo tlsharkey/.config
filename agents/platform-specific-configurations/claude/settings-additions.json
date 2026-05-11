@@ -1,0 +1,12 @@
+{
+  "comment": "Permission additions for ~/.claude/settings.json",
+  "description": "Auto-approve Read tool for agents configuration files",
+  "merge_strategy": {
+    "target_path": "permissions.allow",
+    "method": "array_append_unique",
+    "values": [
+      "Read(~/.config/agents/**)",
+      "Grep(~/.config/agents/**)"
+    ]
+  }
+}
