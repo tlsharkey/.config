@@ -5,3 +5,16 @@ GEMINI.md
 CLAUDE.md
 
 **/.notags
+.tags
+tags
+.tags.*
+
+WIP.md
+
+# MacOS files
+.DS_Store
+**/.DS_Store
+
+# Visual Studio Code
+.vscode
+
