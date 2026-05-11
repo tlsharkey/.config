@@ -25,10 +25,7 @@ brew install neovim
 **Ubuntu/Debian:**
 
 ```bash
-# Install from unstable PPA for latest version
-sudo add-apt-repository ppa:neovim-ppa/unstable
-sudo apt update
-sudo apt install neovim
+sudo snap install nvim --classic
 ```
 
 **Fedora:**
@@ -250,6 +247,48 @@ brew install pngpaste
 sudo apt install xclip
 ```
 
+#### Jupyter Notebook Support (jupytext + molten-nvim)
+
+Required for editing and executing Jupyter `.ipynb` files in Neovim with inline outputs.
+
+**1. Install jupytext (text conversion):**
+
+```bash
+pipx install jupytext
+```
+
+**2. Install Jupyter kernel and dependencies:**
+
+```bash
+pipx install --include-deps jupyter
+pipx inject jupyter pynvim ipykernel cairosvg pnglatex plotly kaleido pyperclip
+```
+
+**3. Create Neovim Python environment:**
+
+```bash
+python3 -m venv ~/.config/nvim/.venv
+~/.config/nvim/.venv/bin/pip install pynvim jupyter-client
+```
+
+**4. Verify imagemagick (required for image rendering):**
+
+```bash
+# macOS
+brew install imagemagick
+
+# Ubuntu/Debian
+sudo apt install imagemagick
+```
+
+**What this gives you:**
+- Edit `.ipynb` files as plain text (jupytext)
+- Execute code cells with inline output (molten-nvim)
+- View plots and images directly in your terminal
+- Full Jupyter kernel support (Python, Julia, R, etc.)
+
+> **Note:** The Neovim Python environment (`~/.config/nvim/.venv`) is only for the editor's Python provider. Jupyter kernels run in the pipx environment, keeping everything isolated.
+
 #### Parquet File Support (parquet-tools)
 
 Required only for viewing and inspecting Parquet files.
@@ -307,7 +346,8 @@ fc-cache -fv
 **macOS (all essential dependencies):**
 
 ```bash
-brew install neovim ripgrep fd universal-ctags tree-sitter node
+brew install neovim ripgrep fd universal-ctags tree-sitter node unzip go dotnet-sdk pipx
+pipx ensurepath
 brew tap homebrew/cask-fonts
 brew install --cask font-jetbrains-mono-nerd-font
 ```
@@ -317,7 +357,8 @@ brew install --cask font-jetbrains-mono-nerd-font
 ```bash
 sudo add-apt-repository ppa:neovim-ppa/unstable
 sudo apt update
-sudo apt install neovim ripgrep fd-find universal-ctags build-essential nodejs npm
+sudo apt install neovim ripgrep fd-find universal-ctags build-essential nodejs npm unzip golang-go dotnet-sdk-8.0 python3-venv pipx
+pipx ensurepath
 npm install -g tree-sitter-cli
 ```
 
@@ -472,6 +513,133 @@ This configuration uses `\` (backslash) as the leader key.
     - `<leader>mp` - Open live preview in browser
     - `<leader>ms` - Stop preview server
 - **Quarto**: Full support for Quarto notebooks
+
+### Jupyter Notebook Execution (molten-nvim)
+
+Execute code cells inline with full Jupyter kernel support and rich output rendering.
+
+#### Quick Start
+
+1. **Open a Python file or notebook:**
+   ```bash
+   # If using a venv, activate it first
+   cd my_project
+   source venv/bin/activate  # or: source .venv/bin/activate
+   nvim script.py
+   ```
+
+2. **Initialize kernel:** Press `<leader>mi` (comma + m + i)
+   - Automatically detects if you're in a venv
+   - Offers to create a kernel for your venv (if ipykernel is installed)
+   - Sets working directory to Neovim's CWD automatically
+   - Falls back to the default python3 kernel
+
+3. **Run code:** 
+   - Move cursor to a line and press `<leader>rc` to execute
+   - Visual select code and press `<leader>r` to run selection
+   - Output appears inline below your code!
+
+#### Cell Execution Keybindings
+
+| Shortcut     | Action                  | Mode          |
+| ------------ | ----------------------- | ------------- |
+| `<leader>mi` | Initialize kernel (smart venv detection) | Normal        |
+| `<leader>me` | Check Python environment | Normal        |
+| `<leader>rc` | Run current cell        | Normal        |
+| `<leader>ra` | Run all cells above     | Normal        |
+| `<leader>rA` | Run all cells           | Normal        |
+| `<leader>r`  | Run visual selection    | Visual        |
+| `<leader>rr` | Re-run cell             | Normal        |
+| `<leader>ro` | Show output window      | Normal        |
+| `<leader>rh` | Hide output window      | Normal        |
+| `<leader>rd` | Delete cell output      | Normal        |
+| `]c`         | Go to next cell         | Normal        |
+| `[c`         | Go to previous cell     | Normal        |
+| `<leader>ri` | Interrupt kernel        | Normal        |
+| `<leader>rx` | Restart kernel          | Normal        |
+
+#### Cell Markers
+
+Molten recognizes code cells using standard cell markers:
+
+**Python (`# %%`):**
+```python
+# %%
+print("This is a cell")
+
+# %%
+result = 42
+```
+
+**Jupyter notebooks (`.ipynb`):**
+Cells are automatically detected from the notebook structure.
+
+**Markdown (code blocks):**
+````markdown
+```python
+print("This is a cell")
+```
+````
+
+#### Output Rendering
+
+- **Text output:** Appears inline below cells
+- **Images:** matplotlib, PIL, plotly render directly in terminal (iTerm/kitty)
+- **Rich formats:** Tables, HTML, LaTeX all supported
+- **Error tracebacks:** Full Python stack traces with syntax highlighting
+
+#### Using Virtual Environments
+
+Molten-nvim automatically detects and uses your Python virtual environments:
+
+**Automatic Detection:**
+1. Checks for `$VIRTUAL_ENV` environment variable (active venv)
+2. Looks for `venv/`, `.venv/`, or `env/` in current working directory
+3. Falls back to pipx jupyter Python
+
+**Creating a Project-Specific Kernel:**
+
+```bash
+# 1. Create and activate venv
+cd ~/my_project
+python3 -m venv venv
+source venv/bin/activate
+
+# 2. Install project dependencies + ipykernel
+pip install pandas numpy matplotlib ipykernel
+
+# 3. Open Neovim from within the activated venv
+nvim analysis.py
+
+# 4. Press <leader>mi
+#    - Neovim detects the venv
+#    - Offers to create a kernel for this project
+#    - Select "Yes" to create project-specific kernel
+```
+
+**Environment Variables:**
+- Venv activation environment variables are inherited by the kernel
+- Working directory is **automatically set** to Neovim's CWD when kernel starts
+- Relative file paths work as expected (e.g., `pd.read_csv('data/file.csv')`)
+- To use project `.env` files, load them in your first cell:
+
+```python
+# %%
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # Loads .env from current directory
+print(f"CWD: {os.getcwd()}")
+print(f"API_KEY: {os.getenv('API_KEY')}")
+```
+
+**Checking Your Environment:**
+
+Press `<leader>me` to see:
+- Which Python interpreter is being used
+- Whether ipykernel is installed
+- Current working directory
+- VIRTUAL_ENV status
 
 ### Parquet File Viewing
 

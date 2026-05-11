@@ -61,21 +61,23 @@ vim.api.nvim_create_autocmd("WinEnter", {
 })
 
 -- Configure LSP hover window size dynamically based on terminal size
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
-    vim.lsp.handlers.hover, {
+local orig_hover = vim.lsp.handlers["textDocument/hover"]
+vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
+    return orig_hover(err, result, ctx, vim.tbl_extend('force', config or {}, {
         border = "rounded",
         max_width = math.floor(vim.o.columns * 0.8),  -- 80% of terminal width
         max_height = math.floor(vim.o.lines * 0.5),   -- 50% of terminal height
-    }
-)
+    }))
+end
 
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
-    vim.lsp.handlers.signature_help, {
+local orig_signature_help = vim.lsp.handlers["textDocument/signatureHelp"]
+vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
+    return orig_signature_help(err, result, ctx, vim.tbl_extend('force', config or {}, {
         border = "rounded",
         max_width = math.floor(vim.o.columns * 0.8),
         max_height = math.floor(vim.o.lines * 0.3),   -- Signature help is usually shorter
-    }
-)
+    }))
+end
 
 -- Configure diagnostic float windows with same styling
 vim.diagnostic.config({
