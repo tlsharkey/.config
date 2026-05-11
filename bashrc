@@ -1,5 +1,6 @@
 #!/bin/bash
 # .bashrc
+source ~/.config/bashrc.private
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
