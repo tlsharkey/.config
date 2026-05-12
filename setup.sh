@@ -187,6 +187,11 @@ git clone https://github.com/msitarzewski/agency-agents ~/.claude/agents
 
 ## 1 Password Setup
 
+# MacOS
+ln -s ~/Library/Application\ Support/1Password/agent.sock ~/.1Password/agent.sock ~/.1password/agent.sock
+# or update ~/.config/ssh/config IdentityFile to ~/Library/Application\ Support/1Password/agent.sock
+
 ## Signed Git Commits
+Go into 1password, find the git signing key and select the option to sign git commits using 1password. Copy the text into ~/.gitconfig or ~/.config/git/gitconfig.private
 
 ## Make ping, rsync, scp all use ssh config host names
