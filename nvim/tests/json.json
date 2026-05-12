@@ -1,0 +1,7 @@
+{
+    "boolean": true,
+    "number": 1,
+    "string": "string",
+    "array": [1, 2, 3],
+    "object": { "a": 1, "b": 2, "c": 3 }
+}

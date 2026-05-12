@@ -1,0 +1,19 @@
+
+boolean: true
+integer: 42
+float: 42.0
+string: "42"
+null: null
+
+array:
+- 1
+- 2
+- 3
+
+map:
+  key1: value1
+  key2: value2
+
+object:
+  key1: value1
+  key2: value2
