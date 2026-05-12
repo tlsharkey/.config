@@ -266,10 +266,42 @@ apply_three_way_merge() {
     local shadow_file="$5"
     local strategy="$6"
 
-    # Check if target exists
+    # Check if target exists - if not, create initial version
     if [[ ! -f "$target_file" ]]; then
-        echo "      ⚠ Target $target_file does not exist, skipping"
-        return 1
+        echo "      → Initial install (target doesn't exist)"
+
+        # Generate merged result
+        local temp_merged=$(mktemp)
+
+        # For concat_with_agents, we need a dummy target for merge
+        if [[ "$strategy" == "concat_with_agents" ]]; then
+            # Just concatenate AGENTS.md + source
+            cat "$AGENTS_DIR/AGENTS.md" > "$temp_merged"
+            echo "" >> "$temp_merged"
+            echo "---" >> "$temp_merged"
+            echo "" >> "$temp_merged"
+            cat "$source_file" >> "$temp_merged"
+        else
+            # For other strategies, just copy source
+            cp "$source_file" "$temp_merged"
+        fi
+
+        # Validate merged result
+        if ! validate_merge "$temp_merged" "$strategy"; then
+            echo "      ✗ Merge produced invalid $strategy file"
+            rm -f "$temp_merged"
+            return 1
+        fi
+
+        # Install merged result
+        mkdir -p "$(dirname "$target_file")"
+        mkdir -p "$(dirname "$shadow_file")"
+        cp "$temp_merged" "$target_file"
+        cp "$temp_merged" "$shadow_file"
+
+        rm -f "$temp_merged"
+        echo "      ${GREEN}✓ Created${NC}"
+        return 0
     fi
 
     # Generate what the merged result should be
@@ -465,7 +497,7 @@ merge_all_configs() {
         # Check if tool is installed
         if [[ ! -d "$tool_dir" ]]; then
             echo -e "${YELLOW}[-]${NC} $platform: not installed, skipping"
-            ((total_skipped++))
+            ((total_skipped++)) || true
             continue
         fi
 
@@ -505,7 +537,7 @@ merge_all_configs() {
                 skip:*)
                     local reason="${strategy#skip:}"
                     echo "    [$filename] Skipping: $reason"
-                    ((skipped++))
+                    ((skipped++)) || true
                     continue
                     ;;
             esac
@@ -517,18 +549,18 @@ merge_all_configs() {
             echo "    [$filename] → $target_filename (strategy: $strategy)"
 
             # Apply three-way merge
-            ((processed++))
+            ((processed++)) || true
             if apply_three_way_merge "$platform" "$target_filename" "$source_file" "$target_file" "$shadow_file" "$strategy"; then
                 # Check if actually updated (new backup exists)
                 if [[ -f "${target_file}.backup" ]] && [[ "${target_file}.backup" -nt "$shadow_file" ]]; then
-                    ((updated++))
+                    ((updated++)) || true
                 fi
             else
                 # Check if preserved or conflict
                 if files_equal "$target_file" "$shadow_file" "$strategy" 2>/dev/null; then
-                    ((preserved++))
+                    ((preserved++)) || true
                 else
-                    ((conflicts++))
+                    ((conflicts++)) || true
                 fi
             fi
         done
