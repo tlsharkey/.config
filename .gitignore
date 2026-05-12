@@ -85,3 +85,10 @@ raycast/extensions
 pygpt-net
 cagent
 .claude
+/BeeperTexts
+/appimage-integrator
+/monitors.xml
+/monitors.xml~
+/tailscale
+/Slack
+/systemd/user

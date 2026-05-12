@@ -1,6 +1,7 @@
 # Shadow copies used for change detection
 .generated/
 backups/
+agency-agents/
 
 !GEMINI.md
 !CLAUDE.md
