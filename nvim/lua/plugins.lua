@@ -270,28 +270,52 @@ require("lazy").setup({
             -- vim.g.gutentags_trace = 1
         end,
     },
+    -- Avante.nvim - AI-powered code assistance with local Ollama support
     {
-        "Exafunction/codeium.nvim",
-        event = "InsertEnter",
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "hrsh7th/nvim-cmp",
+        "yetone/avante.nvim",
+        event = "VeryLazy",
+        lazy = false,
+        version = false,
+        opts = {
+            provider = "ollama",
+            providers = {
+                ollama = {
+                    ["local"] = true,
+                    endpoint = "127.0.0.1:11434",
+                    model = "gemma4:26b",
+                    api_key_name = "",  -- No API key needed for local Ollama
+                },
+            },
         },
-        config = function()
-            require("codeium").setup({
-                virtual_text = {
-                    enabled = true,
-                    key_bindings = {
-                        accept = "<C-Down>",
-                        accept_word = "<C-S-Right>",
-                        accept_line = "<C-Right>",
-                        next = "<C-Up>",
-                        -- prev = "<C-Up>",
-                        dismiss = false,
+        build = "make",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+            "stevearc/dressing.nvim",
+            "nvim-lua/plenary.nvim",
+            "MunifTanjim/nui.nvim",
+            "nvim-tree/nvim-web-devicons",
+            "zbirenbaum/copilot.lua", -- optional
+            {
+                "HakonHarnes/img-clip.nvim",
+                event = "VeryLazy",
+                opts = {
+                    default = {
+                        embed_image_as_base64 = false,
+                        prompt_for_file_name = false,
+                        drag_and_drop = {
+                            insert_mode = true,
+                        },
                     },
                 },
-            })
-        end,
+            },
+            {
+                "MeanderingProgrammer/render-markdown.nvim",
+                opts = {
+                    file_types = { "markdown", "Avante" },
+                },
+                ft = { "markdown", "Avante" },
+            },
+        },
     },
     -- Tree-sitter for syntax highlighting
     {
@@ -302,6 +326,7 @@ require("lazy").setup({
         event = { "BufReadPost", "BufNewFile" },
         dependencies = {
             "JoosepAlviste/nvim-ts-context-commentstring",
+            "nvim-treesitter/nvim-treesitter-context",
         },
         config = function()
             -- Configure context commentstring for TSX/JSX
@@ -310,29 +335,31 @@ require("lazy").setup({
             })
 
             -- New nvim-treesitter v3.0+ API for parser installation
-            -- Using setup({ install = { ... } }) is the standard way to ensure parsers are present
+            -- Using parser_install.ensure_installed is the correct way to ensure parsers are present
             require("nvim-treesitter").setup({
-                install = {
-                    "lua",
-                    "vim",
-                    "vimdoc",
-                    "html",
-                    "css",
-                    "scss",
-                    "javascript",
-                    "typescript",
-                    "tsx",
-                    "python",
-                    "rust",
-                    "go",
-                    "c_sharp",
-                    "json",
-                    "yaml",
-                    "toml",
-                    "bash",
-                    "dockerfile",
-                    "markdown",
-                    "markdown_inline",
+                parser_install = {
+                    ensure_installed = {
+                        "lua",
+                        "vim",
+                        "vimdoc",
+                        "html",
+                        "css",
+                        "scss",
+                        "javascript",
+                        "typescript",
+                        "tsx",
+                        "python",
+                        "rust",
+                        "go",
+                        "c_sharp",
+                        "json",
+                        "yaml",
+                        "toml",
+                        "bash",
+                        "dockerfile",
+                        "markdown",
+                        "markdown_inline",
+                    },
                 },
                 highlight = {
                     enable = true,
@@ -381,6 +408,31 @@ require("lazy").setup({
                     vim.treesitter.stop()
                 end,
             })
+        end,
+    },
+    -- Treesitter Context - shows function/class context at top while scrolling
+    {
+        "nvim-treesitter/nvim-treesitter-context",
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        event = { "BufReadPost", "BufNewFile" },
+        opts = {
+            enable = true,
+            max_lines = 3, -- Maximum number of context lines to show
+            min_window_height = 0, -- Minimum editor window height to enable context
+            line_numbers = true, -- Show line numbers in context
+            multiline_threshold = 1, -- Maximum number of lines to show for a single context
+            trim_scope = "outer", -- Which context lines to discard if max_lines is exceeded
+            mode = "cursor", -- Line used to calculate context. 'cursor' or 'topline'
+            separator = "─", -- Separator line under context (use nil to disable)
+            zindex = 20, -- Z-index of the context window
+        },
+        config = function(_, opts)
+            require("treesitter-context").setup(opts)
+
+            -- Set custom highlight for context background and separator
+            vim.api.nvim_set_hl(0, "TreesitterContext", { bg = "#2d3149" }) -- Subtle background
+            vim.api.nvim_set_hl(0, "TreesitterContextLineNumber", { bg = "#2d3149", fg = "#7aa2f7" })
+            vim.api.nvim_set_hl(0, "TreesitterContextSeparator", { fg = "#565f89" }) -- Separator line color
         end,
     },
     {

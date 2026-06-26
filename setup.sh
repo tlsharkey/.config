@@ -36,6 +36,13 @@ sudo apt install golang-go -y
 sudo apt install dotnet-sdk-8.0 -y
 sudo apt install python3-venv -y
 sudo apt install nodejs npm -y
+# Create tree-sitter wrapper (avoids global npm install)
+mkdir -p ~/.local/bin
+cat > ~/.local/bin/tree-sitter << 'EOF'
+#!/bin/bash
+npx --yes tree-sitter-cli "$@"
+EOF
+chmod +x ~/.local/bin/tree-sitter
 
 ## MacOS
 brew install neovim
@@ -47,12 +54,18 @@ brew install go
 brew install dotnet-sdk
 # Create ctags config symlink
 ln -sf ~/.config/ctags.d ~/.ctags.d
+# Create tree-sitter wrapper (avoids global npm install)
+mkdir -p ~/.local/bin
+cat > ~/.local/bin/tree-sitter << 'EOF'
+#!/bin/bash
+npx --yes tree-sitter-cli "$@"
+EOF
+chmod +x ~/.local/bin/tree-sitter
 # for latex support: [skim](https://skim-app.sourceforge.io/)
 # and [MaxTex](https://www.tug.org/mactex/mactex-download.html)
 # for jupyter notebook support: [quarto](https://quarto.org/docs/get-started/)
 # for pasting images: [xclip](https://github.com/astrand/xclip)
 brew install xclip
-brew install tree-sitter
 brew install --cask mactex
 # for image preview in markdown (optional - enables inline image rendering)
 # there are two options here. One is the crossplatform ueberzugpp that has some jank:
@@ -61,6 +74,13 @@ brew install --cask mactex
 sudo dnf install neovim
 sudo dnf install golang
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+# Create tree-sitter wrapper (avoids global npm install)
+mkdir -p ~/.local/bin
+cat > ~/.local/bin/tree-sitter << 'EOF'
+#!/bin/bash
+npx --yes tree-sitter-cli "$@"
+EOF
+chmod +x ~/.local/bin/tree-sitter
 
 ## MacOS
 brew install ueberzugpp

@@ -4,6 +4,21 @@ This is a Neovim configuration that uses `lazy.nvim` to manage plugins.
 
 ## Installation
 
+### Quick Start
+
+```bash
+# Run the automated setup script
+~/.config/nvim/setup.sh
+
+# Restart your shell to apply PATH changes
+exec zsh
+
+# Launch Neovim (plugins will auto-install)
+nvim
+```
+
+### Manual Installation
+
 1.  Clone this repository to `~/.config/nvim`.
 2.  Install the required dependencies listed below.
 3.  Launch Neovim. The plugins will be installed automatically.
@@ -39,13 +54,26 @@ Download the latest appimage from [Neovim releases](https://github.com/neovim/ne
 
 #### Tree-sitter CLI (0.26.1+)
 
-Required for syntax highlighting.
+Required for compiling treesitter parsers (syntax highlighting).
 
-**Via npm (all platforms):**
+**Option 1: Via wrapper script (recommended - no global pollution):**
+
+```bash
+mkdir -p ~/.local/bin
+cat > ~/.local/bin/tree-sitter << 'EOF'
+#!/bin/bash
+npx --yes tree-sitter-cli "$@"
+EOF
+chmod +x ~/.local/bin/tree-sitter
+```
+
+**Option 2: Via npm global install:**
 
 ```bash
 npm install -g tree-sitter-cli
 ```
+
+> **Note:** The wrapper script approach uses `npx` to run `tree-sitter-cli` on demand without polluting your global npm namespace. Ensure `~/.local/bin` is in your PATH.
 
 #### C Compiler
 
@@ -346,10 +374,18 @@ fc-cache -fv
 **macOS (all essential dependencies):**
 
 ```bash
-brew install neovim ripgrep fd universal-ctags tree-sitter node unzip go dotnet-sdk pipx
+brew install neovim ripgrep fd universal-ctags node unzip go dotnet-sdk pipx
 pipx ensurepath
 brew tap homebrew/cask-fonts
 brew install --cask font-jetbrains-mono-nerd-font
+
+# Create tree-sitter wrapper (avoids global npm install)
+mkdir -p ~/.local/bin
+cat > ~/.local/bin/tree-sitter << 'EOF'
+#!/bin/bash
+npx --yes tree-sitter-cli "$@"
+EOF
+chmod +x ~/.local/bin/tree-sitter
 ```
 
 **Ubuntu/Debian (all essential dependencies):**
@@ -359,16 +395,58 @@ sudo add-apt-repository ppa:neovim-ppa/unstable
 sudo apt update
 sudo apt install neovim ripgrep fd-find universal-ctags build-essential nodejs npm unzip golang-go dotnet-sdk-8.0 python3-venv pipx
 pipx ensurepath
-npm install -g tree-sitter-cli
+
+# Create tree-sitter wrapper (avoids global npm install)
+mkdir -p ~/.local/bin
+cat > ~/.local/bin/tree-sitter << 'EOF'
+#!/bin/bash
+npx --yes tree-sitter-cli "$@"
+EOF
+chmod +x ~/.local/bin/tree-sitter
 ```
 
 ### Plugin Setup
 
 Some plugins require additional setup after installation.
 
-#### Codeium
+#### Avante.nvim (AI Code Assistant)
 
-The `codeium.nvim` plugin requires you to log in to your Codeium account. After the plugin is installed, you will be prompted to log in. You can also run the `:Codeium Auth` command to start the authentication process.
+This configuration uses **Avante.nvim** with **local Ollama** for AI-powered code assistance.
+
+**Prerequisites:**
+1. **Ollama** must be installed and running
+2. A code-capable model must be pulled (e.g., `gemma4:26b`, `qwen2.5-coder`, `deepseek-coder`)
+
+**Setup:**
+
+```bash
+# 1. Install Ollama (if not already installed)
+# macOS: Download from https://ollama.com or:
+brew install --cask ollama
+
+# 2. Start Ollama service (runs in background)
+ollama serve
+
+# 3. Pull a code model (choose one)
+ollama pull gemma4:26b        # Google's Gemma (26B - balanced)
+ollama pull qwen2.5-coder     # Alibaba Qwen Coder (recommended)
+ollama pull deepseek-coder    # DeepSeek Coder (fast)
+
+# 4. Verify it's working
+ollama list
+curl http://127.0.0.1:11434/api/tags
+```
+
+**Usage:**
+- The plugin will automatically connect to local Ollama
+- Chat interface: `:AvanteChat`
+- Inline edit: Select code, then `:AvanteEdit <prompt>`
+- Ask about code: `:AvanteAsk <question>`
+
+**Switching Providers:**
+To use cloud providers (Claude, GPT-4, etc.), edit `~/.config/nvim/lua/plugins.lua` and change the `provider` setting. See [Avante.nvim docs](https://github.com/yetone/avante.nvim) for details.
+
+**Note:** Avante requires Neovim 0.11.0+ and will build native components on first launch.
 
 ## Compatibility Notes
 
@@ -456,14 +534,15 @@ This configuration uses `\` (backslash) as the leader key.
 | `<leader>xl` | Toggle location list         | Normal |
 | `<leader>xq` | Toggle quickfix list         | Normal |
 
-### AI Completion (Codeium)
+### AI Assistance (Avante.nvim)
 
-| Shortcut      | Action            | Mode   |
-| ------------- | ----------------- | ------ |
-| `<C-Down>`    | Accept suggestion | Insert |
-| `<C-Up>`      | Next suggestion   | Insert |
-| `<C-S-Right>` | Accept word       | Insert |
-| `<C-Right>`   | Accept line       | Insert |
+| Shortcut      | Action                        | Mode   |
+| ------------- | ----------------------------- | ------ |
+| `:AvanteChat` | Open AI chat sidebar          | Normal |
+| `:AvanteEdit` | Edit selected code with AI    | Visual |
+| `:AvanteAsk`  | Ask AI about code/selection   | Normal |
+| `<leader>aa`  | Toggle Avante sidebar         | Normal |
+| `<leader>ar`  | Refresh AI suggestion         | Normal |
 
 ### Keybinding Helper (Which-key)
 
@@ -657,11 +736,12 @@ Press `<leader>me` to see:
 
 ### AI Assistance
 
-- **Codeium**: AI-powered code completion
-    - Accept suggestions: `<C-Down>`
-    - Next suggestion: `<C-Up>`
-    - Accept word: `<C-S-Right>`
-    - Accept line: `<C-Right>`
+- **Avante.nvim**: AI-powered code assistance with local Ollama
+    - Chat with AI about your codebase: `:AvanteChat`
+    - Edit code with AI: Select code → `:AvanteEdit <instructions>`
+    - Ask questions: `:AvanteAsk <question>`
+    - Uses local Ollama by default (no API keys needed)
+    - Supports multiple providers: Claude, GPT-4, Gemini, Copilot
 
 ### Version Control
 
