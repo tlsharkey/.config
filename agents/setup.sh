@@ -590,6 +590,45 @@ merge_all_configs() {
 # Run the merge
 merge_all_configs
 
+# Install agency-agents for supported tools
+install_agency_agents() {
+    local agency_dir="$AGENTS_DIR/agency-agents"
+    if [[ ! -d "$agency_dir" ]]; then
+        echo -e "${YELLOW}[-]${NC} agency-agents not found at $agency_dir, skipping"
+        return
+    fi
+
+    echo ""
+    echo -e "${BLUE}=== Installing Agency Agents ===${NC}"
+    echo ""
+
+    # Check if convert.sh needs to run first
+    if [[ ! -d "$agency_dir/integrations/opencode" ]]; then
+        echo -e "${BLUE}[+]${NC} Generating integration files..."
+        (cd "$agency_dir" && ./scripts/convert.sh --tool opencode --tool gemini-cli --tool claude-code >/dev/null 2>&1)
+    fi
+
+    # Install for each detected tool
+    if command -v opencode >/dev/null 2>&1 || [[ -d "$HOME/.config/opencode" ]]; then
+        echo -e "${GREEN}[+]${NC} Installing agency-agents for opencode..."
+        (cd "$agency_dir" && OPENCODE_AGENTS_DIR="$HOME/.config/opencode/agents" ./scripts/install.sh --tool opencode --no-interactive >/dev/null 2>&1) || true
+    fi
+
+    if command -v gemini >/dev/null 2>&1 || [[ -d "$HOME/.gemini" ]]; then
+        echo -e "${GREEN}[+]${NC} Installing agency-agents for gemini-cli..."
+        (cd "$agency_dir" && ./scripts/install.sh --tool gemini-cli --no-interactive >/dev/null 2>&1) || true
+    fi
+
+    if [[ -d "$HOME/.claude" ]]; then
+        echo -e "${GREEN}[+]${NC} Installing agency-agents for claude-code..."
+        (cd "$agency_dir" && ./scripts/install.sh --tool claude-code --no-interactive >/dev/null 2>&1) || true
+    fi
+
+    echo -e "${GREEN}[ok]${NC} Agency agents installed"
+}
+
+install_agency_agents
+
 # Additional info
 echo ""
 echo -e "${BLUE}Global configuration:${NC}"
