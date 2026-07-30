@@ -553,6 +553,24 @@ This configuration uses `\` (backslash) as the leader key.
 
 > **Note:** When you press `<leader>` (backlash), which-key will automatically popup after a short delay showing all available commands.
 
+### Surround (nvim-surround)
+
+| Shortcut   | Action                              | Mode   |
+| ---------- | ----------------------------------- | ------ |
+| `S"`        | Surround selection with `"`         | Visual |
+| `S(` / `S)` | Surround selection with `()`        | Visual |
+| `S[` / `S]` | Surround selection with `[]`        | Visual |
+| `S{` / `S}` | Surround selection with `{}`        | Visual |
+| `S<` / `S>` | Surround selection with `<>`        | Visual |
+| `ysiw"`     | Surround inner word with `"`        | Normal |
+| `ysiw)`     | Surround inner word with `()`       | Normal |
+| `ysiw]`     | Surround inner word with `[]`       | Normal |
+| `ysiw}`     | Surround inner word with `{}`       | Normal |
+| `ds"`       | Delete surrounding `"`              | Normal |
+| `cs"'`      | Change surrounding `"` to `'`       | Normal |
+
+> **Usage:** In visual mode, select text then press `S` followed by the surrounding character (e.g., `S"`). In normal mode, `ysiw"` wraps the word under cursor in quotes.
+
 ## Usage & Features
 
 ### File Navigation

@@ -150,7 +150,7 @@ end, { desc = "Comment line" })
 -- Save
 vim.keymap.set("n", "<C-s>", "<cmd>w<CR>", { desc = "Save file" })
 vim.keymap.set("v", "<C-s>", "<cmd>w<CR>gv", { desc = "Save file and keep selection" })
-vim.keymap.set("i", "<C-s>", "<Esc><cmd>w<CR>gi", { desc = "Save file and stay in insert" })
+vim.keymap.set("i", "<C-s>", "<Esc><cmd>w<CR>", { desc = "Save file and enter normal mode" })
 
 -- Dismiss notifications
 vim.keymap.set("n", "<leader>nd", function()
@@ -193,10 +193,11 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.keymap.set("n", "<leader>rd", ":MoltenDelete<CR>", { buffer = true, desc = "Delete cell", silent = true })
 
         -- Cell navigation (understands # %% markers)
-        vim.keymap.set("n", "]c", function()
+        -- Using ]j/[j since ]c/[c is used by gitsigns for git hunks
+        vim.keymap.set("n", "]j", function()
             require("molten-cells").next_cell()
         end, { buffer = true, desc = "Next cell", silent = true })
-        vim.keymap.set("n", "[c", function()
+        vim.keymap.set("n", "[j", function()
             require("molten-cells").prev_cell()
         end, { buffer = true, desc = "Previous cell", silent = true })
 

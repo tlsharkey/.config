@@ -247,6 +247,82 @@ require("lazy").setup({
     { import = "config.neoscroll" },
     -- merge tool
     "sindrets/diffview.nvim",
+    -- Git signs in gutter with hunk navigation
+    {
+        "lewis6991/gitsigns.nvim",
+        event = { "BufReadPost", "BufNewFile" },
+        opts = {
+            signs = {
+                add          = { text = '│' },
+                change       = { text = '│' },
+                delete       = { text = '_' },
+                topdelete    = { text = '‾' },
+                changedelete = { text = '~' },
+                untracked    = { text = '┆' },
+            },
+            signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
+            numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
+            linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
+            word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
+            watch_gitdir = {
+                follow_files = true
+            },
+            auto_attach = true,
+            attach_to_untracked = true,
+            current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+            current_line_blame_opts = {
+                virt_text = true,
+                virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+                delay = 1000,
+                ignore_whitespace = false,
+                virt_text_priority = 100,
+            },
+            on_attach = function(bufnr)
+                local gitsigns = require('gitsigns')
+
+                local function map(mode, l, r, opts)
+                    opts = opts or {}
+                    opts.buffer = bufnr
+                    vim.keymap.set(mode, l, r, opts)
+                end
+
+                -- Navigation (like ]e for errors, but ]c for git changes)
+                map('n', ']c', function()
+                    if vim.wo.diff then
+                        vim.cmd.normal({']c', bang = true})
+                    else
+                        gitsigns.nav_hunk('next')
+                    end
+                end, { desc = 'Next git hunk' })
+
+                map('n', '[c', function()
+                    if vim.wo.diff then
+                        vim.cmd.normal({'[c', bang = true})
+                    else
+                        gitsigns.nav_hunk('prev')
+                    end
+                end, { desc = 'Previous git hunk' })
+
+                -- Actions
+                map('n', '<leader>hs', gitsigns.stage_hunk, { desc = 'Stage hunk' })
+                map('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'Reset hunk' })
+                map('v', '<leader>hs', function() gitsigns.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end, { desc = 'Stage hunk (visual)' })
+                map('v', '<leader>hr', function() gitsigns.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end, { desc = 'Reset hunk (visual)' })
+                map('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'Stage buffer' })
+                map('n', '<leader>hu', gitsigns.undo_stage_hunk, { desc = 'Undo stage hunk' })
+                map('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'Reset buffer' })
+                map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'Preview hunk' })
+                map('n', '<leader>hb', function() gitsigns.blame_line{full=true} end, { desc = 'Blame line' })
+                map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = 'Toggle blame' })
+                map('n', '<leader>hd', gitsigns.diffthis, { desc = 'Diff this' })
+                map('n', '<leader>hD', function() gitsigns.diffthis('~') end, { desc = 'Diff this ~' })
+                map('n', '<leader>td', gitsigns.toggle_deleted, { desc = 'Toggle deleted' })
+
+                -- Text object
+                map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = 'Select hunk' })
+            end
+        },
+    },
     -- gutentags (like intellisense)
     {
         "ludovicchabant/vim-gutentags",
@@ -278,23 +354,93 @@ require("lazy").setup({
         version = false,
         opts = {
             provider = "ollama",
+            auto_suggestions_provider = "ollama_suggestions",
+            log_level = "debug", -- Enable detailed debug logging
+            behaviour = {
+                auto_suggestions = true, -- Enable AI inline ghost text
+            },
             providers = {
+                -- Main Ollama provider for Chat, Ask, Edit
                 ollama = {
                     ["local"] = true,
-                    endpoint = "127.0.0.1:11434",
+                    endpoint = "http://127.0.0.1:11434",
                     model = "gemma4:26b",
                     api_key_name = "",  -- No API key needed for local Ollama
+                    is_env_set = function()
+                        local ok, ollama = pcall(require, "avante.providers.ollama")
+                        if ok and ollama.check_endpoint_alive then
+                            return ollama.check_endpoint_alive()
+                        end
+                        return true
+                    end,
+                    extra_request_body = {
+                        keep_alive = "24h", -- Keep the model in memory for 24 hours
+                    },
                 },
+                -- Lighter, ultra-fast provider for inline auto-suggestions (using Instruct/Chat model)
+                ollama_suggestions = {
+                    __inherited_from = "ollama",
+                    endpoint = "http://127.0.0.1:11434",
+                    model = "qwen3-coder:latest",
+                    api_key_name = "",  -- No API key needed for local Ollama
+                    is_env_set = function()
+                        local ok, ollama = pcall(require, "avante.providers.ollama")
+                        if ok and ollama.check_endpoint_alive then
+                            return ollama.check_endpoint_alive()
+                        end
+                        return true
+                    end,
+                    extra_request_body = {
+                        keep_alive = "24h", -- Keep the model in memory for 24 hours
+                    },
+                },
+            },
+            mappings = {
+                suggestion = {
+                    accept = "<C-Down>",    -- Accept suggestion with Ctrl+Down (Old Codeium style)
+                    next = "<C-Up>",        -- Cycle to next suggestion
+                    prev = "<C-S-Up>",      -- Cycle to previous suggestion
+                    dismiss = "<C-Left>",   -- Dismiss suggestion
+                },
+            },
+            suggestion = {
+                debounce = 300, -- Lower debounce for faster response times
+                throttle = 300,
             },
         },
         build = "make",
+        config = function(_, opts)
+            require("avante").setup(opts)
+            
+            -- User command to switch suggestion provider
+            vim.api.nvim_create_user_command("AvanteSwitchSuggestionProvider", function()
+                local cfg = require("avante.config")
+                local current = cfg.auto_suggestions_provider
+                local next_provider = (current == "copilot") and "ollama_suggestions" or "copilot"
+                cfg.auto_suggestions_provider = next_provider
+                vim.notify("Avante auto suggestions provider switched to: " .. next_provider, vim.log.levels.INFO, { title = "Avante" })
+            end, {})
+
+            -- Keymap to toggle/switch suggestions provider
+            vim.keymap.set("n", "<leader>as", "<cmd>AvanteSwitchSuggestionProvider<CR>", { desc = "Toggle Avante suggestion provider" })
+        end,
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
             "stevearc/dressing.nvim",
             "nvim-lua/plenary.nvim",
             "MunifTanjim/nui.nvim",
             "nvim-tree/nvim-web-devicons",
-            "zbirenbaum/copilot.lua", -- optional
+            {
+                "zbirenbaum/copilot.lua",
+                cmd = "Copilot",
+                event = "InsertEnter",
+                config = function()
+                    require("copilot").setup({
+                        suggestion = { enabled = false }, -- Avante manages suggestions itself
+                        panel = { enabled = false },
+                    })
+                end,
+            },
             {
                 "HakonHarnes/img-clip.nvim",
                 event = "VeryLazy",
@@ -868,6 +1014,14 @@ require("lazy").setup({
         "stevearc/dressing.nvim",
         event = "VeryLazy",
         opts = {},
+    },
+    {
+        "kylechui/nvim-surround",
+        version = "*",
+        event = "VeryLazy",
+        config = function()
+            require("nvim-surround").setup({})
+        end,
     },
     {
         "petertriho/nvim-scrollbar",
