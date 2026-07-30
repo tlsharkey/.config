@@ -163,21 +163,21 @@ export NVM_DIR="$HOME/.nvm"
 # Automatically switch node version when .nvmrc is present
 autoload -U add-zsh-hook
 function load-nvmrc() {
-  # Skip if nvm isn't loaded yet
-  type nvm_find_nvmrc &>/dev/null || return 0
+    # Skip if nvm isn't loaded yet
+    type nvm_find_nvmrc &>/dev/null || return 0
 
-  local nvmrc_path="$(nvm_find_nvmrc)"
-  if [ -n "$nvmrc_path" ]; then
-    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
-    if [ "$nvmrc_node_version" = "N/A" ]; then
-      nvm install
-    elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
-      nvm use
+    local nvmrc_path="$(nvm_find_nvmrc)"
+    if [ -n "$nvmrc_path" ]; then
+        local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+        if [ "$nvmrc_node_version" = "N/A" ]; then
+            nvm install
+        elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
+            nvm use
+        fi
+    elif [ -n "$(PWD=$OLDPWD nvm_find_nvmrc)" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
+        echo "Reverting to nvm default version"
+        nvm use default
     fi
-  elif [ -n "$(PWD=$OLDPWD nvm_find_nvmrc)" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
-    echo "Reverting to nvm default version"
-    nvm use default
-  fi
 }
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
@@ -199,3 +199,12 @@ eval $(thefuck --alias)
 autoload bashcompinit && bashcompinit
 source $(brew --prefix)/etc/bash_completion.d/az
 export PATH="$HOME/.local/bin:$PATH"
+
+# Load kitty SSH session tracking
+# [[ -f ~/.config/kitty/ssh-session.zsh ]] && source ~/.config/kitty/ssh-session.zsh
+
+# Auto-activate Python venv when launched from kitty tabs/splits
+if [[ -n "$KITTY_VENV_PATH" ]] && [[ -f "$KITTY_VENV_PATH/bin/activate" ]]; then
+    source "$KITTY_VENV_PATH/bin/activate"
+    unset KITTY_VENV_PATH
+fi
