@@ -253,32 +253,32 @@ require("lazy").setup({
         event = { "BufReadPost", "BufNewFile" },
         opts = {
             signs = {
-                add          = { text = '│' },
-                change       = { text = '│' },
-                delete       = { text = '_' },
-                topdelete    = { text = '‾' },
-                changedelete = { text = '~' },
-                untracked    = { text = '┆' },
+                add = { text = "│" },
+                change = { text = "│" },
+                delete = { text = "_" },
+                topdelete = { text = "‾" },
+                changedelete = { text = "~" },
+                untracked = { text = "┆" },
             },
-            signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
-            numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
-            linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
-            word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
+            signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
+            numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
+            linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
+            word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
             watch_gitdir = {
-                follow_files = true
+                follow_files = true,
             },
             auto_attach = true,
             attach_to_untracked = true,
             current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
             current_line_blame_opts = {
                 virt_text = true,
-                virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+                virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
                 delay = 1000,
                 ignore_whitespace = false,
                 virt_text_priority = 100,
             },
             on_attach = function(bufnr)
-                local gitsigns = require('gitsigns')
+                local gitsigns = require("gitsigns")
 
                 local function map(mode, l, r, opts)
                     opts = opts or {}
@@ -287,40 +287,48 @@ require("lazy").setup({
                 end
 
                 -- Navigation (like ]e for errors, but ]c for git changes)
-                map('n', ']c', function()
+                map("n", "]c", function()
                     if vim.wo.diff then
-                        vim.cmd.normal({']c', bang = true})
+                        vim.cmd.normal({ "]c", bang = true })
                     else
-                        gitsigns.nav_hunk('next')
+                        gitsigns.nav_hunk("next")
                     end
-                end, { desc = 'Next git hunk' })
+                end, { desc = "Next git hunk" })
 
-                map('n', '[c', function()
+                map("n", "[c", function()
                     if vim.wo.diff then
-                        vim.cmd.normal({'[c', bang = true})
+                        vim.cmd.normal({ "[c", bang = true })
                     else
-                        gitsigns.nav_hunk('prev')
+                        gitsigns.nav_hunk("prev")
                     end
-                end, { desc = 'Previous git hunk' })
+                end, { desc = "Previous git hunk" })
 
                 -- Actions
-                map('n', '<leader>hs', gitsigns.stage_hunk, { desc = 'Stage hunk' })
-                map('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'Reset hunk' })
-                map('v', '<leader>hs', function() gitsigns.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end, { desc = 'Stage hunk (visual)' })
-                map('v', '<leader>hr', function() gitsigns.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end, { desc = 'Reset hunk (visual)' })
-                map('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'Stage buffer' })
-                map('n', '<leader>hu', gitsigns.undo_stage_hunk, { desc = 'Undo stage hunk' })
-                map('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'Reset buffer' })
-                map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'Preview hunk' })
-                map('n', '<leader>hb', function() gitsigns.blame_line{full=true} end, { desc = 'Blame line' })
-                map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = 'Toggle blame' })
-                map('n', '<leader>hd', gitsigns.diffthis, { desc = 'Diff this' })
-                map('n', '<leader>hD', function() gitsigns.diffthis('~') end, { desc = 'Diff this ~' })
-                map('n', '<leader>td', gitsigns.toggle_deleted, { desc = 'Toggle deleted' })
+                map("n", "<leader>hs", gitsigns.stage_hunk, { desc = "Stage hunk" })
+                map("n", "<leader>hr", gitsigns.reset_hunk, { desc = "Reset hunk" })
+                map("v", "<leader>hs", function()
+                    gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+                end, { desc = "Stage hunk (visual)" })
+                map("v", "<leader>hr", function()
+                    gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
+                end, { desc = "Reset hunk (visual)" })
+                map("n", "<leader>hS", gitsigns.stage_buffer, { desc = "Stage buffer" })
+                map("n", "<leader>hu", gitsigns.undo_stage_hunk, { desc = "Undo stage hunk" })
+                map("n", "<leader>hR", gitsigns.reset_buffer, { desc = "Reset buffer" })
+                map("n", "<leader>hp", gitsigns.preview_hunk, { desc = "Preview hunk" })
+                map("n", "<leader>hb", function()
+                    gitsigns.blame_line({ full = true })
+                end, { desc = "Blame line" })
+                map("n", "<leader>tb", gitsigns.toggle_current_line_blame, { desc = "Toggle blame" })
+                map("n", "<leader>hd", gitsigns.diffthis, { desc = "Diff this" })
+                map("n", "<leader>hD", function()
+                    gitsigns.diffthis("~")
+                end, { desc = "Diff this ~" })
+                map("n", "<leader>td", gitsigns.toggle_deleted, { desc = "Toggle deleted" })
 
                 -- Text object
-                map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = 'Select hunk' })
-            end
+                map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select hunk" })
+            end,
         },
     },
     -- gutentags (like intellisense)
@@ -364,8 +372,8 @@ require("lazy").setup({
                 ollama = {
                     ["local"] = true,
                     endpoint = "http://127.0.0.1:11434",
-                    model = "gemma4:26b",
-                    api_key_name = "",  -- No API key needed for local Ollama
+                    model = "qwen3.6:latest",
+                    api_key_name = "", -- No API key needed for local Ollama
                     is_env_set = function()
                         local ok, ollama = pcall(require, "avante.providers.ollama")
                         if ok and ollama.check_endpoint_alive then
@@ -381,8 +389,8 @@ require("lazy").setup({
                 ollama_suggestions = {
                     __inherited_from = "ollama",
                     endpoint = "http://127.0.0.1:11434",
-                    model = "qwen3-coder:latest",
-                    api_key_name = "",  -- No API key needed for local Ollama
+                    model = "qwen3.6:latest",
+                    api_key_name = "", -- No API key needed for local Ollama
                     is_env_set = function()
                         local ok, ollama = pcall(require, "avante.providers.ollama")
                         if ok and ollama.check_endpoint_alive then
@@ -397,10 +405,10 @@ require("lazy").setup({
             },
             mappings = {
                 suggestion = {
-                    accept = "<C-Down>",    -- Accept suggestion with Ctrl+Down (Old Codeium style)
-                    next = "<C-Up>",        -- Cycle to next suggestion
-                    prev = "<C-S-Up>",      -- Cycle to previous suggestion
-                    dismiss = "<C-Left>",   -- Dismiss suggestion
+                    accept = "<C-Down>", -- Accept suggestion with Ctrl+Down (Old Codeium style)
+                    next = "<C-Up>", -- Cycle to next suggestion
+                    prev = "<C-S-Up>", -- Cycle to previous suggestion
+                    dismiss = "<C-Left>", -- Dismiss suggestion
                 },
             },
             suggestion = {
@@ -411,18 +419,27 @@ require("lazy").setup({
         build = "make",
         config = function(_, opts)
             require("avante").setup(opts)
-            
+
             -- User command to switch suggestion provider
             vim.api.nvim_create_user_command("AvanteSwitchSuggestionProvider", function()
                 local cfg = require("avante.config")
                 local current = cfg.auto_suggestions_provider
                 local next_provider = (current == "copilot") and "ollama_suggestions" or "copilot"
                 cfg.auto_suggestions_provider = next_provider
-                vim.notify("Avante auto suggestions provider switched to: " .. next_provider, vim.log.levels.INFO, { title = "Avante" })
+                vim.notify(
+                    "Avante auto suggestions provider switched to: " .. next_provider,
+                    vim.log.levels.INFO,
+                    { title = "Avante" }
+                )
             end, {})
 
             -- Keymap to toggle/switch suggestions provider
-            vim.keymap.set("n", "<leader>as", "<cmd>AvanteSwitchSuggestionProvider<CR>", { desc = "Toggle Avante suggestion provider" })
+            vim.keymap.set(
+                "n",
+                "<leader>as",
+                "<cmd>AvanteSwitchSuggestionProvider<CR>",
+                { desc = "Toggle Avante suggestion provider" }
+            )
         end,
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
