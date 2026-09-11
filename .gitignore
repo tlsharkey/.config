@@ -92,3 +92,5 @@ cagent
 /tailscale
 /Slack
 /systemd/user
+/context7
+/nvim/.venv
