@@ -539,6 +539,7 @@ require("lazy").setup({
                 },
                 indent = {
                     enable = true,
+                    disable = { "yaml" }, -- Fall back to Vim runtime GetYAMLIndent() for reliable list/mapping indent
                 },
             })
 
@@ -1083,7 +1084,18 @@ require("lazy").setup({
     },
     {
         "tpope/vim-sleuth",
-        event = { "BufReadPost", "BufNewFile" },
+        event = { "BufReadPre", "BufNewFile" },
+        init = function()
+            -- Disable heuristics for filetypes where guessing can be problematic
+            vim.g.sleuth_gitcommit_heuristics = 0
+            vim.g.sleuth_markdown_heuristics = 0
+
+            -- Number of neighbor files to scan when a file is new/empty (default: 8)
+            vim.g.sleuth_neighbor_limit = 8
+
+            -- Number of lines to inspect for modelines (default: 5)
+            vim.g.sleuth_modelines = 5
+        end,
     },
     {
         "lukas-reineke/indent-blankline.nvim",
