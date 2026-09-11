@@ -112,7 +112,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values" },
+    pattern = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values", "helm" },
     callback = function()
         vim.opt_local.tabstop = 2
         vim.opt_local.softtabstop = 2

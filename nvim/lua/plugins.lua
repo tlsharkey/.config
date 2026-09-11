@@ -767,6 +767,11 @@ require("lazy").setup({
             }
         end,
     },
+    -- Kubernetes / Helm templates syntax support
+    {
+        "towolf/vim-helm",
+        ft = { "helm" },
+    },
     -- GUI Stuff
     {
         "echasnovski/mini.icons",

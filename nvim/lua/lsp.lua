@@ -124,6 +124,20 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
     vim.keymap.set("n", "<space>f", function()
+        local ft = vim.bo[bufnr].filetype
+        if ft == "helm" then
+            vim.notify("Skipping format: Helm template file", vim.log.levels.INFO)
+            return
+        end
+        if ft == "yaml" or ft:match("^yaml%.") then
+            local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 50, false)
+            for _, line in ipairs(lines) do
+                if line:match("{{") then
+                    vim.notify("Skipping format: YAML file contains template expressions {{ ... }}", vim.log.levels.INFO)
+                    return
+                end
+            end
+        end
         require("conform").format({ async = true, lsp_fallback = true })
     end, bufopts)
 end
