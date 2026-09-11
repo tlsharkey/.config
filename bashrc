@@ -1,6 +1,11 @@
 #!/bin/bash
 # .bashrc
-source ~/.config/bashrc.private
+for file in ~/.config/bashrc\.*; do
+    # Check if the file exists and is a regular file and readable
+    if [ -f "$file" ] && [ -r "$file" ]; then
+        source "$file"
+    fi
+done
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
@@ -8,7 +13,7 @@ if [ -f /etc/bashrc ]; then
 fi
 
 # User specific environment
-if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
+if ! [[ $PATH =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 # Add kitty to PATH
@@ -27,7 +32,6 @@ if [ -d ~/.bashrc.d ]; then
     done
 fi
 unset rc
-
 
 ###alias###
 alias cat='bat'
@@ -73,6 +77,8 @@ alias re-source='source ~/.config/bashrc'
 # ollama alias for asking a question
 alias ?=ollama_run
 alias aider='aider --model ollama_chat/phi4 --env-file ~/.config/aider.env'
+alias opencodeo='ollama launch opencode --model qwen3.6:latest'
+alias ssh-tunnel-ollama='ssh -v -N -T -o ServerAliveInterval=60 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=no -L 127.0.0.1:11434:127.0.0.1:11434'
 
 # AI Stuff
 ollama_run() {
@@ -92,7 +98,7 @@ sshcat() {
 
     # Collect all config files including imported ones
     for config in "${main_configs[@]}"; do
-        if [[ -f "$config" ]]; then
+        if [[ -f $config ]]; then
             config_files+=("$config")
             # Find and add any included files
             while IFS= read -r include_line; do
@@ -102,7 +108,7 @@ sshcat() {
                 include_path="${include_path/#\~/$HOME}"
                 # Handle wildcards
                 for file in $include_path; do
-                    [[ -f "$file" ]] && config_files+=("$file")
+                    [[ -f $file ]] && config_files+=("$file")
                 done
             done < <(grep -i '^[[:space:]]*Include' "$config" 2>/dev/null)
         fi
@@ -112,7 +118,7 @@ sshcat() {
     local found=false
     for config in "${config_files[@]}"; do
         local result=$(grep -iA6 "^[[:space:]]*Host[[:space:]].*$search_pattern" "$config" 2>/dev/null)
-        if [[ -n "$result" ]]; then
+        if [[ -n $result ]]; then
             echo "# From: $config"
             echo "$result"
             echo ""
@@ -120,7 +126,7 @@ sshcat() {
         fi
     done
 
-    if [[ "$found" = false ]]; then
+    if [[ $found == false ]]; then
         echo "No host matching '$search_pattern' found in SSH config files"
         return 1
     fi
@@ -128,7 +134,7 @@ sshcat() {
 
 # Function to get the current git branch
 parse_git_branch() {
-    if git rev-parse --git-dir > /dev/null 2>&1; then
+    if git rev-parse --git-dir >/dev/null 2>&1; then
         echo "[$(git branch 2>/dev/null | grep '*' | sed 's/* //')] "
     else
         echo ""
@@ -136,14 +142,14 @@ parse_git_branch() {
 }
 
 # Custom prompt
-PS1='\[\e[0;37m\]' # white color
-PS1+='\u@\h ' # user@host
-PS1+='\[\e[0;36m\]' # cyan color
-PS1+='\w ' # cwd
-PS1+='\[\e[0;37m\]' # white color
-PS1+='\[\e[0;32m\]' # green color
+PS1='\[\e[0;37m\]'         # white color
+PS1+='\u@\h '              # user@host
+PS1+='\[\e[0;36m\]'        # cyan color
+PS1+='\w '                 # cwd
+PS1+='\[\e[0;37m\]'        # white color
+PS1+='\[\e[0;32m\]'        # green color
 PS1+='$(parse_git_branch)' # [branch]
-PS1+='\[\e[0;37m\]' # white color
+PS1+='\[\e[0;37m\]'        # white color
 PS1+='\$ '
 export PS1
 
