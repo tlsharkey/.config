@@ -167,7 +167,17 @@ require("lazy").setup({
             })
 
             vim.lsp.config("yamlls", {
-                filetypes = { "yaml", "yaml.docker-compose" },
+                settings = {
+                    redhat = { telemetry = { enabled = false } },
+                    yaml = {
+                        format = {
+                            enable = true,
+                            proseWrap = "preserve",
+                            printWidth = 80,
+                        },
+                        validate = true,
+                    },
+                },
             })
 
             vim.lsp.config("taplo", {
@@ -1070,6 +1080,10 @@ require("lazy").setup({
             { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
         },
         opts = {},
+    },
+    {
+        "tpope/vim-sleuth",
+        event = { "BufReadPost", "BufNewFile" },
     },
     {
         "lukas-reineke/indent-blankline.nvim",

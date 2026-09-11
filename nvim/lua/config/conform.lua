@@ -13,7 +13,8 @@ require("conform").setup({
     html = { "prettier", "prettierd", stop_after_first = true },
     json = { "prettier", "prettierd", stop_after_first = true },
     jsonc = { "prettier", "prettierd", stop_after_first = true },
-    yaml = { "prettier", "prettierd", stop_after_first = true },
+    -- YAML formatted via LSP (yamlls) to dynamically follow buffer indentation
+    yaml = {},
     markdown = { "prettier", "prettierd", stop_after_first = true },
 
     -- Backend/Systems
@@ -45,9 +46,12 @@ require("conform").setup({
       prepend_args = { "fmt", "--option", "indent_string=    " }, -- 4 spaces
     },
   },
+  default_format_opts = {
+    lsp_format = "fallback",
+  },
   format_on_save = {
     -- These options will be passed to conform.format()
     timeout_ms = 500,
-    lsp_fallback = true,
+    lsp_format = "fallback",
   },
 })
