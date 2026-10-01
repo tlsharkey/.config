@@ -41,6 +41,9 @@ require("lazy").setup({
             "mason-org/mason.nvim",
             "mason-org/mason-lspconfig.nvim",
         },
+        init = function()
+            require("lsp")
+        end,
         config = function()
             -- 1. Setup Mason
             require("mason").setup({
@@ -344,6 +347,9 @@ require("lazy").setup({
     -- gutentags (like intellisense)
     {
         "ludovicchabant/vim-gutentags",
+        cond = function()
+            return vim.fn.executable("ctags") == 1
+        end,
         config = function()
             vim.g.gutentags_ctags_tagfile = ".tags"
             vim.g.gutentags_enabled = 1
@@ -373,9 +379,9 @@ require("lazy").setup({
         opts = {
             provider = "ollama",
             auto_suggestions_provider = "ollama_suggestions",
-            log_level = "debug", -- Enable detailed debug logging
+            log_level = "info",
             behaviour = {
-                auto_suggestions = true, -- Enable AI inline ghost text
+                auto_suggestions = false, -- Disabled: manual trigger via <M-/> or :AvanteSuggest to prevent process/file exhaustion
             },
             providers = {
                 -- Main Ollama provider for Chat, Ask, Edit
@@ -422,13 +428,45 @@ require("lazy").setup({
                 },
             },
             suggestion = {
-                debounce = 300, -- Lower debounce for faster response times
-                throttle = 300,
+                debounce = 1000, -- Safe debounce to avoid piling up async curl jobs
+                throttle = 1000, -- Safe throttle
             },
         },
         build = "make",
         config = function(_, opts)
             require("avante").setup(opts)
+
+            -- Function to manually trigger an Avante suggestion at cursor
+            local function trigger_suggestion()
+                local avante = require("avante")
+                local _, _, suggestion = avante.get()
+                if not suggestion then
+                    avante._init(vim.api.nvim_get_current_tabpage())
+                    _, _, suggestion = avante.get()
+                end
+                if suggestion then
+                    suggestion:suggest()
+                end
+            end
+
+            -- User command to manually trigger inline suggestion
+            vim.api.nvim_create_user_command("AvanteSuggest", trigger_suggestion, {
+                desc = "Manually trigger Avante inline suggestion",
+            })
+
+            -- User command to toggle background auto-suggestions on/off
+            vim.api.nvim_create_user_command("AvanteToggleSuggestion", function()
+                require("avante").toggle.suggestion()
+            end, {
+                desc = "Toggle Avante background auto-suggestions",
+            })
+
+            -- Shortcuts to manually trigger completions
+            -- Insert mode: <M-/> (Option + /) and <M-\> (Option + \)
+            vim.keymap.set("i", "<M-/>", trigger_suggestion, { desc = "Avante: manually trigger suggestion" })
+            vim.keymap.set("i", "<M-\\>", trigger_suggestion, { desc = "Avante: manually trigger suggestion" })
+            -- Normal mode: <leader>ag (Avante Generate)
+            vim.keymap.set("n", "<leader>ag", trigger_suggestion, { desc = "Avante: manually trigger suggestion" })
 
             -- User command to switch suggestion provider
             vim.api.nvim_create_user_command("AvanteSwitchSuggestionProvider", function()
@@ -749,7 +787,10 @@ require("lazy").setup({
     },
     {
         "lervag/vimtex",
-        lazy = false, -- we don't want to lazy load VimTeX
+        lazy = false,
+        cond = function()
+            return vim.fn.executable("latex") == 1 or vim.fn.executable("pdflatex") == 1
+        end,
         init = function()
             if vim.fn.executable("skim") == 1 then
                 vim.g.vimtex_view_method = "skim"
@@ -797,6 +838,9 @@ require("lazy").setup({
             -- {"3rd/image.nvim", opts = {}}, -- Optional image support in preview window: See `# Preview Mode` for more information
         },
         lazy = false, -- neo-tree will lazily load itself
+        keys = {
+            { "fe", "<cmd>Neotree<CR>", desc = "Neo-tree" },
+        },
         ---@module "neo-tree"
         ---@type neotree.Config?
         opts = {
@@ -825,6 +869,12 @@ require("lazy").setup({
         "nvim-telescope/telescope.nvim",
         tag = "0.1.8",
         dependencies = { "nvim-lua/plenary.nvim" },
+        keys = {
+            { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
+            { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
+            { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
+            { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help Tags" },
+        },
         config = function()
             local previewers_utils = require("telescope.previewers.utils")
 
@@ -881,6 +931,10 @@ require("lazy").setup({
         version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
         dependencies = { "3rd/image.nvim" },
         build = ":UpdateRemotePlugins",
+        cond = function()
+            return vim.fn.executable("jupyter") == 1 or vim.fn.executable("ipython") == 1
+        end,
+        ft = { "python", "julia", "r", "quarto", "markdown" },
         init = function()
             -- Configuration for molten-nvim
             vim.g.molten_image_provider = "image.nvim"
@@ -889,6 +943,74 @@ require("lazy").setup({
             vim.g.molten_wrap_output = true
             vim.g.molten_virt_text_output = true
             vim.g.molten_virt_lines_off_by_1 = true
+        end,
+        config = function()
+            -- FileType autocmd for Jupyter/Quarto cell execution keymaps
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = { "python", "julia", "r", "quarto", "markdown" },
+                callback = function()
+                    -- Activate quarto for this buffer (enables cell recognition)
+                    pcall(function()
+                        require("quarto").activate()
+                    end)
+
+                    -- Initialize molten for the buffer (smart venv detection)
+                    vim.keymap.set("n", "<leader>mi", function()
+                        require("jupyter-venv").init_molten()
+                    end, { buffer = true, desc = "Initialize Molten (smart venv)", silent = true })
+
+                    -- Check current environment
+                    vim.keymap.set("n", "<leader>me", function()
+                        require("jupyter-venv").check_environment()
+                    end, { buffer = true, desc = "Check Python environment", silent = true })
+
+                    -- Cell execution (with proper # %% support for Python files)
+                    vim.keymap.set("n", "<leader>rc", function()
+                        require("molten-cells").run_cell()
+                    end, { buffer = true, desc = "Run cell", silent = true })
+
+                    -- Wrap Molten commands in pcall for safety
+                    vim.keymap.set("v", "<leader>r", function()
+                        pcall(vim.cmd, "MoltenEvaluateVisual")
+                    end, { buffer = true, desc = "Run selection", silent = true })
+
+                    vim.keymap.set("n", "<leader>rr", function()
+                        pcall(vim.cmd, "MoltenReevaluateCell")
+                    end, { buffer = true, desc = "Re-run cell", silent = true })
+
+                    -- Output management
+                    vim.keymap.set("n", "<leader>ro", function()
+                        pcall(vim.cmd, "MoltenShowOutput")
+                    end, { buffer = true, desc = "Show output", silent = true })
+
+                    vim.keymap.set("n", "<leader>rh", function()
+                        pcall(vim.cmd, "MoltenHideOutput")
+                    end, { buffer = true, desc = "Hide output", silent = true })
+
+                    vim.keymap.set("n", "<leader>rd", function()
+                        pcall(vim.cmd, "MoltenDelete")
+                    end, { buffer = true, desc = "Delete cell", silent = true })
+
+                    -- Cell navigation (understands # %% markers)
+                    -- Using ]j/[j since ]c/[c is used by gitsigns for git hunks
+                    vim.keymap.set("n", "]j", function()
+                        require("molten-cells").next_cell()
+                    end, { buffer = true, desc = "Next cell", silent = true })
+
+                    vim.keymap.set("n", "[j", function()
+                        require("molten-cells").prev_cell()
+                    end, { buffer = true, desc = "Previous cell", silent = true })
+
+                    -- Interrupt/restart
+                    vim.keymap.set("n", "<leader>ri", function()
+                        pcall(vim.cmd, "MoltenInterrupt")
+                    end, { buffer = true, desc = "Interrupt kernel", silent = true })
+
+                    vim.keymap.set("n", "<leader>rx", function()
+                        pcall(vim.cmd, "MoltenRestart!")
+                    end, { buffer = true, desc = "Restart kernel", silent = true })
+                end,
+            })
         end,
     },
     {

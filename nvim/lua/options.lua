@@ -3,6 +3,10 @@ vim.opt.background = "dark"
 vim.opt.clipboard = "unnamedplus" -- uses system clipboard
 vim.opt.wildmenu = true -- show a navigation menu for tab completion
 
+-- Swap files in same directory as the file (.filename.swp)
+vim.opt.swapfile = true
+vim.opt.directory = {""}
+
 
 -- Hint: use `:h <option>` to figure out the meaning if needed
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}

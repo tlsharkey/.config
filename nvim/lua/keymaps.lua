@@ -35,13 +35,6 @@ vim.keymap.set('n', '<C-h>', '<C-w>h', opts)
 vim.keymap.set('n', '<C-j>', '<C-w>j', opts)
 vim.keymap.set('n', '<C-k>', '<C-w>k', opts)
 vim.keymap.set('n', '<C-l>', '<C-w>l', opts)
--- Configure img-paste.vim before the autocmd
-vim.g.mdip_imgdir = '.attachments'
-vim.g.mdip_imgname = 'img'
-
-vim.api.nvim_exec([[
-  autocmd FileType markdown nmap <buffer><silent> <leader>p :call mdip#MarkdownClipboardImage()<CR>
-]], false)
 
 -- Open image under cursor in external viewer
 vim.api.nvim_create_autocmd("FileType", {
@@ -84,14 +77,9 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 
--- neo-tree
-vim.keymap.set('n', 'fe', ':Neotree<CR>', opts)
+-- neo-tree now handled via keys field in plugins.lua
 
--- telescope
-vim.keymap.set('n', '<leader>ff', ':Telescope find_files<CR>', opts)
-vim.keymap.set('n', '<leader>fg', ':Telescope live_grep<CR>', opts)
-vim.keymap.set('n', '<leader>fb', ':Telescope buffers<CR>', opts)
-vim.keymap.set('n', '<leader>fh', ':Telescope help_tags<CR>', opts)
+-- telescope now handled via keys field in plugins.lua
 
 -- Strip whitespace
 local function strip_whitespace()
@@ -139,11 +127,14 @@ vim.keymap.set('v', '>', '>gv', opts)
 
 -- Comment out lines
 vim.keymap.set("n", "<C-/>", function()
-    require("Comment.api").toggle.linewise.current()
+    pcall(function() require("Comment.api").toggle.linewise.current() end)
 end, { desc = "Comment line" })
-vim.keymap.set("v", "<C-/>", "<ESC><cmd>lua require('Comment.api').locked('toggle.linewise')(vim.fn.visualmode())<CR>gv", { desc = "Comment selection" })
+vim.keymap.set("v", "<C-/>", function()
+    pcall(function() require("Comment.api").locked("toggle.linewise")(vim.fn.visualmode()) end)
+    vim.cmd("normal! gv")
+end, { desc = "Comment selection" })
 vim.keymap.set("i", "<C-/>", function()
-    require("Comment.api").toggle.linewise.current()
+    pcall(function() require("Comment.api").toggle.linewise.current() end)
     vim.cmd("startinsert")
 end, { desc = "Comment line" })
 
@@ -154,55 +145,9 @@ vim.keymap.set("i", "<C-s>", "<Esc><cmd>w<CR>", { desc = "Save file and enter no
 
 -- Dismiss notifications
 vim.keymap.set("n", "<leader>nd", function()
-    require("notify").dismiss({ silent = true, pending = true })
+    pcall(function()
+        require("notify").dismiss({ silent = true, pending = true })
+    end)
 end, { desc = "Dismiss all notifications" })
 
--- Jupyter/Quarto cell execution (molten-nvim)
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "python", "julia", "r", "quarto", "markdown" },
-    callback = function()
-        -- Activate quarto for this buffer (enables cell recognition)
-        pcall(function()
-            require("quarto").activate()
-        end)
-
-        -- Initialize molten for the buffer (smart venv detection)
-        vim.keymap.set("n", "<leader>mi", function()
-            require("jupyter-venv").init_molten()
-        end, { buffer = true, desc = "Initialize Molten (smart venv)", silent = true })
-
-        -- Check current environment
-        vim.keymap.set("n", "<leader>me", function()
-            require("jupyter-venv").check_environment()
-        end, { buffer = true, desc = "Check Python environment", silent = true })
-
-        -- Cell execution (with proper # %% support for Python files)
-        vim.keymap.set("n", "<leader>rc", function()
-            require("molten-cells").run_cell()
-        end, { buffer = true, desc = "Run cell", silent = true })
-
-        vim.keymap.set("v", "<leader>r", function()
-            vim.cmd("MoltenEvaluateVisual")
-        end, { buffer = true, desc = "Run selection", silent = true })
-
-        vim.keymap.set("n", "<leader>rr", ":MoltenReevaluateCell<CR>", { buffer = true, desc = "Re-run cell", silent = true })
-
-        -- Output management
-        vim.keymap.set("n", "<leader>ro", ":MoltenShowOutput<CR>", { buffer = true, desc = "Show output", silent = true })
-        vim.keymap.set("n", "<leader>rh", ":MoltenHideOutput<CR>", { buffer = true, desc = "Hide output", silent = true })
-        vim.keymap.set("n", "<leader>rd", ":MoltenDelete<CR>", { buffer = true, desc = "Delete cell", silent = true })
-
-        -- Cell navigation (understands # %% markers)
-        -- Using ]j/[j since ]c/[c is used by gitsigns for git hunks
-        vim.keymap.set("n", "]j", function()
-            require("molten-cells").next_cell()
-        end, { buffer = true, desc = "Next cell", silent = true })
-        vim.keymap.set("n", "[j", function()
-            require("molten-cells").prev_cell()
-        end, { buffer = true, desc = "Previous cell", silent = true })
-
-        -- Interrupt/restart
-        vim.keymap.set("n", "<leader>ri", ":MoltenInterrupt<CR>", { buffer = true, desc = "Interrupt kernel", silent = true })
-        vim.keymap.set("n", "<leader>rx", ":MoltenRestart!<CR>", { buffer = true, desc = "Restart kernel", silent = true })
-    end,
-})
+-- Jupyter/Quarto cell execution now handled in molten-nvim config
