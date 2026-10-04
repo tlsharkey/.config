@@ -21,6 +21,8 @@ mkdir -p ~/.local/bin
 ln -s /usr/bin/batcat ~/.local/bin/bat
 ## MacOS
 brew install bat
+## Fedora
+sudo dnf install bat
 
 # NEOVIM
 
@@ -38,7 +40,7 @@ sudo apt install python3-venv -y
 sudo apt install nodejs npm -y
 # Create tree-sitter wrapper (avoids global npm install)
 mkdir -p ~/.local/bin
-cat > ~/.local/bin/tree-sitter << 'EOF'
+cat >~/.local/bin/tree-sitter <<'EOF'
 #!/bin/bash
 npx --yes tree-sitter-cli "$@"
 EOF
@@ -56,7 +58,7 @@ brew install dotnet-sdk
 ln -sf ~/.config/ctags.d ~/.ctags.d
 # Create tree-sitter wrapper (avoids global npm install)
 mkdir -p ~/.local/bin
-cat > ~/.local/bin/tree-sitter << 'EOF'
+cat >~/.local/bin/tree-sitter <<'EOF'
 #!/bin/bash
 npx --yes tree-sitter-cli "$@"
 EOF
@@ -76,7 +78,7 @@ sudo dnf install golang
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 # Create tree-sitter wrapper (avoids global npm install)
 mkdir -p ~/.local/bin
-cat > ~/.local/bin/tree-sitter << 'EOF'
+cat >~/.local/bin/tree-sitter <<'EOF'
 #!/bin/bash
 npx --yes tree-sitter-cli "$@"
 EOF
@@ -148,6 +150,22 @@ sudo apt-get update
 
 ## MacOS - install docker desktop from https://docs.docker.com/desktop/setup/install/mac-install/
 
+## Fedora
+sudo dnf remove docker \
+    docker-client \
+    docker-client-latest \
+    docker-common \
+    docker-latest \
+    docker-latest-logrotate \
+    docker-logrotate \
+    docker-selinux \
+    docker-engine-selinux \
+    docker-engine
+sudo dnf config-manager addrepo --from-repofile https://download.docker.com/linux/fedora/docker-ce.repo
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo systemctl enable --now docker
+sudo docker run hello-world
+
 # AWS cli
 sudo snap install aws-cli --classic
 ## MacOS
@@ -166,6 +184,8 @@ brew install bash-completion
 # thefuck
 brew thefuck install cjson cmake gcc coreutils gh go imath
 # fedora
+# install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 # install pyenv
 curl -fsSL https://pyenv.run | bash
 # update bashrc with path
@@ -215,3 +235,12 @@ ln -s ~/Library/Application\ Support/1Password/agent.sock ~/.1Password/agent.soc
 Go into 1password, find the git signing key and select the option to sign git commits using 1password. Copy the text into ~/.gitconfig or ~/.config/git/gitconfig.private
 
 ## Make ping, rsync, scp all use ssh config host names
+
+## Secure Boot
+# see https://rpmfusion.org/Howto/Secure%20Boot
+
+## Nvidia Drivers
+# see https://rpmfusion.org/Howto/NVIDIA
+
+## Multimedia Codecs
+# see https://rpmfusion.org/Howto/Multimedia
