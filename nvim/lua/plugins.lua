@@ -697,6 +697,22 @@ require("lazy").setup({
                 render_modes = true,
                 latex = { enabled = false },
                 html = { enabled = false },
+                -- Anti-conceal: show raw text on cursor line for easier editing
+                -- disabled_modes = { 'n' } disables anti-conceal in normal mode
+                -- This means in normal mode, rendered view stays even on cursor line
+                -- In other modes (insert, visual), raw text shows on cursor line
+                anti_conceal = {
+                    enabled = true,
+                    disabled_modes = { "n" },  -- Disable anti-conceal in normal mode
+                    above = 0,  -- Number of lines above cursor to show raw
+                    below = 0,  -- Number of lines below cursor to show raw
+                    ignore = {
+                        code_background = true,
+                        indent = true,
+                        sign = true,
+                        virtual_lines = true,
+                    },
+                },
                 -- Use the beautiful Unicode icons since your terminal supports them
                 heading = {
                     enabled = true,
@@ -731,12 +747,12 @@ require("lazy").setup({
                         nine = { raw = "[9]", rendered = "󰎼 ", highlight = "RenderMarkdownCheckboxNine" },
                         cancelled = {
                             raw = "[-]",
-                            rendered = " ",
+                            rendered = " ",
                             highlight = "Comment",
                             scope_highlight = "Strikethrough",
                         },
-                        urgent = { raw = "[!]", rendered = " ", highlight = "ErrorMsg" }, -- Exclamation icon
-                        question = { raw = "[?]", rendered = " ", highlight = "Question" }, -- Questionmark icon
+                        urgent = { raw = "[!]", rendered = " ", highlight = "ErrorMsg" }, -- Exclamation icon
+                        question = { raw = "[?]", rendered = " ", highlight = "Question" }, -- Questionmark icon
                     },
                 },
                 -- Mermaid diagram support
@@ -760,6 +776,15 @@ require("lazy").setup({
                     enabled = true,
                     preset = "round",
                     style = "full",
+                    -- Wrap table cells to fit window width (requires vim.wo.wrap)
+                    -- Disabled: wrapped tables use marks:replace which is unconditionally
+                    -- hidden when cursor is on the row (ignores anti_conceal settings).
+                    -- See: https://github.com/MeanderingProgrammer/render-markdown.nvim/issues/692
+                    wrap = false,
+                    -- Minimum column width for readability
+                    min_width = 3,
+                    -- Padding between cell content and borders
+                    padding = 1,
                 },
                 -- Enable debugging to see what's happening
                 log_level = "info",
