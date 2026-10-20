@@ -162,6 +162,32 @@ require("lazy").setup({
 
             vim.lsp.config("pyright", {
                 filetypes = { "python" },
+                settings = {
+                    python = {
+                        analysis = {
+                            autoSearchPaths = true,
+                            useLibraryCodeForTypes = true,
+                        },
+                    },
+                },
+                on_init = function(client)
+                    -- Point Pyright at the activated venv's interpreter so it
+                    -- can resolve imports from that venv's site-packages
+                    local venv = vim.env.VIRTUAL_ENV
+                    if venv then
+                        local python = venv .. "/bin/python"
+                        if vim.fn.filereadable(python) == 1 then
+                            client.config.settings.python.defaultInterpreterPath = python
+                            client.config.initOptions = {
+                                settings = {
+                                    python = {
+                                        defaultInterpreterPath = python,
+                                    },
+                                },
+                            }
+                        end
+                    end
+                end,
             })
 
             vim.lsp.config("omnisharp", {
