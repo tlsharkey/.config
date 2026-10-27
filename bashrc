@@ -81,6 +81,7 @@ alias opencodeo='ollama launch opencode --model qwen3.6:latest'
 alias ssh-tunnel-ollama='ssh -v -N -T -o ServerAliveInterval=60 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=no -L 127.0.0.1:11434:127.0.0.1:11434'
 
 # AI Stuff
+OPENCODE_CONFIG="~/.config/opencode/opencode.json"
 ollama_run() {
     local base_prompt="you are a smart command prompt that assists a user primarily with bash script on fedora. When appropriate only respond in the command line code corresponding to the users query. respond in plain shell text. Output will be set to a markdown renderer. Avoid explanations unless requested, especially long ones."
     local user_input="$*"
