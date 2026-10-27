@@ -101,3 +101,5 @@ cagent
 /com.twentyfortyeightlabs.speaktype
 /shadow
 /tiling-assistant
+/bashrc.*
+/zshrc.*
