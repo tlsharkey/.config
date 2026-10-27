@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# @raycast.schemaVersion 1
+# @raycast.title Ask LLM (Ollama)
+# @raycast.mode fullOutput
+# @raycast.argument1 { "type": "text", "placeholder": "Your question...", "optional": false }
+# @raycast.packageName AI
+# @raycast.icon 🤖
+
+# Ask LLM - sends input to Ollama and streams markdown output
+# Usage: echo "question" | ask-llm
+# Env: OLLAMA_MODEL (default: llama3.2:1b)
+
+set -euo pipefail
+
+MODEL="${OLLAMA_MODEL:-llama3.2:1b}"
+
+# Read input from stdin
+INPUT=$(cat)
+
+if [[ -z "$INPUT" ]]; then
+    echo "No input provided"
+    exit 1
+fi
+
+# Run ollama, combine stderr+stdout, filter out thinking blocks, spinner chars, and ANSI codes, then highlight with bat
+ollama run "$MODEL" "$INPUT" 2>&1 \
+    | sed -E 's/\x1b\[[0-9;?]*[a-zA-Z]//g' \
+    | sed -E 's/[⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿]//g' \
+    | awk '
+        /Thinking\.\.\./ { in_thinking=1; next }
+        /\.\.\.done thinking\./ { in_thinking=0; next }
+        in_thinking { next }
+        /^[[:space:]]*$/ { next }
+        { print }
+    ' \
+    | bat --language=md --paging=never --style=plain
