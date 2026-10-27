@@ -10,14 +10,15 @@ if you do not see icons, or you see question marks, you need to set your termina
 
 ## Text Formatting
 
-*italics* _italics_ **bold** __bold__ ~~strikethrough~~
+_italics_ _italics_ **bold** **bold** ~~strikethrough~~
 
 ## Lists
 
-* Unordered star
-* Unordered star
-* Unordered star
-- Unordered dash
+- Unordered star
+- Unordered star
+- Unordered star
+
+* Unordered dash
 
 1. Ordered
 1. Ordered
@@ -30,7 +31,6 @@ if you do not see icons, or you see question marks, you need to set your termina
 - [!] Error
 - [?] Question
 
-
 ## Tables
 
 | Column 1 | Column 2 | Column 3 |
@@ -38,6 +38,16 @@ if you do not see icons, or you see question marks, you need to set your termina
 | Cell 1   | Cell 2   | Cell 3   |
 | Cell 4   | Cell 5   | Cell 6   |
 
+| Column 1                                                                                                                                                      | Column 2 | Column 3 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------- |
+| Cell 1                                                                                                                                                        | Cell 2   | Cell 3   |
+| Cell 4                                                                                                                                                        | Cell 5   | Cell 6   |
+| Here's a cell with really long text that is going to wrap onto the next line, making it difficult to distinguish between rows that have adjacently long text. | Cell 8   | Cell 9   |
+| See it's not clear where the last cell ended and where this one began without looking for periods and whitespace.                                             | Cell 11  | Cell 12  |
+
+| Column 1        | Column 2        | Column 3        | Column 4        | Column 5        | Column 6        | Column 7        | Column 8        | Column 9        | Column 10        | Column 11        | Column 12        | Column 13        | Column 14        | Column 15        |
+| --------------- | --------------- | --------------- | --------------- | --------------- | --------------- | --------------- | --------------- | --------------- | ---------------- | ---------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| Row 1, Column 1 | Row 1, Column 2 | Row 1, Column 3 | Row 1, Column 4 | Row 1, Column 5 | Row 1, Column 6 | Row 1, Column 7 | Row 1, Column 8 | Row 1, Column 9 | Row 1, Column 10 | Row 1, Column 11 | Row 1, Column 12 | Row 1, Column 13 | Row 1, Column 14 | Row 1, Column 15 |
 
 ## Images
 
@@ -81,7 +91,7 @@ print("Hello World")
 ```
 
 ```javascript
-console.log("Hello World")
+console.log("Hello World");
 ```
 
 ```html
@@ -139,7 +149,7 @@ sequenceDiagram
 
 ## Math
 
-$$ \sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6} $$
+$$ \sum\_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6} $$
 
 $ c^2 = a^2 + b^2 $
 
@@ -152,13 +162,14 @@ $ c^2 = a^2 + b^2 $
 ## Quotes
 
 > This is a quote
+>
 > > This is a nested quote
-> 
+>
 > This is back to the original quote
 
-> This is a quote that spills over multiple lines, but doesn't include more `>` characters. 
-Here is the second line.
-And a third line.
+> This is a quote that spills over multiple lines, but doesn't include more `>` characters.
+> Here is the second line.
+> And a third line.
 
 And after a double newline we are no longer in a quote.
 
@@ -167,14 +178,17 @@ And after a double newline we are no longer in a quote.
 Here's some text with a footnote.[^1] And another one.[^2] And here's a text reference[^some author]
 
 [^1]: Footnote 1
-[^2]: Footnote 2
-[^some author]: Footnote reference
+
+[^2]:
+    Footnote 2
+    [^some author]: Footnote reference
 
 ## Horizontal Rule
 
 ---
 
 ---
+
 And then immediate text
 
 ---
@@ -183,11 +197,8 @@ Text after a horizontal rule with space in between
 
 ---
 
-Text directly before a horizontal rule
----
+## Text directly before a horizontal rule
 
 ## Shortcuts
 
 `\mp` - Markdown Preview will open rendered markdown in webbrowser
-
-
