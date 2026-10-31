@@ -47,8 +47,20 @@ alias egrep='\egrep --color=auto'
 
 #network tool
 alias ssh='ssh -F ~/.config/ssh/config -R 2222:localhost:22'
-alias scp='scp -F ~/.config/ssh/config'
-alias rsync='rsync -e "ssh -F /Users/tlsharkey/.config/ssh/config"'
+scp() {
+    if [[ -f ~/.config/ssh/config ]]; then
+        command scp -F ~/.config/ssh/config "$@"
+    else
+        command scp "$@"
+    fi
+}
+rsync() {
+    if [[ -f ~/.config/ssh/config ]]; then
+        command rsync -e "ssh -F ${HOME}/.config/ssh/config" "$@"
+    else
+        command rsync "$@"
+    fi
+}
 
 #cd
 alias cd..='\cd ..'
@@ -96,10 +108,15 @@ sshcat() {
     local search_pattern="$1"
     local config_files=()
     local main_configs=(~/.ssh/config ~/.config/ssh/config)
+    declare -A seen=()
 
     # Collect all config files including imported ones
     for config in "${main_configs[@]}"; do
         if [[ -f $config ]]; then
+            local canonical
+            canonical="$(realpath "$config" 2>/dev/null || echo "$config")"
+            [[ -n ${seen[$canonical]:-} ]] && continue
+            seen[$canonical]=1
             config_files+=("$config")
             # Find and add any included files
             while IFS= read -r include_line; do
@@ -109,7 +126,13 @@ sshcat() {
                 include_path="${include_path/#\~/$HOME}"
                 # Handle wildcards
                 for file in $include_path; do
-                    [[ -f $file ]] && config_files+=("$file")
+                    if [[ -f $file ]]; then
+                        local inc_canonical
+                        inc_canonical="$(realpath "$file" 2>/dev/null || echo "$file")"
+                        [[ -n ${seen[$inc_canonical]:-} ]] && continue
+                        seen[$inc_canonical]=1
+                        config_files+=("$file")
+                    fi
                 done
             done < <(grep -i '^[[:space:]]*Include' "$config" 2>/dev/null)
         fi
@@ -162,3 +185,6 @@ export NVM_DIR="$HOME/.nvm"
 export CODE_USER_DATA_DIR=~/.config/vscode
 export OLLAMA_API_BASE=http://127.0.0.1:11434
 export EDITOR=nvim
+
+# bash completions
+[ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
