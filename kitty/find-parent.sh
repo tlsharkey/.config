@@ -1,29 +1,12 @@
-#!/bin/zsh
-# Find parent window ID by querying kitty's window list
+#!/usr/bin/env sh
+# Dispatcher: launches find-parent.zsh or find-parent.bash
+# depending on which shell is available on the system.
+# Exits cleanly (does nothing) if neither zsh nor bash is installed.
 
-# Get all windows and find the one that was created just before us
-PARENT_ID=$(kitty @ ls 2>/dev/null | grep -B 20 "\"id\": $KITTY_WINDOW_ID" | grep '"id":' | tail -2 | head -1 | grep -oE '[0-9]+')
-
-export KITTY_PARENT_WINDOW_ID="$PARENT_ID"
-echo "DEBUG: My ID=$KITTY_WINDOW_ID, Found parent=$PARENT_ID"
-
-# Check for Python venv in current directory and parent directories
-check_and_activate_venv() {
-    local dir="$PWD"
-    while [[ "$dir" != "/" ]]; do
-        if [[ -f "$dir/venv/bin/activate" ]]; then
-            export KITTY_VENV_PATH="$dir/venv"
-            return 0
-        elif [[ -f "$dir/.venv/bin/activate" ]]; then
-            export KITTY_VENV_PATH="$dir/.venv"
-            return 0
-        fi
-        dir="$(dirname "$dir")"
-    done
-    return 1
-}
-
-# Detect venv and export path if found
-check_and_activate_venv
-
-exec zsh
+if command -v zsh >/dev/null 2>&1; then
+    exec zsh "$HOME/.config/kitty/find-parent.zsh"
+elif command -v bash >/dev/null 2>&1; then
+    exec bash "$HOME/.config/kitty/find-parent.bash"
+else
+    exit 0
+fi

@@ -1,27 +1,15 @@
-#!/bin/zsh
-# Launch wrapper that receives parent window ID as argument
+#!/usr/bin/env sh
+# Dispatcher: launches launch-with-parent.zsh or launch-with-parent.bash
+# depending on which shell is available on the system.
+# Exits cleanly (does nothing) if neither zsh nor bash is installed.
 
 # First argument is the parent window ID
 export KITTY_PARENT_WINDOW_ID="$1"
 
-# Check for Python venv in current directory and parent directories
-check_and_activate_venv() {
-    local dir="$PWD"
-    while [[ "$dir" != "/" ]]; do
-        if [[ -f "$dir/venv/bin/activate" ]]; then
-            export KITTY_VENV_PATH="$dir/venv"
-            return 0
-        elif [[ -f "$dir/.venv/bin/activate" ]]; then
-            export KITTY_VENV_PATH="$dir/.venv"
-            return 0
-        fi
-        dir="$(dirname "$dir")"
-    done
-    return 1
-}
-
-# Detect venv and export path if found
-check_and_activate_venv
-
-# Launch the shell
-exec zsh
+if command -v zsh >/dev/null 2>&1; then
+    exec zsh "$HOME/.config/kitty/launch-with-parent.zsh" "$KITTY_PARENT_WINDOW_ID"
+elif command -v bash >/dev/null 2>&1; then
+    exec bash "$HOME/.config/kitty/launch-with-parent.bash" "$KITTY_PARENT_WINDOW_ID"
+else
+    exit 0
+fi
