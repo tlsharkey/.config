@@ -20,6 +20,22 @@ fi
 PATH="$HOME/.local/kitty.app/bin:$PATH"
 export PATH
 
+# LaTeX: MacTeX exposes binaries through /Library/TeX/texbin (added by
+# path_helper only for login shells), and an upstream TeX Live install lands in
+# <prefix>/<release>/bin/<arch>. Add whichever exists. Unmatched globs stay
+# literal here, which the executable tests below simply reject.
+for _texbin in /Library/TeX/texbin /usr/local/texlive/*/bin/* /opt/texlive/*/bin/*; do
+    if [ -x "$_texbin/latexmk" ] || [ -x "$_texbin/pdflatex" ]; then
+        case ":$PATH:" in
+            *":$_texbin:"*) ;;
+            *) PATH="$_texbin:$PATH" ;;
+        esac
+        break
+    fi
+done
+export PATH
+unset _texbin
+
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
 
