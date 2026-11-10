@@ -11,14 +11,32 @@
 {
    "$schema": "https://vicinae.com/schemas/config.json",
    "close_on_focus_loss": true,
+   "keybinding": "vim",
+   "tray": {
+      "enabled": false
+   },
+   "global_shortcuts": {
+      "toggle": "super+space"
+   },
+   "font": {
+      "normal": {
+         "family": "Adwaita Sans",
+         "size": 11
+      }
+   },
    "theme": {
       "dark": {
-         "icon_theme": "Adwaita"
+         "name": "libadwaita-dark",
+         "icon_theme": "Fluent purple dark"
       }
    },
    "launcher_window": {
+      "opacity": 1,
       "client_side_decorations": {
          "enabled": true
+      },
+      "compact_mode": {
+         "enabled": false
       }
    },
    "providers": {
@@ -27,7 +45,36 @@
             "encryption": false,
             "eraseOnStartup": true,
             "ignorePasswords": true,
-            "monitoring": true
+            "monitoring": true,
+            "preserveTagged": true,
+            "ignoredApps": [
+               "com.onepassword.OnePassword.desktop"
+            ],
+            "evictionThreshold": "604800"
+         }
+      },
+      "scripts": {
+         "preferences": {
+            "customDirs": [
+               "/home/tlsharkey/.config/vicinae/scripts"
+            ]
+         }
+      },
+      "snippets": {
+         "preferences": {
+            "enabled": true,
+            "undo": true,
+            "layout": "",
+            "prePasteDelay": "0",
+            "keyDelay": "2"
+         }
+      },
+      "theme": {
+         "enabled": false,
+         "entrypoints": {
+            "set": {
+               "enabled": true
+            }
          }
       }
    }
