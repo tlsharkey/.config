@@ -71,7 +71,21 @@ get_merge_strategy() {
 get_target_path() {
     local platform="$1"
     local filename="$2"
-    echo "$HOME/.$platform/$filename"
+    local config_dir=$(get_config_dir "$platform")
+    echo "$config_dir/$filename"
+}
+
+# Get config directory for a platform
+get_config_dir() {
+    local platform="$1"
+    case "$platform" in
+        opencode)
+            echo "$HOME/.config/opencode"
+            ;;
+        *)
+            echo "$HOME/.$platform"
+            ;;
+    esac
 }
 
 # Get shadow path
@@ -492,7 +506,7 @@ merge_all_configs() {
         [[ ! -d "$platform_path" ]] && continue
 
         local platform=$(basename "$platform_path")
-        local tool_dir="$HOME/.$platform"
+        local tool_dir=$(get_config_dir "$platform")
 
         # Check if tool is installed
         if [[ ! -d "$tool_dir" ]]; then
@@ -503,16 +517,18 @@ merge_all_configs() {
 
         echo -e "${GREEN}[+]${NC} $platform: processing..."
 
-        # Find all files in platform config dir
+        # Find all files in platform config dir (recursive)
         local processed=0
         local updated=0
         local preserved=0
         local skipped=0
         local conflicts=0
 
-        for source_file in "$platform_path"/*; do
+        while IFS= read -r -d '' source_file; do
             [[ ! -f "$source_file" ]] && continue
 
+            # Get relative path from platform_path
+            local rel_path="${source_file#$platform_path/}"
             local filename=$(basename "$source_file")
 
             # Skip metadata files
@@ -526,17 +542,17 @@ merge_all_configs() {
             local strategy_result=$(get_merge_strategy "$filename")
 
             # Handle special case: settings-additions.json
-            local target_filename="$filename"
+            local target_filename="$rel_path"
             local strategy="$strategy_result"
             if [[ "$strategy_result" == json:* ]]; then
-                target_filename="${strategy_result#json:}"
+                target_filename="${rel_path%.*}.json"
                 strategy="json"
             fi
 
             case "$strategy" in
                 skip:*)
                     local reason="${strategy#skip:}"
-                    echo "    [$filename] Skipping: $reason"
+                    echo "    [$rel_path] Skipping: $reason"
                     ((skipped++)) || true
                     continue
                     ;;
@@ -546,7 +562,7 @@ merge_all_configs() {
             local target_file=$(get_target_path "$platform" "$target_filename")
             local shadow_file=$(get_shadow_path "$platform" "$target_filename")
 
-            echo "    [$filename] → $target_filename (strategy: $strategy)"
+            echo "    [$rel_path] → $target_filename (strategy: $strategy)"
 
             # Apply three-way merge
             ((processed++)) || true
@@ -563,7 +579,7 @@ merge_all_configs() {
                     ((conflicts++)) || true
                 fi
             fi
-        done
+        done < <(find "$platform_path" -type f -print0 | sort -z)
 
         # Platform summary
         echo "    Summary: processed=$processed, updated=$updated, preserved=$preserved, skipped=$skipped, conflicts=$conflicts"
