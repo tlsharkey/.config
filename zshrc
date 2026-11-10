@@ -230,3 +230,16 @@ if [[ -n $KITTY_VENV_PATH ]] && [[ -f "$KITTY_VENV_PATH/bin/activate" ]]; then
     source "$KITTY_VENV_PATH/bin/activate"
     unset KITTY_VENV_PATH
 fi
+
+# History modifications
+HISTSIZE=99999
+HISTFILESIZE=999999
+SAVEHIST=$HISTSIZE
+alias history="history 1"
+
+# Up arrow to go through history matching current line
+autoload -U up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey "^[[A" up-line-or-beginning-search
+bindkey "^[[B" down-line-or-beginning-search
