@@ -33,6 +33,21 @@ alias uniq='LC_ALL=C uniq'
 #homebrew
 export PATH="/opt/homebrew/bin:$PATH"
 
+# LaTeX: MacTeX/BasicTeX expose binaries through /Library/TeX/texbin, which
+# path_helper only adds for login shells, and an upstream TeX Live install lands
+# in <prefix>/<release>/bin/<arch>. Add whichever exists so latexmk works from
+# any terminal and from :! subshells.
+for _texbin in /Library/TeX/texbin /usr/local/texlive/*/bin/*(/N) /opt/texlive/*/bin/*(/N); do
+    if [[ -x $_texbin/latexmk || -x $_texbin/pdflatex ]]; then
+        case ":$PATH:" in
+            *":$_texbin:"*) ;;
+            *) export PATH="$_texbin:$PATH" ;;
+        esac
+        break
+    fi
+done
+unset _texbin
+
 ## Completions
 autoload -U compinit
 compinit -C
