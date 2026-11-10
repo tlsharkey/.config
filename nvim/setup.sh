@@ -217,6 +217,64 @@ else
     echo "✅ imagemagick installed"
 fi
 
+# LaTeX toolchain for VimTeX (optional)
+# TeX is routinely missing from PATH in a non-login shell, so probe the install
+# locations directly instead of trusting PATH (mirrors nvim's lua/latex.lua).
+TEX_BIN=""
+find_tex_bin() {
+    for _cand in /Library/TeX/texbin /usr/local/texlive/*/bin/* /opt/texlive/*/bin/*; do
+        if [ -x "$_cand/latexmk" ] || [ -x "$_cand/pdflatex" ]; then
+            TEX_BIN="$_cand"
+            return 0
+        fi
+    done
+    if command_exists latexmk || command_exists pdflatex; then
+        TEX_BIN="$(dirname "$(command -v latexmk || command -v pdflatex)")"
+        return 0
+    fi
+    return 1
+}
+
+if find_tex_bin; then
+    echo "✅ TeX toolchain installed ($TEX_BIN)"
+    if [ ! -x "$TEX_BIN/latexmk" ]; then
+        # latexmk drives VimTeX's default compiler; BasicTeX ships without it.
+        echo "⚠️  latexmk is missing from $TEX_BIN (run: sudo tlmgr install latexmk)"
+    fi
+else
+    echo "💡 VimTeX stays disabled until a TeX distribution is installed:"
+    case $OS in
+        macos)
+            echo "   brew install --cask mactex-no-gui   # or basictex"
+            ;;
+        debian)
+            echo "   sudo apt install texlive-latex-extra latexmk"
+            ;;
+        fedora)
+            echo "   sudo dnf install texlive-latexmk"
+            ;;
+        *)
+            echo "   Install TeX Live for this platform."
+            ;;
+    esac
+    echo "   Note: BasicTeX omits latexmk; run 'sudo tlmgr install latexmk'."
+fi
+
+# SyncTeX-capable PDF viewer (optional)
+if [[ -d /Applications/Skim.app ]] || command_exists zathura || command_exists sioyek; then
+    echo "✅ SyncTeX-capable PDF viewer available"
+else
+    echo "💡 Without a viewer, :VimtexView opens the PDF in the default app:"
+    case $OS in
+        macos)
+            echo "   brew install --cask skim"
+            ;;
+        debian|fedora)
+            echo "   sudo apt/dnf install zathura"
+            ;;
+    esac
+fi
+
 echo ""
 echo "5️⃣  Finalizing setup..."
 echo ""

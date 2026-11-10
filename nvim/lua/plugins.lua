@@ -821,39 +821,46 @@ require("lazy").setup({
         "jghauser/follow-md-links.nvim",
     },
     {
-        "iamcco/markdown-preview.nvim",
-        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+        "selimacerbas/mdkite.nvim",
+        dependencies = { "selimacerbas/kitehost.nvim" },
+        cmd = { "MdKite" },
         ft = { "markdown" },
-        build = "cd app && npm install && git checkout .",
         config = function()
-            vim.g.mkdp_auto_close = 0 -- Don't auto-close preview when switching buffers
-            vim.g.mkdp_theme = "dark"
-            vim.g.mkdp_filetypes = { "markdown" }
-            vim.g.mkdp_browser = "" -- Use system default browser
+            require("mdkite").setup({
+                instance_mode = "takeover", -- one shared tab, like mkdp did
+                port = 0,                   -- 0 = auto (8421 for takeover)
+                open_browser = true,        -- system default browser
+                default_theme = "dark",     -- was vim.g.mkdp_theme
+                debounce_ms = 300,
+            })
 
             -- Keymaps
-            vim.keymap.set("n", "<leader>mp", "<cmd>MarkdownPreview<cr>", { desc = "Markdown Preview (browser)" })
-            vim.keymap.set("n", "<leader>ms", "<cmd>MarkdownPreviewStop<cr>", { desc = "Stop Markdown Preview" })
+            vim.keymap.set("n", "<leader>mp", "<cmd>MdKite toggle<cr>", { desc = "Markdown Preview (browser)" })
+            vim.keymap.set("n", "<leader>ms", "<cmd>MdKite stop<cr>", { desc = "Stop Markdown Preview" })
         end,
     },
+    -- LaTeX support. Loaded at startup rather than on a filetype trigger: this
+    -- is a legacy Vim plugin, and its after/ftplugin hooks need to be on the
+    -- runtimepath before the first FileType event fires.
     {
         "lervag/vimtex",
         lazy = false,
         cond = function()
-            return vim.fn.executable("latex") == 1 or vim.fn.executable("pdflatex") == 1
+            return require("latex").has_tex()
         end,
         init = function()
-            if vim.fn.executable("skim") == 1 then
-                vim.g.vimtex_view_method = "skim"
-            elseif vim.fn.executable("zathura") == 1 then
-                vim.g.vimtex_view_method = "zathura"
-            elseif vim.fn.executable("evince") == 1 then
-                vim.g.vimtex_view_method = "evince"
-            elseif vim.fn.executable("okular") == 1 then
-                vim.g.vimtex_view_method = "okular"
-            elseif vim.fn.executable("mupdf") == 1 then
-                vim.g.vimtex_view_method = "mupdf"
+            local latex = require("latex")
+
+            -- Unset means "use VimTeX's own per-OS default viewer".
+            local method, general_viewer = latex.detect_viewer()
+            if method then
+                vim.g.vimtex_view_method = method
+                if general_viewer then
+                    vim.g.vimtex_view_general_viewer = general_viewer
+                end
             end
+
+            -- Keep build artefacts out of the project root.
             vim.g.vimtex_compiler_latexmk = {
                 out_dir = ".latex",
             }

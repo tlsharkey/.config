@@ -141,6 +141,16 @@ sequenceDiagram
     Bob->Alice: Great!
 ```
 
+```mermaid
+architecture-beta
+    group cloud(cloud)[Cloud Platform]
+    service lambda(logos:aws-lambda)[Lambda] in cloud
+    service db(database)[Postgres] in cloud
+    service cache(redis)[Redis] in cloud
+    lambda:R --> L:db
+    lambda:R --> L:cache
+```
+
 ## Embeds
 
 [Example Link](https://example.com) regular link out to url

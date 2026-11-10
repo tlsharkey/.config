@@ -130,6 +130,11 @@ vim.keymap.set("n", "<C-/>", function()
     pcall(function() require("Comment.api").toggle.linewise.current() end)
 end, { desc = "Comment line" })
 vim.keymap.set("v", "<C-/>", function()
+    -- Leave Visual mode *before* asking Comment.nvim for the range.
+    -- It resolves the region from the '< and '> marks, which are only
+    -- written when Visual mode is exited; without this we read whatever
+    -- the previous selection was and comment the wrong line.
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "nx", false)
     pcall(function() require("Comment.api").locked("toggle.linewise")(vim.fn.visualmode()) end)
     vim.cmd("normal! gv")
 end, { desc = "Comment selection" })

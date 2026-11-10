@@ -7,6 +7,9 @@ end
 require("options")
 require("filetypes")
 require("keymaps")
+-- Must run before plugins: it puts TeX on PATH, which VimTeX's enable check and
+-- its latexmk job both depend on.
+require("latex").setup()
 require("plugins")
 require("colorscheme")
 
