@@ -69,8 +69,8 @@ zoom.conf
 zoomus.conf
 yelp
 config.private
-zshrc.private
-bashrc.private
+zshrc.*
+bashrc.*
 uv
 fish/conf.d
 op
