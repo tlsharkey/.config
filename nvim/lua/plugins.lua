@@ -520,6 +520,9 @@ require("lazy").setup({
             "stevearc/dressing.nvim",
             "nvim-lua/plenary.nvim",
             "MunifTanjim/nui.nvim",
+            -- Required by avante's plugin/avante.lua command setup (require("mega.cmdparse")).
+            -- Without these, startup fails with: module 'mega.cmdparse' not found
+            { "ColinKennedy/mega.cmdparse", dependencies = { "ColinKennedy/mega.logging" } },
             "nvim-tree/nvim-web-devicons",
             {
                 "zbirenbaum/copilot.lua",
@@ -1334,5 +1337,13 @@ require("lazy").setup({
                 desc = "Buffer Local Keymaps (which-key)",
             },
         },
+    },
+}, {
+    -- Automatically install any missing plugins (and their declared dependencies,
+    -- e.g. avante's mega.cmdparse / mega.logging) on startup instead of only
+    -- showing a "not installed" notification. Safe: lazy does this without
+    -- blocking startup.
+    install = {
+        missing = true,
     },
 })
