@@ -732,9 +732,9 @@ require("lazy").setup({
                 -- In other modes (insert, visual), raw text shows on cursor line
                 anti_conceal = {
                     enabled = true,
-                    disabled_modes = { "n" },  -- Disable anti-conceal in normal mode
-                    above = 0,  -- Number of lines above cursor to show raw
-                    below = 0,  -- Number of lines below cursor to show raw
+                    disabled_modes = { "n" }, -- Disable anti-conceal in normal mode
+                    above = 0, -- Number of lines above cursor to show raw
+                    below = 0, -- Number of lines below cursor to show raw
                     ignore = {
                         code_background = true,
                         indent = true,
@@ -824,16 +824,17 @@ require("lazy").setup({
         "jghauser/follow-md-links.nvim",
     },
     {
-        "selimacerbas/mdkite.nvim",
+        "tlsharkey/mdkite.nvim",
+        branch = "overlay-live-update",
         dependencies = { "selimacerbas/kitehost.nvim" },
         cmd = { "MdKite" },
         ft = { "markdown" },
         config = function()
             require("mdkite").setup({
                 instance_mode = "takeover", -- one shared tab, like mkdp did
-                port = 0,                   -- 0 = auto (8421 for takeover)
-                open_browser = true,        -- system default browser
-                default_theme = "dark",     -- was vim.g.mkdp_theme
+                port = 0, -- 0 = auto (8421 for takeover)
+                open_browser = true, -- system default browser
+                default_theme = "dark", -- was vim.g.mkdp_theme
                 debounce_ms = 300,
             })
 
