@@ -1,2 +1,6 @@
 service.json
 opencode.json
+opencode.jsonc
+service.jsonc
+node_modules
+package-lock.json
