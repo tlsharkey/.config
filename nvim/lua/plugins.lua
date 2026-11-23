@@ -459,6 +459,7 @@ require("lazy").setup({
             },
         },
         build = "make",
+        rocks = { "mega.cmdparse", "mega.logging" },
         config = function(_, opts)
             require("avante").setup(opts)
 

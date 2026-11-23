@@ -3,19 +3,29 @@
   "diffs": {
     "wrap": "word"
   },
+  "tabs": {
+    "mode": "on",
+    "layout": "horizontal",
+    "indicators": "status"
+  },
   "session": {
     "sidebar": "auto",
     "scrollbar": false,
     "thinking": "hide",
-    "permissions": "prompt"
+    "permissions": "prompt",
+    "grouping": "auto"
   },
   "animations": true,
   "prompt": {
+    "paste": "compact",
     "image_preview": true
   },
   "attention": {
     "notifications": true,
     "sound": true,
     "volume": 0.4
+  },
+  "theme": {
+    "mode": "system"
   }
 }

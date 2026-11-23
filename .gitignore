@@ -103,3 +103,8 @@ cagent
 /tiling-assistant
 /bashrc.*
 /zshrc.*
+/opencode/opencode.json.bak
+/pdfcraft
+/vllm
+/docker
+/btop
