@@ -114,3 +114,7 @@ When working in a project, check for documentation in this order:
 - ASCII diagrams only
 - Present all decision information inline in text before asking for user input
 - Keep diagrams simple and readable in monospace font
+
+## Local CLI Tools
+
+Available here: `jq`, `yq` (mikefarah v4), `rg`, `fd`, `bat`, `tree`, `glow`, `tldr`, `sqlite3`, `plutil`, `defaults`, `gh`, `lazygit`, `git-lfs`, `ncdu`, `btop`, `ffmpeg`, `magick`, `sips`, `cwebp`, `pdftotext`, `tesseract`, `unar`, `docker`/`orbctl`, `kubectl`, `helm`, `k9s`, `stern`, `aws`, `az`, `tailscale`, `uv`/`uvx`/`pipx`/`pyenv`, `node`/`npm`/`pnpm`, `go`, `cargo`, `dotnet`, `swift`/`xcodebuild`/`xcrun`, `mdfind`, `pbcopy`/`pbpaste`, `open`, `osascript`, `timeout`, `safe-cat` instead of `cat` for .env environment variables. Prefer these over hand-rolled equivalents.

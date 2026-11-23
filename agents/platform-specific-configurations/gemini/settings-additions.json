@@ -1,0 +1,15 @@
+{
+  "comment": "Permission additions for ~/.gemini/settings.json",
+  "description": "Auto-approve tools for agents configuration files",
+  "merge_strategy": {
+    "target_path": "tools.autoApprovedTools",
+    "method": "array_append_unique",
+    "values": [
+      "read_file",
+      "write_file",
+      "list_directory",
+      "glob_files",
+      "grep"
+    ]
+  }
+}

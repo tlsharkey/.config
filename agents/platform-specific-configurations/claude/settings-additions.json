@@ -6,7 +6,13 @@
     "method": "array_append_unique",
     "values": [
       "Read(~/.config/agents/**)",
-      "Grep(~/.config/agents/**)"
+      "Grep(~/.config/agents/**)",
+      "Read(./.agents/**)",
+      "Grep(./.agents/**)",
+      "Edit(./.agents/**)",
+      "Read(**/.agents/**)",
+      "Grep(**/.agents/**)",
+      "Edit(**/.agents/**)"
     ]
   }
 }

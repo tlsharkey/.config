@@ -1,0 +1,149 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "subagent_depth": 3,
+    "permission": {
+        "bash": {
+            "*": "ask",
+            "git *": "allow",
+            "git stash*": "ask",
+            "git commit*": "deny",
+            "git push*": "deny",
+            "wc *": "allow",
+            "sed -n *": "allow",
+            "pytest*": "allow",
+            "python -m pytest*": "allow",
+            "npm test*": "allow",
+            "npm run test*": "allow",
+            "ls *": "allow",
+            "echo *": "allow",
+            "head *": "allow",
+            "tail *": "allow",
+            "find *": "allow",
+            "cat *": "allow",
+            "grep *": "allow",
+            "rg *": "allow",
+            "type *": "allow",
+            "*.env*": "ask",
+        },
+        "read": {
+            "~/.config/agents/**": "allow",
+            ".agents/**": "allow",
+            "**/.agents/**": "allow",
+        },
+        "edit": {
+            ".agents/**": "allow",
+            "**/.agents/**": "allow",
+        },
+        "grep": {
+            "~/.config/agents/**": "allow",
+            ".agents/**": "allow",
+            "**/.agents/**": "allow",
+        },
+    },
+    "mcp": {
+        "context7": {
+            "type": "remote",
+            "url": "https://mcp.context7.com/mcp",
+            "enabled": true,
+            "headers": {
+                "CONTEXT7_API_KEY": "ctx7sk-99cf3894-0fd8-47b9-a1d1-59d23e9b6c56",
+            },
+        },
+        "sequentialthinking": {
+            "type": "local",
+            "command": [
+                "docker",
+                "run",
+                "--rm",
+                "-i",
+                "mcp/sequentialthinking",
+            ],
+            "enabled": true,
+        },
+        "memory": {
+            "type": "local",
+            "command": [
+                "docker",
+                "run",
+                "-i",
+                "-v",
+                "claude-memory:/app/dist",
+                "--rm",
+                "mcp/memory",
+            ],
+            "enabled": true,
+        },
+        "brave-search": {
+            "type": "local",
+            "command": [
+                "docker",
+                "run",
+                "-i",
+                "--rm",
+                "-e",
+                "BRAVE_API_KEY={env:BRAVE_API_KEY}",
+                "docker.io/mcp/brave-search",
+            ],
+            "enabled": true,
+        },
+        "deep-research": {
+            "type": "remote",
+            "url": "http://localhost:3333/api/mcp",
+            "timeout": 600,
+            "enabled": true,
+        },
+        "xcode": {
+            "type": "local",
+            "command": ["xcrun", "mcpbridge"],
+            "enabled": true,
+        },
+        "xcodemcp": {
+            "type": "local",
+            "command": ["npx", "-y", "xcodemcp@latest", "--sidekick-only"],
+            "enabled": true,
+            "env": {
+                "XCODE_MCP_PREFERRED_SCHEME": "",
+                "XCODE_MCP_PREFERRED_XCODEPROJ": "",
+            },
+        },
+        "document-mcp": {
+            "type": "local",
+            "command": ["npx", "-y", "document-mcp"],
+        },
+        "academic-editor": {
+            "type": "local",
+            "command": [
+                "/Users/tlsharkey/.local/share/opencode/mcp-academic-editor/.venv/bin/python",
+                "/Users/tlsharkey/.local/share/opencode/mcp-academic-editor/server.py"
+            ],
+            "env": {
+                "PYTHONPATH": "/Users/tlsharkey/.local/share/opencode/mcp-academic-editor"
+            },
+            "enabled": true,
+        },
+        "resume-editor": {
+            "type": "local",
+            "command": [
+                "docker",
+                "exec",
+                "-i",
+                "resume-tailor",
+                "python3",
+                "/app/resume_editor_server.py"
+            ],
+            "enabled": true,
+        },
+        "jd-keyword-extractor": {
+            "type": "local",
+            "command": [
+                "docker",
+                "exec",
+                "-i",
+                "resume-tailor",
+                "python3",
+                "/app/jd_keyword_extractor_mcp.py"
+            ],
+            "enabled": true,
+        },
+    },
+}
