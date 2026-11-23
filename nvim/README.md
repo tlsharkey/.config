@@ -193,6 +193,14 @@ brew install omnisharp
 
 Required only if writing LaTeX documents.
 
+The TeX binaries are picked up automatically (`lua/latex.lua`), so this works
+whether or not your terminal is a login shell: on macOS `/Library/TeX/texbin`
+and `.../texlive/<release>/bin/<arch>` are probed directly and added to `PATH`
+if the engines are not already reachable. For an unusual install prefix, point
+`TEX_BIN_DIR` at the directory holding `latexmk`/`pdflatex`. VimTeX stays
+disabled when no engine is found at all, and opening a `.tex` file then prints
+one warning instead of failing silently.
+
 **macOS:**
 
 ```bash
@@ -222,10 +230,28 @@ sudo dnf install texlive-scheme-full
 
 #### PDF Viewer for LaTeX
 
+VimTeX auto-detects a viewer in this order: **Skim**, **Sioyek**, **Zathura**,
+**MuPDF** (all SyncTeX-capable), then **Okular**/**Evince** through VimTeX's
+general viewer (opens the PDF, no sync). On Windows the choice is left to
+VimTeX, which uses SumatraPDF when present. If nothing is installed, `:VimtexView`
+hands the PDF to the OS default application.
+
+> **Note:** on macOS Skim is detected as an application bundle
+> (`/Applications/Skim.app`), *not* by a `skim` command. VimTeX drives Skim over
+> AppleScript, and `brew install --cask skim` does not install the optional
+> command-line tool, so do not gate this on `executable("skim")`.
+
 **macOS (Skim - recommended):**
 
 ```bash
 brew install --cask skim
+```
+
+Then configure inverse search: in Skim choose **Settings → Sync**, pick the
+**Custom** preset, and set the command to:
+
+```bash
+nvim --headless -c "VimtexInverseSearch %line '%file'"
 ```
 
 **Linux:**
@@ -337,7 +363,7 @@ go install github.com/hangxie/parquet-tools@latest
 
 #### Mermaid Diagram Rendering
 
-The `markdown-preview.nvim` plugin provides live markdown preview in your browser with full mermaid diagram support. No additional installation required.
+The `mdkite.nvim` plugin provides live markdown preview in your browser. The browser loads Mermaid v11 from a CDN (jsDelivr), so it renders the latest diagram types — including architecture diagrams (`architecture-beta`, v11.1+) — with no npm/Node installation required. Internet access is needed for diagram rendering.
 
 Press `<leader>mp` to open the browser preview and see rendered mermaid diagrams.
 
@@ -504,7 +530,7 @@ This configuration uses `\` (backslash) as the leader key.
 
 | Shortcut     | Action                             | Mode   |
 | ------------ | ---------------------------------- | ------ |
-| `<leader>mp` | Open live preview in browser       | Normal |
+| `<leader>mp` | Toggle live preview in browser     | Normal |
 | `<leader>ms` | Stop markdown preview server       | Normal |
 
 ### Code Intelligence (LSP & Gutentags)
@@ -596,18 +622,27 @@ This configuration uses `\` (backslash) as the leader key.
 ### LaTeX Editing
 
 - **VimTeX**: Comprehensive LaTeX support
-    - `:VimtexCompile` to compile and auto-preview
-    - PDF updates automatically on save
+    - Compiling is a toggle, not a `start`: `\ll` (`:VimtexCompile`) starts
+        continuous `latexmk` and rebuilds on save; pressing it again stops it.
+        Use `\lS` (`:VimtexCompileSS`) for a one-shot build.
+    - `\lv` view PDF · `\le` errors in quickfix · `\lo` compiler output ·
+        `\lg` status · `\lc` clean · `\li` state report
+    - Build artefacts go to `.latex/` (add it to your project's `.gitignore`)
+    - Editing: `i_e`/`a_e` environment, `i$`/`a$` math, `<F7>` create command,
+        `<F6>` wrap in environment, `tse`/`tsc` toggle star, `K` package docs
+    - Default maps are prefixed `<localleader>l`; with no `maplocalleader` set
+        that means `\l...`
+    - In-buffer math preview (`\lp`) needs Neovim 0.13+, a kitty-protocol
+        terminal, the `preview` LaTeX package, and `pdftocairo`
     - See [VimTeX docs](https://github.com/lervag/vimtex/blob/master/VISUALS.md) for keyboard shortcuts
-    - `]]` / `[[` to navigate between sections
 
 ### Markdown Features
 
 - **Follow links**: `<Ctrl> + <click>` to open links
 - **Rich rendering**: Custom checkboxes and beautiful formatting
 - **Image pasting**: Paste images directly with `img-paste.vim`
-- **Browser preview**: Live markdown preview with mermaid diagram support
-    - `<leader>mp` - Open live preview in browser
+- **Browser preview**: Live markdown preview via `mdkite.nvim` (Mermaid v11 from CDN)
+    - `<leader>mp` - Toggle live preview in browser
     - `<leader>ms` - Stop preview server
 - **Quarto**: Full support for Quarto notebooks
 

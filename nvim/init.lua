@@ -13,6 +13,9 @@ require("keymaps")
 local luarocks_51 = os.getenv("HOME") .. "/.luarocks/share/lua/5.1"
 package.path = luarocks_51 .. "/?.lua;" .. luarocks_51 .. "/?/init.lua;" .. package.path
 
+-- Must run before plugins: it puts TeX on PATH, which VimTeX's enable check and
+-- its latexmk job both depend on.
+require("latex").setup()
 require("plugins")
 require("colorscheme")
 
