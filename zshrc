@@ -40,8 +40,8 @@ export PATH="/opt/homebrew/bin:$PATH"
 for _texbin in /Library/TeX/texbin /usr/local/texlive/*/bin/*(/N) /opt/texlive/*/bin/*(/N); do
     if [[ -x $_texbin/latexmk || -x $_texbin/pdflatex ]]; then
         case ":$PATH:" in
-            *":$_texbin:"*) ;;
-            *) export PATH="$_texbin:$PATH" ;;
+        *":$_texbin:"*) ;;
+        *) export PATH="$_texbin:$PATH" ;;
         esac
         break
     fi
@@ -93,6 +93,7 @@ alias optipng='\optipng -o7 -zm1-9 -preserve'
 alias vim='nvim'
 alias python=python3
 alias aider='aider --env-file ~/.config/aider.env'
+alias safe-env="awk -F= 'BEGIN { OFS=\"=\" } /^[[:space:]]*#/ || /^[[:space:]]*$/ { print; next } tolower(\$1) ~ /key|secret|pass|token|auth|private/ { print \$1, \"[REDACTED]\"; next } { print }'"
 # alias ctags = 'ctags --options=$HOME/.config/ctags'
 alias defaultsource='source ~/.config/zshrc'
 alias sourcedefault='source ~/.config/zshrc'

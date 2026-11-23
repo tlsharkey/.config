@@ -27,8 +27,8 @@ export PATH
 for _texbin in /Library/TeX/texbin /usr/local/texlive/*/bin/* /opt/texlive/*/bin/*; do
     if [ -x "$_texbin/latexmk" ] || [ -x "$_texbin/pdflatex" ]; then
         case ":$PATH:" in
-            *":$_texbin:"*) ;;
-            *) PATH="$_texbin:$PATH" ;;
+        *":$_texbin:"*) ;;
+        *) PATH="$_texbin:$PATH" ;;
         esac
         break
     fi
@@ -102,6 +102,7 @@ alias python=python3
 alias aider='aider --env-file ~/.config/aider.env'
 alias resource='source ~/.config/bashrc'
 alias re-source='source ~/.config/bashrc'
+alias safe-env="awk -F= 'BEGIN { OFS=\"=\" } /^[[:space:]]*#/ || /^[[:space:]]*$/ { print; next } tolower(\$1) ~ /key|secret|pass|token|auth|private/ { print \$1, \"[REDACTED]\"; next } { print }'"
 # ollama alias for asking a question
 alias ?=ollama_run
 alias aider='aider --model ollama_chat/phi4 --env-file ~/.config/aider.env'
